@@ -8,10 +8,13 @@ public class Tetromino : MonoBehaviour
     [SerializeField]
     private float fallSpeed = 1;
     [SerializeField]
-    private bool allowRotation = true;
+    private bool allowRotation = true;  // We use this to specofy if we want to allow the tetromino to rotate
     [SerializeField]
-    private bool limitRotation;
+    private bool limitRotation;         // This is used to limit the rotation of the tetromino to a 90 / -90 rotation (To / From)
     private Game game;
+
+    private int individualScore = 100;
+    private float individualScoreTime;
 
     private void Start()
     {
@@ -21,6 +24,18 @@ public class Tetromino : MonoBehaviour
     private void Update()
     {
         CheckUserInput();
+        UpdateIndividualScore();
+    }
+
+    private void UpdateIndividualScore()
+    {
+        if (individualScoreTime < 1)
+            individualScoreTime += Time.deltaTime;
+        else
+        {
+            individualScoreTime = 0;
+            individualScore = Mathf.Max(individualScore - 10, 0);
+        }
     }
 
     private void CheckUserInput()
@@ -98,6 +113,7 @@ public class Tetromino : MonoBehaviour
                 }
 
                 enabled = false;
+                Game.CurrentScore += individualScore;
                 game.SpawnNextTetromino();
             }
 
