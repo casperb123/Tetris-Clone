@@ -636,10 +636,10 @@ PlayerSettings:
     m_VersionCode: 1
     m_VersionName: 
   apiCompatibilityLevel: 6
-  cloudProjectId: fc6d0d95-0347-4fcc-8f21-77d6d1daa2fa
+  cloudProjectId: 
   framebufferDepthMemorylessMode: 0
-  projectName: Tetris Clone
-  organizationId: casper-johannes-bastholm
+  projectName: 
+  organizationId: 
   cloudEnabled: 0
   enableNativePlatformBackendsForNewInputSystem: 0
   disableOldInputManagerSupport: 0

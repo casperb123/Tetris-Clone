@@ -63,7 +63,7 @@ public class Tetromino : MonoBehaviour
                 {
                     Vector3 toMove = GetUnitsToMove();
 
-                    if (toMove.x > 0 || toMove.x < 0 || toMove.y > 0)
+                    if (toMove.x != 0 || toMove.y != 0)
                         transform.position += toMove;
                     else
                     {
