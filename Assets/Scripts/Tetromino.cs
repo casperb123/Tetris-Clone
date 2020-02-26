@@ -61,10 +61,10 @@ public class Tetromino : MonoBehaviour
                     game.UpdateGrid(this);
                 else
                 {
-                    int toMove = GetUnitsToMove();
+                    Vector3 toMove = GetUnitsToMove();
 
-                    if (toMove > 0 || toMove < 0)
-                        transform.position += new Vector3(toMove, 0);
+                    if (toMove.x > 0 || toMove.x < 0 || toMove.y > 0)
+                        transform.position += toMove;
                     else
                     {
                         if (limitRotation)
@@ -117,18 +117,23 @@ public class Tetromino : MonoBehaviour
         return true;
     }
 
-    private int GetUnitsToMove()
+    private Vector3 GetUnitsToMove()
     {
+        Vector3 positionToReturn = new Vector3();
+
         foreach (Transform mino in transform)
         {
             Vector3 roundedPos = game.Round(mino.position);
 
             if (roundedPos.x < 0)
-                return (int)roundedPos.x * -1;
+                positionToReturn += new Vector3((int)roundedPos.x * -1, 0);
             else if (roundedPos.x >= Game.GridWidth)
-                return ((int)roundedPos.x - 9) * -1;
+                return positionToReturn += new Vector3(((int)roundedPos.x - 9) * -1, 0);
+
+            if (roundedPos.y < 0)
+                positionToReturn += new Vector3(0, (int)roundedPos.y * -1);
         }
 
-        return 0;
+        return positionToReturn;
     }
 }
