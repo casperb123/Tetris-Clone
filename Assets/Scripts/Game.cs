@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class Game : MonoBehaviour
 {
@@ -13,6 +14,24 @@ public class Game : MonoBehaviour
     {
         tetrominos = GameObject.Find("Tetrominos").transform;
         SpawnNextTetromino();
+    }
+
+    public bool CheckIsAboveGrid(Tetromino tetromino)
+    {
+        for (int x = 0; x < GridWidth; x++)
+        {
+            foreach (Transform mino in tetromino.transform)
+            {
+                Vector2 pos = Round(mino.position);
+
+                if (pos.y > GridHeight - 1)
+                {
+                    return true;
+                }
+            }
+        }
+
+        return false;
     }
 
     public bool IsFullRowAt(int y)
@@ -150,5 +169,10 @@ public class Game : MonoBehaviour
         }
 
         return $"Prefabs/{randomTetrominoName}";
+    }
+
+    public void GameOver()
+    {
+        SceneManager.LoadScene("GameOver");
     }
 }

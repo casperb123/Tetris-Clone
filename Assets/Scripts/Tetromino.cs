@@ -90,10 +90,14 @@ public class Tetromino : MonoBehaviour
             else
             {
                 transform.position += new Vector3(0, 1);
-
                 game.DeleteRow();
-                enabled = false;
 
+                if (game.CheckIsAboveGrid(this))
+                {
+                    game.GameOver();
+                }
+
+                enabled = false;
                 game.SpawnNextTetromino();
             }
 
