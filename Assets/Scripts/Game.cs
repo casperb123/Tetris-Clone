@@ -4,7 +4,7 @@ using UnityEngine.UI;
 public class Game : MonoBehaviour
 {
     private Transform tetrominos;
-    private int numberOfRowsThisTurn = 0;
+    private int numberOfRowsThisTurn = 0;   // The number of rows cleared by a tetromino
 
     [SerializeField]
     private Text scoreText;
@@ -44,7 +44,7 @@ public class Game : MonoBehaviour
     {
         audioSource = GetComponent<AudioSource>();
         tetrominos = GameObject.Find("Tetrominos").transform;
-        SpawnNextTetromino();
+        SpawnTetromino();
     }
 
     private void Update()
@@ -53,11 +53,17 @@ public class Game : MonoBehaviour
         UpdateUI();
     }
 
+    /// <summary>
+    /// Updates the score text
+    /// </summary>
     private void UpdateUI()
     {
         scoreText.text = CurrentScore.ToString();
     }
 
+    /// <summary>
+    /// Checks how many lines is cleared
+    /// </summary>
     public void UpdateScore()
     {
         if (numberOfRowsThisTurn == 1)
@@ -72,40 +78,63 @@ public class Game : MonoBehaviour
         numberOfRowsThisTurn = 0;
     }
 
-    public void ClearedOneLine()
+    /// <summary>
+    /// Updates the score
+    /// </summary>
+    private void ClearedOneLine()
     {
         CurrentScore += scoreOneLine;
         PlayClearLineSound();
     }
 
-    public void ClearedTwoLines()
+    /// <summary>
+    /// Updates the score
+    /// </summary>
+    private void ClearedTwoLines()
     {
         CurrentScore += scoreTwoLines;
         PlayClearLineSound();
     }
 
-    public void ClearedThreeLines()
+    /// <summary>
+    /// Updates the score
+    /// </summary>
+    private void ClearedThreeLines()
     {
         CurrentScore += scoreThreeLines;
         PlayClearLineSound();
     }
 
-    public void ClearedFourLines()
+    /// <summary>
+    /// Updates the score
+    /// </summary>
+    private void ClearedFourLines()
     {
         CurrentScore += scoreFourLines;
         PlayClearFourLinesSound();
     }
 
+    /// <summary>
+    /// Plays the clear line sound
+    /// </summary>
     private void PlayClearLineSound()
     {
         audioSource.PlayOneShot(clearLineSound);
     }
 
+    /// <summary>
+    /// Plays the clear 4 lines sound
+    /// </summary>
     private void PlayClearFourLinesSound()
     {
         audioSource.PlayOneShot(clearFourLinesSound);
     }
 
+    /// <summary>
+    /// Checks if a tetromino is above the grid
+    /// </summary>
+    /// <param name="tetromino">The tetromino to check</param>
+    /// <returns><c>true</c>, if the tetromino is above the grid, <c>false</c> otherwise</returns>
     public bool CheckIsAboveGrid(Tetromino tetromino)
     {
         for (int x = 0; x < GridWidth; x++)
@@ -124,6 +153,11 @@ public class Game : MonoBehaviour
         return false;
     }
 
+    /// <summary>
+    /// Checks if a row is full
+    /// </summary>
+    /// <param name="y">The row to check</param>
+    /// <returns><c>true</c>, if the row is full, <c>false</c> otherwise</returns>
     public bool IsFullRowAt(int y)
     {
         // The parameter y, is the row we will iterate over in the grid array to check each x position for a transform
@@ -142,7 +176,11 @@ public class Game : MonoBehaviour
         return true;
     }
 
-    public void DeleteMinoAt(int y)
+    /// <summary>
+    /// Deletes minos at a row
+    /// </summary>
+    /// <param name="y">The row to delete</param>
+    public void DeleteMinosAt(int y)
     {
         for (int x = 0; x < GridWidth; x++)
         {
@@ -151,6 +189,10 @@ public class Game : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Moves a row down
+    /// </summary>
+    /// <param name="y">The row to move</param>
     public void MoveRowDown(int y)
     {
         for (int x = 0; x < GridWidth; x++)
@@ -164,6 +206,10 @@ public class Game : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Moves all rows down
+    /// </summary>
+    /// <param name="y">The row to stop at</param>
     public void MoveAllRowsDown(int y)
     {
         for (int i = y; i < GridHeight; i++)
@@ -172,19 +218,26 @@ public class Game : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Deletes the full rows
+    /// </summary>
     public void DeleteRow()
     {
         for (int y = 0; y < GridHeight; y++)
         {
             if (IsFullRowAt(y))
             {
-                DeleteMinoAt(y);
+                DeleteMinosAt(y);
                 MoveAllRowsDown(y + 1);
                 y--;
             }
         }
     }
 
+    /// <summary>
+    /// Updates the grid with the tetromino position
+    /// </summary>
+    /// <param name="tetromino">The tetromino to update</param>
     public void UpdateGrid(Tetromino tetromino)
     {
         for (int y = 0; y < GridHeight; y++)
@@ -212,6 +265,11 @@ public class Game : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Gets the transform at a specific position in the grid
+    /// </summary>
+    /// <param name="pos">The position to get the transform from</param>
+    /// <returns><c>Transform</c>, if one exists at the position in the grid, <c>null</c> otherwise</returns>
     public Transform GetTransformAtGridPosition(Vector2 pos)
     {
         if (pos.y > GridHeight - 1)
@@ -220,21 +278,38 @@ public class Game : MonoBehaviour
         return grid[(int)pos.x, (int)pos.y];
     }
 
-    public void SpawnNextTetromino()
+    /// <summary>
+    /// Spawns a random tetromino
+    /// </summary>
+    public void SpawnTetromino()
     {
         GameObject nextTetromino = (GameObject)Instantiate(Resources.Load(GetRandomTetromino(), typeof(GameObject)), new Vector2(5, 20), Quaternion.identity, tetrominos);
     }
 
+    /// <summary>
+    /// Checks if a position is inside the grid
+    /// </summary>
+    /// <param name="pos">The position to check</param>
+    /// <returns><c>true</c>, if the position is inside, <c>false</c> otherwise</returns>
     public bool CheckIsInsideGrid(Vector2 pos)
     {
         return (int)pos.x >= 0 && (int)pos.x < GridWidth && (int)pos.y >= 0;
     }
 
+    /// <summary>
+    /// Rounds the x and y of the position
+    /// </summary>
+    /// <param name="pos">The position to round</param>
+    /// <returns>The rounded position</returns>
     public Vector2 Round(Vector2 pos)
     {
         return new Vector2(Mathf.Round(pos.x), Mathf.Round(pos.y));
     }
 
+    /// <summary>
+    /// Gets a random tetromino
+    /// </summary>
+    /// <returns>Tetromino name</returns>
     private string GetRandomTetromino()
     {
         int randomTetromino = Random.Range(1, 8);
@@ -268,6 +343,9 @@ public class Game : MonoBehaviour
         return $"Prefabs/{randomTetrominoName}";
     }
 
+    /// <summary>
+    /// Pretty self explanatory
+    /// </summary>
     public void GameOver()
     {
         gameOverPanel.SetActive(true);

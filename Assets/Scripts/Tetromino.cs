@@ -214,7 +214,7 @@ public class Tetromino : MonoBehaviour
                 // Updates the individual score
                 Game.CurrentScore += individualScore;
                 // Spawn the next tetromino
-                game.SpawnNextTetromino();
+                game.SpawnTetromino();
                 // Plays the land audio
                 PlayLandAudio();
             }
@@ -259,6 +259,10 @@ public class Tetromino : MonoBehaviour
         return true;
     }
 
+    /// <summary>
+    /// Checks how many units the tetromino is outside of the grid
+    /// </summary>
+    /// <returns>The number of units the tetromino is outside</returns>
     private Vector3 GetUnitsToMove()
     {
         Vector3 positionToReturn = new Vector3();
