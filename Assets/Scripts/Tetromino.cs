@@ -12,6 +12,7 @@ public class Tetromino : MonoBehaviour
     private bool movedImmediateHorizontal;
     private bool movedImmediateVertical;
 
+    [Header("Rotation Settings")]
     [SerializeField]
     private bool allowRotation = true;      // We use this to specofy if we want to allow the tetromino to rotate
     [SerializeField]
@@ -20,6 +21,7 @@ public class Tetromino : MonoBehaviour
 
     private AudioSource audioSource;
 
+    [Header("Audio Settings")]
     [SerializeField]
     private AudioClip moveSound;            // Sound for when the tetromino is moved or rotated
     [SerializeField]

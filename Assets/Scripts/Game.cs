@@ -6,11 +6,13 @@ public class Game : MonoBehaviour
     private Transform tetrominos;
     private int numberOfRowsThisTurn = 0;   // The number of rows cleared by a tetromino
 
+    [Header("UI Settings")]
     [SerializeField]
     private Text scoreText;
     [SerializeField]
     private GameObject gameOverPanel;
 
+    [Header("Score Settings")]
     [SerializeField]
     private int scoreOneLine = 40;
     [SerializeField]
@@ -22,16 +24,20 @@ public class Game : MonoBehaviour
 
     private AudioSource audioSource;
 
+    [Header("Audio Settings")]
     [SerializeField]
     private AudioClip clearLineSound;
     [SerializeField]
     private AudioClip clearFourLinesSound;
 
+    [Header("Speed Settings")]
     public float FallSpeed = 1;             // The speed at which the tetromino will fall if the down arrow isn't being held down
     public float VerticalSpeed = .1f;       // The speed at which the tetromino will move when the down arrow is held down
     public float HorizontalSpeed = .1f;     // The speed at which the tetromino will move when the left or right arrow is held down
     public float ButtonDownWaitMax = .2f;   // How long to wait before the tetromino recognizes that a button is being held down
 
+    [Header("Game Settings")]
+    [ReadOnly]
     public bool IsGameOver;
     public static int GridWidth = 10;
     public static int GridHeight = 20;

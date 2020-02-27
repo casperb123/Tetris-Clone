@@ -353,6 +353,7 @@ MonoBehaviour:
   FallSpeed: 1
   VerticalSpeed: 0.05
   HorizontalSpeed: 0.1
+  ButtonDownWaitMax: 0.2
   IsGameOver: 0
 --- !u!4 &757178063
 Transform:
