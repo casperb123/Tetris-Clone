@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class Game : MonoBehaviour
@@ -9,6 +8,8 @@ public class Game : MonoBehaviour
 
     [SerializeField]
     private Text scoreText;
+    [SerializeField]
+    private GameObject gameOverPanel;
 
     [SerializeField]
     private int scoreOneLine = 40;
@@ -19,6 +20,19 @@ public class Game : MonoBehaviour
     [SerializeField]
     private int scoreFourLines = 1200;
 
+    private AudioSource audioSource;
+
+    [SerializeField]
+    private AudioClip clearLineSound;
+    [SerializeField]
+    private AudioClip clearFourLinesSound;
+
+    public float FallSpeed = 1;             // The speed at which the tetromino will fall if the down arrow isn't being held down
+    public float VerticalSpeed = .1f;       // The speed at which the tetromino will move when the down arrow is held down
+    public float HorizontalSpeed = .1f;     // The speed at which the tetromino will move when the left or right arrow is held down
+    public float ButtonDownWaitMax = .2f;   // How long to wait before the tetromino recognizes that a button is being held down
+
+    public bool IsGameOver;
     public static int GridWidth = 10;
     public static int GridHeight = 20;
 
@@ -28,6 +42,7 @@ public class Game : MonoBehaviour
 
     private void Start()
     {
+        audioSource = GetComponent<AudioSource>();
         tetrominos = GameObject.Find("Tetrominos").transform;
         SpawnNextTetromino();
     }
@@ -60,21 +75,35 @@ public class Game : MonoBehaviour
     public void ClearedOneLine()
     {
         CurrentScore += scoreOneLine;
+        PlayClearLineSound();
     }
 
     public void ClearedTwoLines()
     {
         CurrentScore += scoreTwoLines;
+        PlayClearLineSound();
     }
 
     public void ClearedThreeLines()
     {
         CurrentScore += scoreThreeLines;
+        PlayClearLineSound();
     }
 
     public void ClearedFourLines()
     {
         CurrentScore += scoreFourLines;
+        PlayClearFourLinesSound();
+    }
+
+    private void PlayClearLineSound()
+    {
+        audioSource.PlayOneShot(clearLineSound);
+    }
+
+    private void PlayClearFourLinesSound()
+    {
+        audioSource.PlayOneShot(clearFourLinesSound);
     }
 
     public bool CheckIsAboveGrid(Tetromino tetromino)
@@ -241,6 +270,7 @@ public class Game : MonoBehaviour
 
     public void GameOver()
     {
-        SceneManager.LoadScene("GameOver");
+        gameOverPanel.SetActive(true);
+        IsGameOver = true;
     }
 }
