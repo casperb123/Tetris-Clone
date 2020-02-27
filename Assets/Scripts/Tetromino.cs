@@ -9,6 +9,9 @@ public class Tetromino : MonoBehaviour
     private float horizontalTimer = 0;      // Countdown timer for the horizontal speed
     private float buttonDownWaitTimer = 0;  // Countdown timer for the button
 
+    private bool movedImmediateHorizontal;
+    private bool movedImmediateVertical;
+
     [SerializeField]
     private bool allowRotation = true;      // We use this to specofy if we want to allow the tetromino to rotate
     [SerializeField]
@@ -67,17 +70,32 @@ public class Tetromino : MonoBehaviour
 
         if (Input.GetKeyUp(KeyCode.RightArrow) || Input.GetKeyUp(KeyCode.LeftArrow) || Input.GetKeyUp(KeyCode.UpArrow))
         {
+            movedImmediateHorizontal = false;
+            movedImmediateVertical = false;
+
             horizontalTimer = 0;
             verticalTimer = 0;
+            buttonDownWaitTimer = 0;
         }
 
         if (Input.GetKey(KeyCode.RightArrow))
         {
-            if (horizontalTimer < game.HorizontalSpeed)
+            if (movedImmediateHorizontal)
             {
-                horizontalTimer += Time.deltaTime;
-                return;
+                if (buttonDownWaitTimer < game.ButtonDownWaitMax)
+                {
+                    buttonDownWaitTimer += Time.deltaTime;
+                    return;
+                }
+
+                if (horizontalTimer < game.HorizontalSpeed)
+                {
+                    horizontalTimer += Time.deltaTime;
+                    return;
+                }
             }
+            else
+                movedImmediateHorizontal = true;
 
             horizontalTimer = 0;
 
@@ -97,11 +115,22 @@ public class Tetromino : MonoBehaviour
         }
         else if (Input.GetKey(KeyCode.LeftArrow))
         {
-            if (horizontalTimer < game.HorizontalSpeed)
+            if (movedImmediateHorizontal)
             {
-                horizontalTimer += Time.deltaTime;
-                return;
+                if (buttonDownWaitTimer < game.ButtonDownWaitMax)
+                {
+                    buttonDownWaitTimer += Time.deltaTime;
+                    return;
+                }
+
+                if (horizontalTimer < game.HorizontalSpeed)
+                {
+                    horizontalTimer += Time.deltaTime;
+                    return;
+                }
             }
+            else
+                movedImmediateHorizontal = true;
 
             horizontalTimer = 0;
 
@@ -183,11 +212,22 @@ public class Tetromino : MonoBehaviour
         
         if (Input.GetKey(KeyCode.DownArrow) || Time.time - fallTimer >= game.FallSpeed)
         {
-            if (verticalTimer < game.VerticalSpeed)
+            if (movedImmediateVertical)
             {
-                verticalTimer += Time.deltaTime;
-                return;
+                if (buttonDownWaitTimer < game.ButtonDownWaitMax)
+                {
+                    buttonDownWaitTimer += Time.deltaTime;
+                    return;
+                }
+
+                if (verticalTimer < game.VerticalSpeed)
+                {
+                    verticalTimer += Time.deltaTime;
+                    return;
+                }
             }
+            else
+                movedImmediateVertical = true;
 
             verticalTimer = 0;
 
