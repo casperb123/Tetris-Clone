@@ -48,6 +48,8 @@ public class Game : MonoBehaviour
     public float ButtonDownWaitMax = .2f;   // How long to wait before the tetromino recognizes that a button is being held down
 
     [Header("Game Settings")]
+    [SerializeField]
+    private GameObject minoGridPrefab;
     public bool IsGameOver;
     public static int GridWidth = 10;
     public static int GridHeight = 20;
@@ -58,6 +60,7 @@ public class Game : MonoBehaviour
 
     private void Start()
     {
+        GenerateGridWalls();
         audioSource = GetComponent<AudioSource>();
         tetrominos = GameObject.Find("Tetrominos").transform;
         SpawnTetromino();
@@ -69,6 +72,26 @@ public class Game : MonoBehaviour
         UpdateUI();
         UpdateLevel();
         UpdateSpeed();
+    }
+
+    private void GenerateGridWalls()
+    {
+        Transform grid = GameObject.Find("Grid").transform;
+
+        for (int x = -1; x < GridWidth + 1; x++)
+        {
+            Instantiate(minoGridPrefab, new Vector3(x, -1), Quaternion.identity, grid);
+        }
+
+        for (int y = 0; y < GridHeight; y++)
+        {
+            Instantiate(minoGridPrefab, new Vector3(-1, y), Quaternion.identity, grid);
+        }
+
+        for (int y = 0; y < GridHeight; y++)
+        {
+            Instantiate(minoGridPrefab, new Vector3(GridWidth, y), Quaternion.identity, grid);
+        }
     }
 
     private void UpdateLevel()
@@ -321,14 +344,14 @@ public class Game : MonoBehaviour
         {
             gameStarted = true;
 
-            nextTetromino = (GameObject)Instantiate(Resources.Load(GetRandomTetromino(), typeof(GameObject)), new Vector2(5, 20), Quaternion.identity, tetrominos);
+            nextTetromino = (GameObject)Instantiate(Resources.Load(GetRandomTetromino(), typeof(GameObject)), new Vector2(GridWidth / 2, GridHeight), Quaternion.identity, tetrominos);
 
             previewTetromino = (GameObject)Instantiate(Resources.Load(GetRandomTetromino(), typeof(GameObject)), new Vector2(-7.5f, GridHeight / 2), Quaternion.identity);
             previewTetromino.GetComponent<Tetromino>().enabled = false;
         }
         else
         {
-            previewTetromino.transform.localPosition = new Vector2(5, 20);
+            previewTetromino.transform.localPosition = new Vector2(GridWidth / 2, GridHeight);
             nextTetromino = previewTetromino;
             nextTetromino.transform.SetParent(tetrominos);
             nextTetromino.GetComponent<Tetromino>().enabled = true;
