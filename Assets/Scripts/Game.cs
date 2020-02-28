@@ -4,11 +4,18 @@ using UnityEngine.UI;
 public class Game : MonoBehaviour
 {
     private Transform tetrominos;
+    private int currentLevel;
+    private int totalLinesCleared;
     private int numberOfRowsThisTurn = 0;   // The number of rows cleared by a tetromino
+    private AudioSource audioSource;
 
     [Header("UI Settings")]
     [SerializeField]
     private Text scoreText;
+    [SerializeField]
+    private Text levelText;
+    [SerializeField]
+    private Text linesText;
     [SerializeField]
     private GameObject gameOverPanel;
 
@@ -22,13 +29,17 @@ public class Game : MonoBehaviour
     [SerializeField]
     private int scoreFourLines = 1200;
 
-    private AudioSource audioSource;
 
     [Header("Audio Settings")]
     [SerializeField]
     private AudioClip clearLineSound;
     [SerializeField]
     private AudioClip clearFourLinesSound;
+
+    private GameObject previewTetromino;
+    private GameObject nextTetromino;
+
+    private bool gameStarted;
 
     [Header("Speed Settings")]
     public float FallSpeed = 1;             // The speed at which the tetromino will fall if the down arrow isn't being held down
@@ -37,7 +48,6 @@ public class Game : MonoBehaviour
     public float ButtonDownWaitMax = .2f;   // How long to wait before the tetromino recognizes that a button is being held down
 
     [Header("Game Settings")]
-    [ReadOnly]
     public bool IsGameOver;
     public static int GridWidth = 10;
     public static int GridHeight = 20;
@@ -57,14 +67,28 @@ public class Game : MonoBehaviour
     {
         UpdateScore();
         UpdateUI();
+        UpdateLevel();
+        UpdateSpeed();
+    }
+
+    private void UpdateLevel()
+    {
+        currentLevel = totalLinesCleared / 10;
+    }
+
+    private void UpdateSpeed()
+    {
+        FallSpeed = 1 - (currentLevel * .1f);
     }
 
     /// <summary>
-    /// Updates the score text
+    /// Updates the UI
     /// </summary>
     private void UpdateUI()
     {
         scoreText.text = CurrentScore.ToString();
+        levelText.text = currentLevel.ToString();
+        linesText.text = totalLinesCleared.ToString();
     }
 
     /// <summary>
@@ -89,8 +113,9 @@ public class Game : MonoBehaviour
     /// </summary>
     private void ClearedOneLine()
     {
-        CurrentScore += scoreOneLine;
+        CurrentScore += scoreOneLine + (currentLevel * 20);
         PlayClearLineSound();
+        totalLinesCleared++;
     }
 
     /// <summary>
@@ -98,8 +123,9 @@ public class Game : MonoBehaviour
     /// </summary>
     private void ClearedTwoLines()
     {
-        CurrentScore += scoreTwoLines;
+        CurrentScore += scoreTwoLines + (currentLevel * 25);
         PlayClearLineSound();
+        totalLinesCleared += 2;
     }
 
     /// <summary>
@@ -107,8 +133,9 @@ public class Game : MonoBehaviour
     /// </summary>
     private void ClearedThreeLines()
     {
-        CurrentScore += scoreThreeLines;
+        CurrentScore += scoreThreeLines + (currentLevel * 30);
         PlayClearLineSound();
+        totalLinesCleared += 3;
     }
 
     /// <summary>
@@ -116,8 +143,9 @@ public class Game : MonoBehaviour
     /// </summary>
     private void ClearedFourLines()
     {
-        CurrentScore += scoreFourLines;
+        CurrentScore += scoreFourLines + (currentLevel * 40);
         PlayClearFourLinesSound();
+        totalLinesCleared += 4;
     }
 
     /// <summary>
@@ -289,7 +317,25 @@ public class Game : MonoBehaviour
     /// </summary>
     public void SpawnTetromino()
     {
-        GameObject nextTetromino = (GameObject)Instantiate(Resources.Load(GetRandomTetromino(), typeof(GameObject)), new Vector2(5, 20), Quaternion.identity, tetrominos);
+        if (!gameStarted)
+        {
+            gameStarted = true;
+
+            nextTetromino = (GameObject)Instantiate(Resources.Load(GetRandomTetromino(), typeof(GameObject)), new Vector2(5, 20), Quaternion.identity, tetrominos);
+
+            previewTetromino = (GameObject)Instantiate(Resources.Load(GetRandomTetromino(), typeof(GameObject)), new Vector2(-7.5f, GridHeight / 2), Quaternion.identity);
+            previewTetromino.GetComponent<Tetromino>().enabled = false;
+        }
+        else
+        {
+            previewTetromino.transform.localPosition = new Vector2(5, 20);
+            nextTetromino = previewTetromino;
+            nextTetromino.transform.SetParent(tetrominos);
+            nextTetromino.GetComponent<Tetromino>().enabled = true;
+
+            previewTetromino = (GameObject)Instantiate(Resources.Load(GetRandomTetromino(), typeof(GameObject)), new Vector2(-7.5f, GridHeight / 2), Quaternion.identity);
+            previewTetromino.GetComponent<Tetromino>().enabled = false;
+        }
     }
 
     /// <summary>
