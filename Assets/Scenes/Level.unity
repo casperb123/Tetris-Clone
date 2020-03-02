@@ -702,10 +702,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1cce6ea076da8a1468a093ca08e879b4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  GridWidth: 10
+  GridHeight: 20
+  CurrentScore: 0
+  IsPaused: 0
   scoreText: {fileID: 797903322}
   levelText: {fileID: 1316752016}
   linesText: {fileID: 185101033}
-  gameOverPanel: {fileID: 0}
   scoreOneLine: 40
   scoreTwoLines: 100
   scoreThreeLines: 300
@@ -842,6 +845,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   pausePanel: {fileID: 377001441}
+  buttonClick: {fileID: 8300000, guid: 8c258dca7e08fb1438113b0b75348f71, type: 3}
 --- !u!1 &792468764
 GameObject:
   m_ObjectHideFlags: 0

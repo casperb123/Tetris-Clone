@@ -5,8 +5,13 @@ using UnityEngine.SceneManagement;
 
 public class PauseMenu : MonoBehaviour
 {
+    [Header("UI Settings")]
     [SerializeField]
     private GameObject pausePanel;
+
+    [Header("Sound Settings")]
+    [SerializeField]
+    private AudioClip buttonClick;
 
     private Game Game;
     private AudioSource audioSource;
@@ -31,12 +36,14 @@ public class PauseMenu : MonoBehaviour
             pausePanel.SetActive(false);
             Game.Instance.IsPaused = false;
             audioSource.UnPause();
+            audioSource.PlayOneShot(buttonClick, 2);
         }
         else
         {
             Game.Instance.IsPaused = true;
             pausePanel.SetActive(true);
             audioSource.Pause();
+            audioSource.PlayOneShot(buttonClick, 2);
         }
     }
 

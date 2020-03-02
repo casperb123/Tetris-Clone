@@ -27,8 +27,6 @@ public class Game : MonoBehaviour
     private Text levelText;
     [SerializeField]
     private Text linesText;
-    [SerializeField]
-    private GameObject gameOverPanel;
 
     [Header("Score Settings")]
     [SerializeField]

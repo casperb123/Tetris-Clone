@@ -6,16 +6,25 @@ using UnityEngine.UI;
 
 public class GameMenu : MonoBehaviour
 {
-    private Game game;
-
+    [Header("UI Settings")]
     [SerializeField]
     private Text levelText;
     [SerializeField]
     private Text highScoreText;
 
+    [Header("Sound Settings")]
+    [SerializeField]
+    private AudioClip sliderClick;
+    [SerializeField]
+    private AudioClip buttonClick;
+
+    private Game game;
+    private AudioSource audioSource;
+
     private void Start()
     {
         game = Game.Instance;
+        audioSource = GetComponent<AudioSource>();
 
         if (highScoreText != null)
             highScoreText.text = PlayerPrefs.GetInt("highscore").ToString();
@@ -23,6 +32,8 @@ public class GameMenu : MonoBehaviour
 
     public void PlayGame()
     {
+        audioSource.PlayOneShot(buttonClick);
+
         if (Game.StartingLevel == 0)
             Game.StartingAtLevelZero = true;
         else
@@ -33,6 +44,8 @@ public class GameMenu : MonoBehaviour
 
     public void ExitGame()
     {
+        audioSource.PlayOneShot(buttonClick);
+        while (audioSource.isPlaying){}
         Application.Quit();
     }
 
@@ -40,5 +53,6 @@ public class GameMenu : MonoBehaviour
     {
         Game.StartingLevel = (int)level;
         levelText.text = level.ToString();
+        audioSource.PlayOneShot(sliderClick);
     }
 }
