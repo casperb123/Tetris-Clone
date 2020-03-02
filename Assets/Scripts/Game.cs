@@ -5,12 +5,13 @@ using UnityEngine.UI;
 public class Game : MonoBehaviour
 {
     public static Game Instance;
+    public static bool StartingAtLevelZero;
+    public static int StartingLevel;
+
     public int GridWidth = 10;
     public int GridHeight = 20;
     public Transform[,] grid;
     public int CurrentScore;
-    public bool StartingAtLevelZero;
-    public int StartingLevel;
     public bool IsPaused;
 
     private Transform tetrominos;

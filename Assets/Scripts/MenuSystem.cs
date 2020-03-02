@@ -5,13 +5,20 @@ using UnityEngine.SceneManagement;
 
 public class MenuSystem : MonoBehaviour
 {
+    private Game game;
+
+    private void Start()
+    {
+        game = Game.Instance;
+    }
+
     /// <summary>
     /// Pretty self explanatory
     /// </summary>
     public void PlayAgain()
     {
         SceneManager.LoadScene("Level");
-        Game.CurrentScore = 0;
+        game.CurrentScore = 0;
     }
 
     /// <summary>

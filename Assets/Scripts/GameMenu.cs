@@ -6,6 +6,8 @@ using UnityEngine.UI;
 
 public class GameMenu : MonoBehaviour
 {
+    private Game game;
+
     [SerializeField]
     private Text levelText;
     [SerializeField]
@@ -13,6 +15,8 @@ public class GameMenu : MonoBehaviour
 
     private void Start()
     {
+        game = Game.Instance;
+
         if (highScoreText != null)
             highScoreText.text = PlayerPrefs.GetInt("highscore").ToString();
     }

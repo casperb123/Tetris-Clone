@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class Tetromino : MonoBehaviour
 {
+    private Game game;
+
     private float fallTimer = 0;                        // Countdown timer for the fall speed
     private float verticalTimer = 0;                    // Countdown timer for the vertical speed
     private float horizontalTimer = 0;                  // Countdown timer for the horizontal speed
@@ -18,7 +20,6 @@ public class Tetromino : MonoBehaviour
     private bool allowRotation = true;                  // We use this to specofy if we want to allow the tetromino to rotate
     [SerializeField]
     private bool limitRotation;                         // This is used to limit the rotation of the tetromino to a 90 / -90 rotation (To / From)
-    private Game game;
 
     private AudioSource audioSource;
 
@@ -33,13 +34,13 @@ public class Tetromino : MonoBehaviour
 
     private void Start()
     {
+        game = Game.Instance;
         audioSource = GetComponent<AudioSource>();
-        game = GameObject.Find("GameManager").GetComponent<Game>();
     }
 
     private void Update()
     {
-        if (game.IsGameOver || Game.IsPaused)
+        if (game.IsGameOver || game.IsPaused)
             return;
 
         CheckUserInput();
