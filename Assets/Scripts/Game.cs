@@ -1,42 +1,17 @@
 ﻿using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class Game : MonoBehaviour
 {
-    /// <summary>
-    /// The width of the grid
-    /// </summary>
-    public static int GridWidth = 10;
-
-    /// <summary>
-    /// The height of the grid
-    /// </summary>
-    public static int GridHeight = 20;
-
-    /// <summary>
-    /// The grid
-    /// </summary>
-    public static Transform[,] grid = new Transform[GridWidth, GridHeight];
-
-    /// <summary>
-    /// The current score
-    /// </summary>
-    public static int CurrentScore;
-
-    /// <summary>
-    /// If the game is starting at level zer0
-    /// </summary>
-    public static bool StartingAtLevelZero;
-
-    /// <summary>
-    /// The level the game is starting on
-    /// </summary>
-    public static int StartingLevel;
-
-    /// <summary>
-    /// If the game is paused
-    /// </summary>
-    public static bool IsPaused;
+    public static Game Instance;
+    public int GridWidth = 10;
+    public int GridHeight = 20;
+    public Transform[,] grid;
+    public int CurrentScore;
+    public bool StartingAtLevelZero;
+    public int StartingLevel;
+    public bool IsPaused;
 
     private Transform tetrominos;
     private int currentLevel;
@@ -75,6 +50,7 @@ public class Game : MonoBehaviour
     private GameObject nextTetromino;
 
     private bool gameStarted;
+    private int startingHighscore;
 
     [Header("Speed Settings")]
     public float FallSpeed = 1;             // The speed at which the tetromino will fall if the down arrow isn't being held down
@@ -87,9 +63,21 @@ public class Game : MonoBehaviour
     private GameObject minoGridPrefab;
     public bool IsGameOver;
 
+    private void Awake()
+    {
+        if (Instance is null)
+            Instance = this;
+        else
+            Destroy(this);
+    }
+
     private void Start()
     {
+        grid = new Transform[GridWidth, GridHeight];
+
+        CurrentScore = 0;
         currentLevel = StartingLevel;
+        startingHighscore = PlayerPrefs.GetInt("highscore");
 
         GenerateGridWalls();
         audioSource = GetComponent<AudioSource>();
@@ -131,7 +119,10 @@ public class Game : MonoBehaviour
     private void UpdateLevel()
     {
         if (StartingAtLevelZero || !StartingAtLevelZero && totalLinesCleared / 10 > StartingLevel)
-            currentLevel = totalLinesCleared / 10;
+        {
+            if (currentLevel <= 9)
+                currentLevel = totalLinesCleared / 10;
+        }
     }
 
     private void UpdateSpeed()
@@ -154,16 +145,20 @@ public class Game : MonoBehaviour
     /// </summary>
     public void UpdateScore()
     {
-        if (numberOfRowsThisTurn == 1)
-            ClearedOneLine();
-        else if (numberOfRowsThisTurn == 2)
-            ClearedTwoLines();
-        else if (numberOfRowsThisTurn == 3)
-            ClearedThreeLines();
-        else if (numberOfRowsThisTurn == 4)
-            ClearedFourLines();
+        if (numberOfRowsThisTurn > 0)
+        {
+            if (numberOfRowsThisTurn == 1)
+                ClearedOneLine();
+            else if (numberOfRowsThisTurn == 2)
+                ClearedTwoLines();
+            else if (numberOfRowsThisTurn == 3)
+                ClearedThreeLines();
+            else if (numberOfRowsThisTurn == 4)
+                ClearedFourLines();
 
-        numberOfRowsThisTurn = 0;
+            numberOfRowsThisTurn = 0;
+            UpdateHighscore();
+        }
     }
 
     /// <summary>
@@ -204,6 +199,12 @@ public class Game : MonoBehaviour
         CurrentScore += scoreFourLines + (currentLevel * 40);
         PlayClearFourLinesSound();
         totalLinesCleared += 4;
+    }
+
+    public void UpdateHighscore()
+    {
+        if (CurrentScore > startingHighscore)
+            PlayerPrefs.SetInt("highscore", CurrentScore);
     }
 
     /// <summary>
@@ -458,7 +459,6 @@ public class Game : MonoBehaviour
     /// </summary>
     public void GameOver()
     {
-        gameOverPanel.SetActive(true);
-        IsGameOver = true;
+        SceneManager.LoadScene("GameOver");
     }
 }

@@ -34,7 +34,7 @@ public class Tetromino : MonoBehaviour
     private void Start()
     {
         audioSource = GetComponent<AudioSource>();
-        game = GameObject.Find("GameScript").GetComponent<Game>();
+        game = GameObject.Find("GameManager").GetComponent<Game>();
     }
 
     private void Update()
@@ -224,12 +224,16 @@ public class Tetromino : MonoBehaviour
 
             // Check if there are any minos above the grid
             if (game.CheckIsAboveGrid(this))
+            {
                 game.GameOver();
+                return;
+            }
 
             // Disables the script
             enabled = false;
             // Updates the individual score
-            Game.CurrentScore += individualScore;
+            Game.Instance.CurrentScore += individualScore;
+            game.UpdateHighscore();
             // Spawn the next tetromino
             game.SpawnTetromino();
             // Plays the land audio
@@ -382,7 +386,7 @@ public class Tetromino : MonoBehaviour
                 if (toMove > (int)positionToReturn.x)
                     positionToReturn.x = toMove;
             }
-            else if (roundedPos.x >= Game.GridWidth)
+            else if (roundedPos.x >= Game.Instance.GridWidth)
             {
                 int toMove = ((int)roundedPos.x - 9) * -1;
 
