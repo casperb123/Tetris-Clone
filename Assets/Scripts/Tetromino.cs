@@ -39,7 +39,7 @@ public class Tetromino : MonoBehaviour
 
     private void Update()
     {
-        if (game.IsGameOver)
+        if (game.IsGameOver || Game.IsPaused)
             return;
 
         CheckUserInput();

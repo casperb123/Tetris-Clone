@@ -3,6 +3,41 @@ using UnityEngine.UI;
 
 public class Game : MonoBehaviour
 {
+    /// <summary>
+    /// The width of the grid
+    /// </summary>
+    public static int GridWidth = 10;
+
+    /// <summary>
+    /// The height of the grid
+    /// </summary>
+    public static int GridHeight = 20;
+
+    /// <summary>
+    /// The grid
+    /// </summary>
+    public static Transform[,] grid = new Transform[GridWidth, GridHeight];
+
+    /// <summary>
+    /// The current score
+    /// </summary>
+    public static int CurrentScore;
+
+    /// <summary>
+    /// If the game is starting at level zer0
+    /// </summary>
+    public static bool StartingAtLevelZero;
+
+    /// <summary>
+    /// The level the game is starting on
+    /// </summary>
+    public static int StartingLevel;
+
+    /// <summary>
+    /// If the game is paused
+    /// </summary>
+    public static bool IsPaused;
+
     private Transform tetrominos;
     private int currentLevel;
     private int totalLinesCleared;
@@ -51,15 +86,11 @@ public class Game : MonoBehaviour
     [SerializeField]
     private GameObject minoGridPrefab;
     public bool IsGameOver;
-    public static int GridWidth = 10;
-    public static int GridHeight = 20;
-
-    public static int CurrentScore;
-
-    public static Transform[,] grid = new Transform[GridWidth, GridHeight];
 
     private void Start()
     {
+        currentLevel = StartingLevel;
+
         GenerateGridWalls();
         audioSource = GetComponent<AudioSource>();
         tetrominos = GameObject.Find("Tetrominos").transform;
@@ -68,6 +99,9 @@ public class Game : MonoBehaviour
 
     private void Update()
     {
+        if (IsPaused)
+            return;
+
         UpdateScore();
         UpdateUI();
         UpdateLevel();
@@ -76,7 +110,7 @@ public class Game : MonoBehaviour
 
     private void GenerateGridWalls()
     {
-        Transform grid = GameObject.Find("Grid").transform;
+        Transform grid = GameObject.Find("MinoGrid").transform;
 
         for (int x = -1; x < GridWidth + 1; x++)
         {
@@ -96,7 +130,8 @@ public class Game : MonoBehaviour
 
     private void UpdateLevel()
     {
-        currentLevel = totalLinesCleared / 10;
+        if (StartingAtLevelZero || !StartingAtLevelZero && totalLinesCleared / 10 > StartingLevel)
+            currentLevel = totalLinesCleared / 10;
     }
 
     private void UpdateSpeed()
