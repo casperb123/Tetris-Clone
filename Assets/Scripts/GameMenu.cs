@@ -42,7 +42,6 @@ public class GameMenu : MonoBehaviour
     public void Quit()
     {
         audioSource.PlayOneShot(buttonClick);
-        while (audioSource.isPlaying){}
         Application.Quit();
     }
 
