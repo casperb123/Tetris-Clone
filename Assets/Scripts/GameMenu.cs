@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -8,9 +9,9 @@ public class GameMenu : MonoBehaviour
 {
     [Header("UI Settings")]
     [SerializeField]
-    private Text levelText;
+    private TextMeshProUGUI levelText;
     [SerializeField]
-    private Text highScoreText;
+    private TextMeshProUGUI highScoreText;
 
     [Header("Sound Settings")]
     [SerializeField]
@@ -18,19 +19,15 @@ public class GameMenu : MonoBehaviour
     [SerializeField]
     private AudioClip buttonClick;
 
-    private Game game;
     private AudioSource audioSource;
 
     private void Start()
     {
-        game = Game.Instance;
         audioSource = GetComponent<AudioSource>();
-
-        if (highScoreText != null)
-            highScoreText.text = PlayerPrefs.GetInt("highscore").ToString();
+        highScoreText.text = PlayerPrefs.GetInt("highscore").ToString();
     }
 
-    public void PlayGame()
+    public void Play()
     {
         audioSource.PlayOneShot(buttonClick);
 
@@ -42,7 +39,7 @@ public class GameMenu : MonoBehaviour
         SceneManager.LoadScene("Level");
     }
 
-    public void ExitGame()
+    public void Quit()
     {
         audioSource.PlayOneShot(buttonClick);
         while (audioSource.isPlaying){}

@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -7,9 +8,9 @@ using UnityEngine.UI;
 public class GameOver : MonoBehaviour
 {
     [SerializeField]
-    private Text highScoreText;
+    private TextMeshProUGUI highScoreText;
     [SerializeField]
-    private Text scoreText;
+    private TextMeshProUGUI scoreText;
 
     private int highScore;
 
@@ -26,7 +27,7 @@ public class GameOver : MonoBehaviour
         SceneManager.LoadScene("GameMenu");
     }
 
-    public void ExitGame()
+    public void Quit()
     {
         Application.Quit();
     }

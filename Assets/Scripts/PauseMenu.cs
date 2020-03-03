@@ -7,18 +7,17 @@ public class PauseMenu : MonoBehaviour
 {
     [Header("UI Settings")]
     [SerializeField]
-    private GameObject pausePanel;
-
-    [Header("Sound Settings")]
-    [SerializeField]
-    private AudioClip buttonClick;
+    private GameObject pauseMenu;
 
     private Game Game;
     private AudioSource audioSource;
+    private AudioSource audioSourceGameLoop;
+    private bool isPaused;
 
     private void Start()
     {
         audioSource = GetComponent<AudioSource>();
+        audioSourceGameLoop = GameObject.FindGameObjectWithTag("GameManager").GetComponent<AudioSource>();
     }
 
     private void Update()
@@ -31,19 +30,21 @@ public class PauseMenu : MonoBehaviour
 
     public void PauseToggle()
     {
-        if (Game.Instance.IsPaused)
+        audioSource.Play();
+
+        if (isPaused)
         {
-            pausePanel.SetActive(false);
-            Game.Instance.IsPaused = false;
-            audioSource.UnPause();
-            audioSource.PlayOneShot(buttonClick, 2);
+            pauseMenu.SetActive(false);
+            audioSourceGameLoop.UnPause();
+            isPaused = false;
+            Time.timeScale = 1;
         }
         else
         {
-            Game.Instance.IsPaused = true;
-            pausePanel.SetActive(true);
-            audioSource.Pause();
-            audioSource.PlayOneShot(buttonClick, 2);
+            pauseMenu.SetActive(true);
+            audioSourceGameLoop.Pause();
+            isPaused = true;
+            Time.timeScale = 0;
         }
     }
 
@@ -52,13 +53,12 @@ public class PauseMenu : MonoBehaviour
         PauseToggle();
     }
 
-    public void ExitToTitle()
+    public void Menu()
     {
-        Game.IsPaused = false;
         SceneManager.LoadScene("GameMenu");
     }
 
-    public void ExitGame()
+    public void Quit()
     {
         Application.Quit();
     }

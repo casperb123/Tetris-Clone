@@ -21,6 +21,9 @@ public class Tetromino : MonoBehaviour
     [SerializeField]
     private bool limitRotation;                         // This is used to limit the rotation of the tetromino to a 90 / -90 rotation (To / From)
 
+    [Header("Position Settings")]
+    public Vector3 CenterPosition;
+
     private AudioSource audioSource;
 
     [Header("Audio Settings")]
@@ -234,7 +237,6 @@ public class Tetromino : MonoBehaviour
             enabled = false;
             // Updates the individual score
             Game.Instance.CurrentScore += individualScore;
-            game.UpdateHighscore();
             // Spawn the next tetromino
             game.SpawnTetromino();
             // Plays the land audio
@@ -249,59 +251,43 @@ public class Tetromino : MonoBehaviour
     /// </summary>
     private void Rotate()
     {
-        // The up key was pressed, lets first check if the tetromino is allowed to rotate
         if (allowRotation)
         {
-            // If it is, we need to check if the rotation is limited to just back and forth
             if (limitRotation)
             {
-                // If it is, we need to check what the current rotation is
                 if (transform.rotation.eulerAngles.z >= 90)
-                    // If it is at 90 then we know it was already rotated, so we rotate it back by -90
                     transform.Rotate(0, 0, -90);
                 else
-                    // If it isn't, then we rotate it by 90
                     transform.Rotate(0, 0, 90);
             }
             else
-                // If it isn't, we rotate it by 90
                 transform.Rotate(0, 0, 90);
 
-            // Not we check if the tetromino is at a valid position after attempting a rotation
             if (CheckIsValidPosition())
             {
-                // If the position is valid, we update the grid
                 game.UpdateGrid(this);
                 PlayMoveAudio();
             }
             else
             {
-                // Checks if any of the minos in the tetromino is outside of the grid, if it is then it gets how many minos is outside
                 Vector3 toMove = GetUnitsToMove();
 
-                // Checks if the x or y position is not equal to 0
-                if (toMove.x != 0 || toMove.y != 0 && !IsOtherMinoInTheWay())
+                if (toMove.x != 0 && !IsOtherMinoInTheWay() || toMove.y != 0 && !IsOtherMinoInTheWay())
                 {
-                    // If thats true then it moves the tetromino
                     transform.position += toMove;
                     game.UpdateGrid(this);
                     PlayMoveAudio();
                 }
                 else
                 {
-                    // if the x or y position is equal to 0 then we check if the tetromino is limited to rotation back and forth
                     if (limitRotation)
                     {
-                        // If it's limited then we need to check what the current rotation is
                         if (transform.rotation.eulerAngles.z >= 90)
-                            // If it's at 90 then we know it was already rotated, so we rotate it back by -90
                             transform.Rotate(0, 0, -90);
                         else
-                            // If it isn't, we rotate it by 90
                             transform.Rotate(0, 0, 90);
                     }
                     else
-                        // If it isn't limited then we rotate it by -90
                         transform.Rotate(0, 0, -90);
                 }
 
@@ -338,8 +324,6 @@ public class Tetromino : MonoBehaviour
             if (!game.CheckIsInsideGrid(pos))
                 return false;
 
-            //if (game.GetTransformAtGridPosition(pos) != null && game.GetTransformAtGridPosition(pos).parent != transform)
-            //    return false;
             if (!IsPositionFree(pos))
                 return false;
         }

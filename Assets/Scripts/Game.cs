@@ -1,6 +1,6 @@
-﻿using UnityEngine;
+﻿using TMPro;
+using UnityEngine;
 using UnityEngine.SceneManagement;
-using UnityEngine.UI;
 
 public class Game : MonoBehaviour
 {
@@ -22,11 +22,11 @@ public class Game : MonoBehaviour
 
     [Header("UI Settings")]
     [SerializeField]
-    private Text scoreText;
+    private TextMeshProUGUI scoreText;
     [SerializeField]
-    private Text levelText;
+    private TextMeshProUGUI levelText;
     [SerializeField]
-    private Text linesText;
+    private TextMeshProUGUI linesText;
 
     [Header("Score Settings")]
     [SerializeField]
@@ -38,7 +38,6 @@ public class Game : MonoBehaviour
     [SerializeField]
     private int scoreFourLines = 1200;
 
-
     [Header("Audio Settings")]
     [SerializeField]
     private AudioClip clearLineSound;
@@ -49,7 +48,7 @@ public class Game : MonoBehaviour
     private GameObject nextTetromino;
 
     private bool gameStarted;
-    private int startingHighscore;
+    private int startingHighScore;
 
     [Header("Speed Settings")]
     public float FallSpeed = 1;             // The speed at which the tetromino will fall if the down arrow isn't being held down
@@ -59,26 +58,24 @@ public class Game : MonoBehaviour
 
     [Header("Game Settings")]
     [SerializeField]
-    private GameObject minoGridPrefab;
+    private Transform nextTetrominoTransform;
     public bool IsGameOver;
 
     private void Awake()
     {
-        if (Instance is null)
-            Instance = this;
-        else
-            Destroy(this);
+        Instance = this;
     }
 
     private void Start()
     {
+        Time.timeScale = 1;
+
         grid = new Transform[GridWidth, GridHeight];
 
         CurrentScore = 0;
         currentLevel = StartingLevel;
-        startingHighscore = PlayerPrefs.GetInt("highscore");
+        startingHighScore = PlayerPrefs.GetInt("highscore");
 
-        GenerateGridWalls();
         audioSource = GetComponent<AudioSource>();
         tetrominos = GameObject.Find("Tetrominos").transform;
         SpawnTetromino();
@@ -93,26 +90,6 @@ public class Game : MonoBehaviour
         UpdateUI();
         UpdateLevel();
         UpdateSpeed();
-    }
-
-    private void GenerateGridWalls()
-    {
-        Transform grid = GameObject.Find("MinoGrid").transform;
-
-        for (int x = -1; x < GridWidth + 1; x++)
-        {
-            Instantiate(minoGridPrefab, new Vector3(x, -1), Quaternion.identity, grid);
-        }
-
-        for (int y = 0; y < GridHeight; y++)
-        {
-            Instantiate(minoGridPrefab, new Vector3(-1, y), Quaternion.identity, grid);
-        }
-
-        for (int y = 0; y < GridHeight; y++)
-        {
-            Instantiate(minoGridPrefab, new Vector3(GridWidth, y), Quaternion.identity, grid);
-        }
     }
 
     private void UpdateLevel()
@@ -156,7 +133,6 @@ public class Game : MonoBehaviour
                 ClearedFourLines();
 
             numberOfRowsThisTurn = 0;
-            UpdateHighscore();
         }
     }
 
@@ -202,7 +178,7 @@ public class Game : MonoBehaviour
 
     public void UpdateHighscore()
     {
-        if (CurrentScore > startingHighscore)
+        if (CurrentScore > startingHighScore)
             PlayerPrefs.SetInt("highscore", CurrentScore);
     }
 
@@ -381,17 +357,19 @@ public class Game : MonoBehaviour
 
             nextTetromino = (GameObject)Instantiate(Resources.Load(GetRandomTetromino(), typeof(GameObject)), new Vector2(GridWidth / 2, GridHeight), Quaternion.identity, tetrominos);
 
-            previewTetromino = (GameObject)Instantiate(Resources.Load(GetRandomTetromino(), typeof(GameObject)), new Vector2(-7.5f, GridHeight / 2), Quaternion.identity);
+            previewTetromino = (GameObject)Instantiate(Resources.Load(GetRandomTetromino()), nextTetrominoTransform, false);
+            previewTetromino.transform.localPosition = -previewTetromino.GetComponent<Tetromino>().CenterPosition;
             previewTetromino.GetComponent<Tetromino>().enabled = false;
         }
         else
         {
-            previewTetromino.transform.localPosition = new Vector2(GridWidth / 2, GridHeight);
             nextTetromino = previewTetromino;
             nextTetromino.transform.SetParent(tetrominos);
+            nextTetromino.transform.position = new Vector2(GridWidth / 2, GridHeight);
             nextTetromino.GetComponent<Tetromino>().enabled = true;
 
-            previewTetromino = (GameObject)Instantiate(Resources.Load(GetRandomTetromino(), typeof(GameObject)), new Vector2(-7.5f, GridHeight / 2), Quaternion.identity);
+            previewTetromino = (GameObject)Instantiate(Resources.Load(GetRandomTetromino()), nextTetrominoTransform, false);
+            previewTetromino.transform.localPosition = -previewTetromino.GetComponent<Tetromino>().CenterPosition;
             previewTetromino.GetComponent<Tetromino>().enabled = false;
         }
     }
@@ -458,6 +436,7 @@ public class Game : MonoBehaviour
     /// </summary>
     public void GameOver()
     {
+        UpdateHighscore();
         SceneManager.LoadScene("GameOver");
     }
 }
