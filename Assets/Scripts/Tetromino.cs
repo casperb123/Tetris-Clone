@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Threading.Tasks;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class Tetromino : MonoBehaviour
 {
@@ -138,7 +136,7 @@ public class Tetromino : MonoBehaviour
         transform.position += Vector3.left;
 
         // We then check if the tetromino is at a valid position
-        if (CheckIsValidPosition())
+        if (game.CheckIsValidPosition(gameObject))
         {
             // if it is, we then call the UpdateGrid method which records this tetrominos new position
             game.UpdateGrid(this);
@@ -177,7 +175,7 @@ public class Tetromino : MonoBehaviour
         transform.position += Vector3.right;
 
         // We then check if the tetromino is at a valid position
-        if (CheckIsValidPosition())
+        if (game.CheckIsValidPosition(gameObject))
         {
             // if it is, we then call the UpdateGrid method which records this tetrominos new position
             game.UpdateGrid(this);
@@ -214,7 +212,7 @@ public class Tetromino : MonoBehaviour
 
         transform.position += Vector3.down;
 
-        if (CheckIsValidPosition())
+        if (game.CheckIsValidPosition(gameObject))
         {
             game.UpdateGrid(this);
 
@@ -233,14 +231,11 @@ public class Tetromino : MonoBehaviour
                 return;
             }
 
-            // Disables the script
-            enabled = false;
-            // Updates the individual score
             Game.Instance.CurrentScore += individualScore;
-            // Spawn the next tetromino
             game.SpawnTetromino();
-            // Plays the land audio
             PlayLandAudio();
+            tag = "Untagged";
+            enabled = false;
         }
 
         fallTimer = Time.time;
@@ -263,7 +258,7 @@ public class Tetromino : MonoBehaviour
             else
                 transform.Rotate(0, 0, 90);
 
-            if (CheckIsValidPosition())
+            if (game.CheckIsValidPosition(gameObject))
             {
                 game.UpdateGrid(this);
                 PlayMoveAudio();
@@ -309,26 +304,6 @@ public class Tetromino : MonoBehaviour
     private void PlayLandAudio()
     {
         audioSource.PlayOneShot(landSound);
-    }
-
-    /// <summary>
-    /// Checks if the position is valid
-    /// </summary>
-    /// <returns><c>true</c>, if the positions is valid, <c>false</c> otherwise</returns>
-    private bool CheckIsValidPosition()
-    {
-        foreach (Transform mino in transform)
-        {
-            Vector2 pos = game.Round(mino.position);
-
-            if (!game.CheckIsInsideGrid(pos))
-                return false;
-
-            if (!IsPositionFree(pos))
-                return false;
-        }
-
-        return true;
     }
 
     private bool IsPositionFree(Vector2 pos)
