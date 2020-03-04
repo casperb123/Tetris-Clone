@@ -522,7 +522,7 @@ public class Game : MonoBehaviour
             // There is currently a tetromino being held
             GameObject tempSavedTetromino = GameObject.FindGameObjectWithTag("SavedTetromino");
             tempSavedTetromino.transform.SetParent(tetrominos);
-            tempSavedTetromino.transform.position = tetrominoTransform.position + Vector3.up;
+            tempSavedTetromino.transform.position = tetrominoTransform.position;
             tempSavedTetromino.transform.position += GetUnitsToMove(tempSavedTetromino.transform);
 
             if (IsOtherMinoInTheWay(tempSavedTetromino.transform))
@@ -542,7 +542,7 @@ public class Game : MonoBehaviour
             nextTetromino = Instantiate(tempSavedTetromino, tetrominos, true);
             nextTetromino.tag = "CurrentTetromino";
             nextTetromino.transform.SetParent(tetrominos);
-            nextTetromino.transform.position = tetrominoTransform.position;
+            nextTetromino.transform.position = tetrominoTransform.position + Vector3.up;
             nextTetromino.transform.position += GetUnitsToMove(nextTetromino.transform);
             nextTetromino.GetComponent<Tetromino>().enabled = true;
 
