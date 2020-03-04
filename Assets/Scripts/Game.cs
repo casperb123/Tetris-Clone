@@ -121,6 +121,9 @@ public class Game : MonoBehaviour
     /// </summary>
     public void UpdateScore()
     {
+        if (CurrentScore > startingHighScore)
+            scoreText.color = Color.green;
+
         if (numberOfRowsThisTurn > 0)
         {
             if (numberOfRowsThisTurn == 1)
@@ -132,6 +135,7 @@ public class Game : MonoBehaviour
             else if (numberOfRowsThisTurn == 4)
                 ClearedFourLines();
 
+            UpdateHighscore();
             numberOfRowsThisTurn = 0;
         }
     }
