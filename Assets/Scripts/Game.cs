@@ -390,9 +390,81 @@ public class Game : MonoBehaviour
     }
 
     /// <summary>
+    /// Checks how many units the tetromino is outside of the grid
+    /// </summary>
+    /// <param name="tetromino">The tetromino to check</param>
+    /// <returns>The number of units the tetromino is outside</returns>
+    public Vector3 GetUnitsToMove(Transform tetromino)
+    {
+        Vector3 positionToReturn = new Vector3();
+
+        foreach (Transform mino in tetromino)
+        {
+            Vector3 roundedPos = Round(mino.position);
+
+            if (roundedPos.x < 0)
+            {
+                int toMove = (int)roundedPos.x * -1;
+
+                if (toMove > (int)positionToReturn.x)
+                    positionToReturn.x = toMove;
+            }
+            else if (roundedPos.x >= GridWidth)
+            {
+                int toMove = ((int)roundedPos.x - 9) * -1;
+
+                if (toMove < (int)positionToReturn.x)
+                    positionToReturn.x = toMove;
+            }
+
+            if (roundedPos.y < 0)
+            {
+                int toMove = (int)roundedPos.y * -1;
+
+                if (toMove > (int)positionToReturn.y)
+                    positionToReturn.y = toMove;
+            }
+        }
+
+        return positionToReturn;
+    }
+
+    /// <summary>
+    /// Checks if the position is free
+    /// </summary>
+    /// <param name="pos">The position to check</param>
+    /// <param name="tetromino">The tetromino to check</param>
+    /// <param name="ignoreTag">The tag to be ignored</param>
+    /// <returns><c>true</c>, is the position is free, <c>false</c> otherwise</returns>
+    public bool IsPositionFree(Vector2 pos, Transform tetromino)
+    {
+        if (GetTransformAtGridPosition(pos) != null && GetTransformAtGridPosition(pos).parent != tetromino && !GetTransformAtGridPosition(pos).parent.CompareTag("CurrentTetromino"))
+            return false;
+
+        return true;
+    }
+
+    /// <summary>
+    /// Checks if another mino is in the way
+    /// </summary>
+    /// <returns><c>true</c>, if another mino is in the way, <c>false</c> otherwise</returns>
+    public bool IsOtherMinoInTheWay(Transform tetromino)
+    {
+        foreach (Transform mino in tetromino)
+        {
+            Vector2 pos = Round(mino.position);
+
+            if (!IsPositionFree(pos, tetromino))
+                return true;
+        }
+
+        return false;
+    }
+
+    /// <summary>
     /// Spawns a random tetromino
     /// </summary>
-    public void SpawnTetromino(Vector2 pos = default)
+    public bool SpawnTetromino(Vector2 pos = default)
     {
         if (!gameStarted)
         {
@@ -416,7 +488,16 @@ public class Game : MonoBehaviour
             if (pos.x == 0 && pos.y == 0)
                 nextTetromino.transform.position = spawnPosition;
             else
+            {
                 nextTetromino.transform.position = pos;
+                nextTetromino.transform.position += GetUnitsToMove(nextTetromino.transform);
+
+                if (IsOtherMinoInTheWay(nextTetromino.transform))
+                {
+                    DestroyImmediate(nextTetromino);
+                    return false;
+                }
+            }
             nextTetromino.GetComponent<Tetromino>().enabled = true;
             nextTetromino.tag = "CurrentTetromino";
 
@@ -426,6 +507,7 @@ public class Game : MonoBehaviour
         }
 
         currentSwaps = 0;
+        return true;
     }
 
     private void SaveTetromino(Transform tetrominoTransform)
@@ -440,9 +522,10 @@ public class Game : MonoBehaviour
             // There is currently a tetromino being held
             GameObject tempSavedTetromino = GameObject.FindGameObjectWithTag("SavedTetromino");
             tempSavedTetromino.transform.SetParent(tetrominos);
-            tempSavedTetromino.transform.position = spawnPosition;
+            tempSavedTetromino.transform.position = tetrominoTransform.position + Vector3.up;
+            tempSavedTetromino.transform.position += GetUnitsToMove(tempSavedTetromino.transform);
 
-            if (!CheckIsValidPosition(tempSavedTetromino))
+            if (IsOtherMinoInTheWay(tempSavedTetromino.transform))
             {
                 tempSavedTetromino.transform.SetParent(savedTetrominoTransform);
                 tempSavedTetromino.transform.localPosition = -tempSavedTetromino.GetComponent<Tetromino>().CenterPosition;
@@ -460,6 +543,7 @@ public class Game : MonoBehaviour
             nextTetromino.tag = "CurrentTetromino";
             nextTetromino.transform.SetParent(tetrominos);
             nextTetromino.transform.position = tetrominoTransform.position;
+            nextTetromino.transform.position += GetUnitsToMove(nextTetromino.transform);
             nextTetromino.GetComponent<Tetromino>().enabled = true;
 
             DestroyImmediate(tetrominoTransform.gameObject);
@@ -471,12 +555,21 @@ public class Game : MonoBehaviour
             GameObject currentTetromino = GameObject.FindGameObjectWithTag("CurrentTetromino");
             savedTetromino = Instantiate(currentTetromino, savedTetrominoTransform, false);
             savedTetromino.tag = "SavedTetromino";
+            savedTetromino.transform.rotation = Quaternion.identity;
             Tetromino tetromino = savedTetromino.GetComponent<Tetromino>();
             savedTetromino.transform.localPosition = -tetromino.CenterPosition;
-            savedTetromino.transform.rotation = Quaternion.identity;
             tetromino.enabled = false;
 
-            SpawnTetromino(currentTetromino.transform.position);
+            bool isValid = SpawnTetromino(currentTetromino.transform.position + Vector3.up);
+
+            if (!isValid)
+            {
+                DestroyImmediate(savedTetromino);
+                savedTetromino = null;
+                Instantiate(currentTetromino, currentTetromino.transform.position, currentTetromino.transform.rotation, tetrominos);
+                return;
+            }
+
             DestroyImmediate(currentTetromino);
         }
     }

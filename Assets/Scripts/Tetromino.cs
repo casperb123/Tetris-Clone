@@ -72,7 +72,6 @@ public class Tetromino : MonoBehaviour
         // Left and right will move the tetromino 1 unit to the left or right
         // Down will move the tetromino 1 unit down
         // Up will rotate the tetromino
-
         if (Input.GetKeyUp(KeyCode.RightArrow) || Input.GetKeyUp(KeyCode.LeftArrow))
         {
             movedImmediateHorizontal = false;
@@ -265,11 +264,28 @@ public class Tetromino : MonoBehaviour
             }
             else
             {
-                Vector3 toMove = GetUnitsToMove();
+                Vector3 toMove = game.GetUnitsToMove(transform);
 
-                if (toMove.x != 0 && !IsOtherMinoInTheWay() || toMove.y != 0 && !IsOtherMinoInTheWay())
+                if (toMove.x != 0 || toMove.y != 0)
                 {
                     transform.position += toMove;
+                    if (game.IsOtherMinoInTheWay(transform))
+                    {
+                        transform.position -= toMove;
+
+                        if (limitRotation)
+                        {
+                            if (transform.rotation.eulerAngles.z >= 90)
+                                transform.Rotate(0, 0, -90);
+                            else
+                                transform.Rotate(0, 0, 90);
+                        }
+                        else
+                            transform.Rotate(0, 0, -90);
+
+                        return;
+                    }
+
                     game.UpdateGrid(this);
                     PlayMoveAudio();
                 }
@@ -304,65 +320,5 @@ public class Tetromino : MonoBehaviour
     private void PlayLandAudio()
     {
         audioSource.PlayOneShot(landSound);
-    }
-
-    private bool IsPositionFree(Vector2 pos)
-    {
-        if (game.GetTransformAtGridPosition(pos) != null && game.GetTransformAtGridPosition(pos).parent != transform)
-            return false;
-
-        return true;
-    }
-
-    private bool IsOtherMinoInTheWay()
-    {
-        foreach (Transform mino in transform)
-        {
-            Vector2 pos = game.Round(mino.position);
-
-            if (!IsPositionFree(pos))
-                return true;
-        }
-
-        return false;
-    }
-
-    /// <summary>
-    /// Checks how many units the tetromino is outside of the grid
-    /// </summary>
-    /// <returns>The number of units the tetromino is outside</returns>
-    private Vector3 GetUnitsToMove()
-    {
-        Vector3 positionToReturn = new Vector3();
-
-        foreach (Transform mino in transform)
-        {
-            Vector3 roundedPos = game.Round(mino.position);
-
-            if (roundedPos.x < 0)
-            {
-                int toMove = (int)roundedPos.x * -1;
-
-                if (toMove > (int)positionToReturn.x)
-                    positionToReturn.x = toMove;
-            }
-            else if (roundedPos.x >= Game.Instance.GridWidth)
-            {
-                int toMove = ((int)roundedPos.x - 9) * -1;
-
-                if (toMove < (int)positionToReturn.x)
-                    positionToReturn.x = toMove;
-            }
-
-            if (roundedPos.y < 0)
-            {
-                int toMove = (int)roundedPos.y * -1;
-
-                if (toMove > (int)positionToReturn.y)
-                    positionToReturn.y = toMove;
-            }
-        }
-
-        return positionToReturn;
     }
 }
