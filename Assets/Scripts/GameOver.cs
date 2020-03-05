@@ -22,7 +22,7 @@ public class GameOver : MonoBehaviour
         scoreText.text = Game.Instance.CurrentScore.ToString();
     }
 
-    public void PlayAgain()
+    public void Retry()
     {
         SceneManager.LoadScene("GameMenu");
     }
