@@ -20,6 +20,7 @@ public class GameMenu : MonoBehaviour
     private AudioClip buttonClick;
 
     private AudioSource audioSource;
+    private int startingLevel;
 
     private void Start()
     {
@@ -30,6 +31,7 @@ public class GameMenu : MonoBehaviour
     public void Play()
     {
         audioSource.PlayOneShot(buttonClick);
+        Game.StartingLevel = startingLevel;
 
         if (Game.StartingLevel == 0)
             Game.StartingAtLevelZero = true;
@@ -47,7 +49,7 @@ public class GameMenu : MonoBehaviour
 
     public void ChangedLevel(float level)
     {
-        Game.StartingLevel = (int)level;
+        startingLevel = (int)level;
         levelText.text = level.ToString();
         audioSource.PlayOneShot(sliderClick);
     }
