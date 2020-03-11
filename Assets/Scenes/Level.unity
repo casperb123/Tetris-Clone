@@ -2566,7 +2566,7 @@ MonoBehaviour:
   GridHeight: 20
   nextTetrominoTransform: {fileID: 2022269649}
   savedTetrominoTransform: {fileID: 1557378381}
-  maxSwaps: 2
+  maxSwaps: 1000
   CurrentScore: 0
   IsPaused: 0
   IsGameOver: 0
