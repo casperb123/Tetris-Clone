@@ -534,6 +534,15 @@ public class Game : MonoBehaviour
         GhostTetromino.name = "GhostTetromino";
         GhostTetromino.GetComponent<Tetromino>().enabled = false;
 
+        foreach (Transform mino in GhostTetromino.transform)
+        {
+            Renderer renderer = mino.GetComponent<Renderer>();
+            Color color = renderer.material.color;
+            color.a = .5f;
+
+            renderer.material.color = color;
+        }
+
         MoveGhostTetromino((int)GhostTetromino.transform.position.x, nextTetromino.transform);
 
         currentSwaps = 0;
