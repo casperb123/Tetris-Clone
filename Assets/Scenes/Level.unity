@@ -2562,14 +2562,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1cce6ea076da8a1468a093ca08e879b4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  GhostTetromino: {fileID: 0}
+  CurrentScore: 0
+  IsPaused: 0
+  IsGameOver: 0
   GridWidth: 10
   GridHeight: 20
   nextTetrominoTransform: {fileID: 2022269649}
   savedTetrominoTransform: {fileID: 1557378381}
   maxSwaps: 2
-  CurrentScore: 0
-  IsPaused: 0
-  IsGameOver: 0
+  MaxIndividualScore: 100
   scoreText: {fileID: 1616623725}
   levelText: {fileID: 957945095}
   linesText: {fileID: 347449779}

@@ -30,13 +30,14 @@ public class Tetromino : MonoBehaviour
     [SerializeField]
     private AudioClip landSound;                        // Sound for when the tetromino lands
 
-    private int individualScore = 100;
+    private int individualScore;
     private float individualScoreTime;
 
     private void Start()
     {
         game = Game.Instance;
         audioSource = GetComponent<AudioSource>();
+        individualScore = game.MaxIndividualScore;
     }
 
     private void Update()
@@ -88,13 +89,13 @@ public class Tetromino : MonoBehaviour
 
         if (Input.GetKey(KeyCode.RightArrow))
             MoveRight();
-        
+
         if (Input.GetKey(KeyCode.LeftArrow))
             MoveLeft();
-        
+
         if (Input.GetKeyDown(KeyCode.UpArrow))
             Rotate();
-        
+
         if (Input.GetKey(KeyCode.DownArrow) || Time.time - fallTimer >= game.FallSpeed)
             MoveDown();
 
@@ -135,6 +136,7 @@ public class Tetromino : MonoBehaviour
             // if it is, we then call the UpdateGrid method which records this tetrominos new position
             game.UpdateGrid(this);
             PlayMoveAudio();
+            game.MoveGhostTetromino((int)transform.position.x, transform);
         }
         else
             // If it isn't we move the tetromino back to the right
@@ -165,18 +167,15 @@ public class Tetromino : MonoBehaviour
 
         horizontalTimer = 0;
 
-        // First we attempt to move the tetromino to the right
         transform.position += Vector3.right;
 
-        // We then check if the tetromino is at a valid position
         if (game.CheckIsValidPosition(transform))
         {
-            // if it is, we then call the UpdateGrid method which records this tetrominos new position
             game.UpdateGrid(this);
             PlayMoveAudio();
+            game.MoveGhostTetromino((int)transform.position.x, transform);
         }
         else
-            // If it isn't we move the tetromino back to the left
             transform.position += Vector3.left;
     }
 
@@ -209,6 +208,7 @@ public class Tetromino : MonoBehaviour
         if (game.CheckIsValidPosition(transform))
         {
             game.UpdateGrid(this);
+            game.MoveGhostTetromino((int)transform.position.x, transform);
 
             if (Input.GetKey(KeyCode.DownArrow))
                 PlayMoveAudio();
@@ -238,7 +238,7 @@ public class Tetromino : MonoBehaviour
     /// <summary>
     /// Moves the tetromino to the bottom
     /// </summary>
-    private void MoveToBottom()
+    public void MoveToBottom()
     {
         transform.position = new Vector2(transform.position.x, 0);
 
@@ -261,41 +261,12 @@ public class Tetromino : MonoBehaviour
             }
         }
 
+        game.DeleteRow();
         Game.Instance.CurrentScore += individualScore;
         game.SpawnTetromino();
         PlayLandAudio();
         tag = "Untagged";
         enabled = false;
-
-        //Vector3 pos = game.GetLowestPosition(transform);
-
-        //if (pos.y < transform.position.y)
-        //{
-        //    transform.position = pos;
-
-        //    if (game.CheckIsValidPosition(transform))
-        //    {
-        //        game.UpdateGrid(this);
-        //        PlayMoveAudio();
-        //    }
-        //    else
-        //    {
-        //        game.DeleteRow();
-
-        //        // Check if there are any minos above the grid
-        //        if (game.CheckIsAboveGrid(this))
-        //        {
-        //            game.GameOver();
-        //            return;
-        //        }
-
-        //        Game.Instance.CurrentScore += individualScore;
-        //        game.SpawnTetromino();
-        //        PlayLandAudio();
-        //        tag = "Untagged";
-        //        enabled = false;
-        //    }
-        //}
     }
 
     /// <summary>
@@ -319,6 +290,8 @@ public class Tetromino : MonoBehaviour
             {
                 game.UpdateGrid(this);
                 PlayMoveAudio();
+
+                game.RotateGhostTetromino(transform.rotation, transform);
             }
             else
             {
@@ -346,6 +319,9 @@ public class Tetromino : MonoBehaviour
 
                     game.UpdateGrid(this);
                     PlayMoveAudio();
+
+                    game.RotateGhostTetromino(transform.rotation, transform);
+                    game.MoveGhostTetromino((int)transform.position.x, transform);
                 }
                 else
                 {

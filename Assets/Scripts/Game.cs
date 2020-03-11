@@ -19,11 +19,19 @@ public class Game : MonoBehaviour
     private GameObject previewTetromino;
     private GameObject nextTetromino;
     private GameObject savedTetromino;
+    [HideInInspector]
+    public GameObject GhostTetromino = null;
     private Vector2 spawnPosition;
 
     private bool gameStarted;
+    [HideInInspector]
+    public int CurrentScore;
     private int startingHighScore;
     private int currentSwaps;
+    [HideInInspector]
+    public bool IsPaused;
+    [HideInInspector]
+    public bool IsGameOver;
 
     [Header("Game Settings")]
     public int GridWidth = 10;
@@ -34,9 +42,7 @@ public class Game : MonoBehaviour
     private Transform savedTetrominoTransform;
     [SerializeField]
     private int maxSwaps = 2;
-    public int CurrentScore;
-    public bool IsPaused;
-    public bool IsGameOver;
+    public int MaxIndividualScore = 100;
 
     [Header("UI Settings")]
     [SerializeField]
@@ -224,9 +230,9 @@ public class Game : MonoBehaviour
     /// Checks if the tetrominos position is valid
     /// </summary>
     /// <param name="tetromino">The tetromino to check</param>
-    /// <param name="posY">The y position to check</param>
+    /// <param name="ignore">The tetromino to ignore</param>
     /// <returns><c>trye</c>, if the tetrominos position is valid, <c>false</c> otherwise</returns>
-    public bool CheckIsValidPosition(Transform tetromino)
+    public bool CheckIsValidPosition(Transform tetromino, Transform ignore = null)
     {
         foreach (Transform mino in tetromino)
         {
@@ -235,15 +241,23 @@ public class Game : MonoBehaviour
             if (!CheckIsInsideGrid(pos))
                 return false;
 
-            if (GetTransformAtGridPosition(pos) != null && GetTransformAtGridPosition(pos).parent != tetromino)
-                return false;
-
-            for (int y = (int)pos.y + 1; y < GridHeight; y++)
+            if (ignore is null)
             {
-                Vector2 upPos = Round(new Vector2(pos.x, y));
-
-                if (GetTransformAtGridPosition(upPos) != null && GetTransformAtGridPosition(upPos).parent != tetromino)
+                if (GetTransformAtGridPosition(pos) != null && GetTransformAtGridPosition(pos).parent != tetromino)
                     return false;
+            }
+            else
+            {
+                if (GetTransformAtGridPosition(pos) != null && GetTransformAtGridPosition(pos).parent != tetromino && GetTransformAtGridPosition(pos).parent != ignore)
+                    return false;
+
+                for (int y = (int)pos.y + 1; y < GridHeight; y++)
+                {
+                    Vector2 upPos = Round(new Vector2(pos.x, y));
+
+                    if (GetTransformAtGridPosition(upPos) != null && GetTransformAtGridPosition(upPos).parent != tetromino && GetTransformAtGridPosition(upPos).parent != ignore)
+                        return false;
+                }
             }
         }
 
@@ -515,6 +529,13 @@ public class Game : MonoBehaviour
             previewTetromino.GetComponent<Tetromino>().enabled = false;
         }
 
+        DestroyImmediate(GhostTetromino);
+        GhostTetromino = Instantiate(nextTetromino, nextTetromino.transform.position, nextTetromino.transform.rotation);
+        GhostTetromino.name = "GhostTetromino";
+        GhostTetromino.GetComponent<Tetromino>().enabled = false;
+
+        MoveGhostTetromino((int)GhostTetromino.transform.position.x, nextTetromino.transform);
+
         currentSwaps = 0;
         return true;
     }
@@ -601,6 +622,29 @@ public class Game : MonoBehaviour
     public Vector2 Round(Vector2 pos)
     {
         return new Vector2(Mathf.Round(pos.x), Mathf.Round(pos.y));
+    }
+
+    public void MoveGhostTetromino(int x, Transform tetromino)
+    {
+        GhostTetromino.transform.position = new Vector2(x, 0);
+
+        while (!CheckIsValidPosition(GhostTetromino.transform, tetromino))
+        {
+            GhostTetromino.transform.position += Vector3.up;
+
+            if (GhostTetromino.transform.position.y > nextTetromino.transform.position.y)
+            {
+                GhostTetromino.transform.position = nextTetromino.transform.position;
+                break;
+            }
+        }
+    }
+
+    public void RotateGhostTetromino(Quaternion rotation, Transform tetromino)
+    {
+        GhostTetromino.transform.rotation = rotation;
+        GhostTetromino.transform.position += new Vector3(GetUnitsToMove(GhostTetromino.transform).x, 0);
+        MoveGhostTetromino((int)GhostTetromino.transform.position.x, tetromino);
     }
 
     /// <summary>
