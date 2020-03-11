@@ -224,18 +224,27 @@ public class Game : MonoBehaviour
     /// Checks if the tetrominos position is valid
     /// </summary>
     /// <param name="tetromino">The tetromino to check</param>
+    /// <param name="posY">The y position to check</param>
     /// <returns><c>trye</c>, if the tetrominos position is valid, <c>false</c> otherwise</returns>
-    public bool CheckIsValidPosition(GameObject tetromino)
+    public bool CheckIsValidPosition(Transform tetromino)
     {
-        foreach (Transform mino in tetromino.transform)
+        foreach (Transform mino in tetromino)
         {
             Vector2 pos = Round(mino.position);
 
             if (!CheckIsInsideGrid(pos))
                 return false;
 
-            if (GetTransformAtGridPosition(pos) != null && GetTransformAtGridPosition(pos).parent != tetromino.transform)
+            if (GetTransformAtGridPosition(pos) != null && GetTransformAtGridPosition(pos).parent != tetromino)
                 return false;
+
+            for (int y = (int)pos.y + 1; y < GridHeight; y++)
+            {
+                Vector2 upPos = Round(new Vector2(pos.x, y));
+
+                if (GetTransformAtGridPosition(upPos) != null && GetTransformAtGridPosition(upPos).parent != tetromino)
+                    return false;
+            }
         }
 
         return true;

@@ -87,24 +87,19 @@ public class Tetromino : MonoBehaviour
         }
 
         if (Input.GetKey(KeyCode.RightArrow))
-        {
             MoveRight();
-        }
         
         if (Input.GetKey(KeyCode.LeftArrow))
-        {
             MoveLeft();
-        }
         
         if (Input.GetKeyDown(KeyCode.UpArrow))
-        {
             Rotate();
-        }
         
         if (Input.GetKey(KeyCode.DownArrow) || Time.time - fallTimer >= game.FallSpeed)
-        {
             MoveDown();
-        }
+
+        if (Input.GetKeyDown(KeyCode.LeftAlt))
+            MoveToBottom();
     }
 
     /// <summary>
@@ -135,7 +130,7 @@ public class Tetromino : MonoBehaviour
         transform.position += Vector3.left;
 
         // We then check if the tetromino is at a valid position
-        if (game.CheckIsValidPosition(gameObject))
+        if (game.CheckIsValidPosition(transform))
         {
             // if it is, we then call the UpdateGrid method which records this tetrominos new position
             game.UpdateGrid(this);
@@ -174,7 +169,7 @@ public class Tetromino : MonoBehaviour
         transform.position += Vector3.right;
 
         // We then check if the tetromino is at a valid position
-        if (game.CheckIsValidPosition(gameObject))
+        if (game.CheckIsValidPosition(transform))
         {
             // if it is, we then call the UpdateGrid method which records this tetrominos new position
             game.UpdateGrid(this);
@@ -211,7 +206,7 @@ public class Tetromino : MonoBehaviour
 
         transform.position += Vector3.down;
 
-        if (game.CheckIsValidPosition(gameObject))
+        if (game.CheckIsValidPosition(transform))
         {
             game.UpdateGrid(this);
 
@@ -241,6 +236,69 @@ public class Tetromino : MonoBehaviour
     }
 
     /// <summary>
+    /// Moves the tetromino to the bottom
+    /// </summary>
+    private void MoveToBottom()
+    {
+        transform.position = new Vector2(transform.position.x, 0);
+
+        while (true)
+        {
+            if (game.CheckIsValidPosition(transform))
+            {
+                game.UpdateGrid(this);
+                break;
+            }
+            else
+            {
+                transform.position += Vector3.up;
+
+                if (game.CheckIsAboveGrid(this))
+                {
+                    game.GameOver();
+                    return;
+                }
+            }
+        }
+
+        Game.Instance.CurrentScore += individualScore;
+        game.SpawnTetromino();
+        PlayLandAudio();
+        tag = "Untagged";
+        enabled = false;
+
+        //Vector3 pos = game.GetLowestPosition(transform);
+
+        //if (pos.y < transform.position.y)
+        //{
+        //    transform.position = pos;
+
+        //    if (game.CheckIsValidPosition(transform))
+        //    {
+        //        game.UpdateGrid(this);
+        //        PlayMoveAudio();
+        //    }
+        //    else
+        //    {
+        //        game.DeleteRow();
+
+        //        // Check if there are any minos above the grid
+        //        if (game.CheckIsAboveGrid(this))
+        //        {
+        //            game.GameOver();
+        //            return;
+        //        }
+
+        //        Game.Instance.CurrentScore += individualScore;
+        //        game.SpawnTetromino();
+        //        PlayLandAudio();
+        //        tag = "Untagged";
+        //        enabled = false;
+        //    }
+        //}
+    }
+
+    /// <summary>
     /// Rotates the tetromino
     /// </summary>
     private void Rotate()
@@ -257,7 +315,7 @@ public class Tetromino : MonoBehaviour
             else
                 transform.Rotate(0, 0, 90);
 
-            if (game.CheckIsValidPosition(gameObject))
+            if (game.CheckIsValidPosition(transform))
             {
                 game.UpdateGrid(this);
                 PlayMoveAudio();
