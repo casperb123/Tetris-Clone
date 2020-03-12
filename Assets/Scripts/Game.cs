@@ -529,22 +529,7 @@ public class Game : MonoBehaviour
             previewTetromino.GetComponent<Tetromino>().enabled = false;
         }
 
-        DestroyImmediate(GhostTetromino);
-        GhostTetromino = Instantiate(nextTetromino, nextTetromino.transform.position, nextTetromino.transform.rotation);
-        GhostTetromino.name = "GhostTetromino";
-        GhostTetromino.GetComponent<Tetromino>().enabled = false;
-
-        foreach (Transform mino in GhostTetromino.transform)
-        {
-            Renderer renderer = mino.GetComponent<Renderer>();
-            Color color = renderer.material.color;
-            color.a = .5f;
-
-            renderer.material.color = color;
-        }
-
-        MoveGhostTetromino((int)GhostTetromino.transform.position.x, nextTetromino.transform);
-
+        SpawnGhostTetromino();
         currentSwaps = 0;
         return true;
     }
@@ -611,6 +596,27 @@ public class Game : MonoBehaviour
 
             DestroyImmediate(currentTetromino);
         }
+
+        SpawnGhostTetromino();
+    }
+
+    private void SpawnGhostTetromino()
+    {
+        DestroyImmediate(GhostTetromino);
+        GhostTetromino = Instantiate(nextTetromino, nextTetromino.transform.position, nextTetromino.transform.rotation);
+        GhostTetromino.name = "GhostTetromino";
+        GhostTetromino.GetComponent<Tetromino>().enabled = false;
+
+        foreach (Transform mino in GhostTetromino.transform)
+        {
+            Renderer renderer = mino.GetComponent<Renderer>();
+            Color color = renderer.material.color;
+            color.a = .5f;
+
+            renderer.material.color = color;
+        }
+
+        MoveGhostTetromino((int)GhostTetromino.transform.position.x, nextTetromino.transform);
     }
 
     /// <summary>
