@@ -12,7 +12,7 @@ public class ShakeBehaviour : MonoBehaviour
 
     // Desired duration of the shake effect
     [SerializeField]
-    private float shakeDuration = 1;
+    private float shakeDuration = .5f;
 
     // A measure of the magnitude for the shake
     [SerializeField]
