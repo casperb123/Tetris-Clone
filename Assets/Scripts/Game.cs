@@ -16,7 +16,7 @@ public class Game : MonoBehaviour
     private int numberOfRowsThisTurn = 0;   // The number of rows cleared by a tetromino
     private AudioSource audioSource;
 
-    private GameObject previewTetromino;
+    private GameObject nextTetromino;
     private GameObject currentTetromino;
     private GameObject savedTetromino;
     [HideInInspector]
@@ -500,13 +500,13 @@ public class Game : MonoBehaviour
 
             currentTetromino.tag = "CurrentTetromino";
 
-            previewTetromino = (GameObject)Instantiate(Resources.Load(GetRandomTetromino()), nextTetrominoTransform, false);
-            previewTetromino.transform.localPosition = -previewTetromino.GetComponent<Tetromino>().CenterPosition;
-            previewTetromino.GetComponent<Tetromino>().enabled = false;
+            nextTetromino = (GameObject)Instantiate(Resources.Load(GetRandomTetromino()), nextTetrominoTransform, false);
+            nextTetromino.transform.localPosition = -nextTetromino.GetComponent<Tetromino>().CenterPosition;
+            nextTetromino.GetComponent<Tetromino>().enabled = false;
         }
         else
         {
-            currentTetromino = previewTetromino;
+            currentTetromino = nextTetromino;
             currentTetromino.transform.SetParent(tetrominos);
             if (pos.x == 0 && pos.y == 0)
                 currentTetromino.transform.position = spawnPosition;
@@ -524,9 +524,9 @@ public class Game : MonoBehaviour
             currentTetromino.GetComponent<Tetromino>().enabled = true;
             currentTetromino.tag = "CurrentTetromino";
 
-            previewTetromino = (GameObject)Instantiate(Resources.Load(GetRandomTetromino()), nextTetrominoTransform, false);
-            previewTetromino.transform.localPosition = -previewTetromino.GetComponent<Tetromino>().CenterPosition;
-            previewTetromino.GetComponent<Tetromino>().enabled = false;
+            nextTetromino = (GameObject)Instantiate(Resources.Load(GetRandomTetromino()), nextTetrominoTransform, false);
+            nextTetromino.transform.localPosition = -nextTetromino.GetComponent<Tetromino>().CenterPosition;
+            nextTetromino.GetComponent<Tetromino>().enabled = false;
         }
 
         SpawnGhostTetromino();
