@@ -7,20 +7,14 @@ public class ShakeBehaviour : MonoBehaviour
     // Transform of the GameObject you want to shake
     private Transform transform;
 
-    // The duration it shakes
-    private float duration = 0;
-
     // Desired duration of the shake effect
-    [SerializeField]
-    private float shakeDuration = .5f;
+    private float shakeDuration;
 
     // A measure of the magnitude for the shake
-    [SerializeField]
-    private float shakeMagnitude = .1f;
+    private float shakeMagnitude;
 
     // A measure of how quickly the shake effect should evaporate
-    [SerializeField]
-    private float dampingSpeed = 5;
+    private float dampingSpeed;
 
     // The initial position of the GameObject
     private Vector3 initialPosition;
@@ -38,20 +32,28 @@ public class ShakeBehaviour : MonoBehaviour
 
     private void FixedUpdate()
     {
-        if (duration > 0)
+        if (shakeDuration > 0)
         {
             transform.localPosition = initialPosition + Random.insideUnitSphere * shakeMagnitude;
-            duration -= Time.deltaTime * dampingSpeed;
+            shakeDuration -= Time.fixedDeltaTime * dampingSpeed;
         }
         else
         {
-            duration = 0;
+            shakeDuration = 0;
             transform.localPosition = initialPosition;
         }
     }
 
-    public void TriggerShake()
+    /// <summary>
+    /// Triggers the shake effect
+    /// </summary>
+    /// <param name="duration">The duration of the shake effect</param>
+    /// <param name="magnitude">How much it shoulf shake</param>
+    /// <param name="damping">How quickly the shake should evaporate</param>
+    public void TriggerShake(float duration = 1, float magnitude = 1, float damping = 1)
     {
-        duration = shakeDuration;
+        shakeMagnitude = magnitude;
+        dampingSpeed = damping;
+        shakeDuration = duration;
     }
 }

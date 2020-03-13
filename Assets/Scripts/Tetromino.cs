@@ -261,7 +261,7 @@ public class Tetromino : MonoBehaviour
             }
         }
 
-        Camera.main.GetComponent<ShakeBehaviour>().TriggerShake();
+        Camera.main.GetComponent<ShakeBehaviour>().TriggerShake(.5f, .1f, 5);
 
         game.DeleteRow();
         Game.Instance.CurrentScore += individualScore;

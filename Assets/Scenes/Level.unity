@@ -1571,7 +1571,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   shakeDuration: 0.5
   shakeMagnitude: 0.1
-  dampingSpeed: 5
+  dampingSpeed: 4
 --- !u!20 &519420031
 Camera:
   m_ObjectHideFlags: 0
