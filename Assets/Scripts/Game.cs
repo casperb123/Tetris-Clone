@@ -707,4 +707,9 @@ public class Game : MonoBehaviour
         UpdateHighscore();
         SceneManager.LoadScene("GameOver");
     }
+
+    public void Shake()
+    {
+
+    }
 }

@@ -238,7 +238,7 @@ public class Tetromino : MonoBehaviour
     /// <summary>
     /// Moves the tetromino to the bottom
     /// </summary>
-    public void MoveToBottom()
+    private void MoveToBottom()
     {
         transform.position = new Vector2(transform.position.x, 0);
 
@@ -260,6 +260,8 @@ public class Tetromino : MonoBehaviour
                 }
             }
         }
+
+        Camera.main.GetComponent<ShakeBehaviour>().TriggerShake();
 
         game.DeleteRow();
         Game.Instance.CurrentScore += individualScore;
