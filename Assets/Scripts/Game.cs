@@ -17,7 +17,7 @@ public class Game : MonoBehaviour
     private AudioSource audioSource;
 
     private GameObject previewTetromino;
-    private GameObject nextTetromino;
+    private GameObject currentTetromino;
     private GameObject savedTetromino;
     [HideInInspector]
     public GameObject GhostTetromino = null;
@@ -494,11 +494,11 @@ public class Game : MonoBehaviour
             gameStarted = true;
 
             if (pos.x == 0 && pos.y == 0)
-                nextTetromino = (GameObject)Instantiate(Resources.Load(GetRandomTetromino()), spawnPosition, Quaternion.identity, tetrominos);
+                currentTetromino = (GameObject)Instantiate(Resources.Load(GetRandomTetromino()), spawnPosition, Quaternion.identity, tetrominos);
             else
-                nextTetromino = (GameObject)Instantiate(Resources.Load(GetRandomTetromino()), pos, Quaternion.identity, tetrominos);
+                currentTetromino = (GameObject)Instantiate(Resources.Load(GetRandomTetromino()), pos, Quaternion.identity, tetrominos);
 
-            nextTetromino.tag = "CurrentTetromino";
+            currentTetromino.tag = "CurrentTetromino";
 
             previewTetromino = (GameObject)Instantiate(Resources.Load(GetRandomTetromino()), nextTetrominoTransform, false);
             previewTetromino.transform.localPosition = -previewTetromino.GetComponent<Tetromino>().CenterPosition;
@@ -506,23 +506,23 @@ public class Game : MonoBehaviour
         }
         else
         {
-            nextTetromino = previewTetromino;
-            nextTetromino.transform.SetParent(tetrominos);
+            currentTetromino = previewTetromino;
+            currentTetromino.transform.SetParent(tetrominos);
             if (pos.x == 0 && pos.y == 0)
-                nextTetromino.transform.position = spawnPosition;
+                currentTetromino.transform.position = spawnPosition;
             else
             {
-                nextTetromino.transform.position = pos;
-                nextTetromino.transform.position += GetUnitsToMove(nextTetromino.transform);
+                currentTetromino.transform.position = pos;
+                currentTetromino.transform.position += GetUnitsToMove(currentTetromino.transform);
 
-                if (IsOtherMinoInTheWay(nextTetromino.transform))
+                if (IsOtherMinoInTheWay(currentTetromino.transform))
                 {
-                    DestroyImmediate(nextTetromino);
+                    DestroyImmediate(currentTetromino);
                     return false;
                 }
             }
-            nextTetromino.GetComponent<Tetromino>().enabled = true;
-            nextTetromino.tag = "CurrentTetromino";
+            currentTetromino.GetComponent<Tetromino>().enabled = true;
+            currentTetromino.tag = "CurrentTetromino";
 
             previewTetromino = (GameObject)Instantiate(Resources.Load(GetRandomTetromino()), nextTetrominoTransform, false);
             previewTetromino.transform.localPosition = -previewTetromino.GetComponent<Tetromino>().CenterPosition;
@@ -563,12 +563,12 @@ public class Game : MonoBehaviour
             savedTetromino.transform.rotation = Quaternion.identity;
             savedTetrominoClass.enabled = false;
 
-            nextTetromino = Instantiate(tempSavedTetromino, tetrominos, true);
-            nextTetromino.tag = "CurrentTetromino";
-            nextTetromino.transform.SetParent(tetrominos);
-            nextTetromino.transform.position = tetrominoTransform.position + Vector3.up;
-            nextTetromino.transform.position += GetUnitsToMove(nextTetromino.transform);
-            nextTetromino.GetComponent<Tetromino>().enabled = true;
+            currentTetromino = Instantiate(tempSavedTetromino, tetrominos, true);
+            currentTetromino.tag = "CurrentTetromino";
+            currentTetromino.transform.SetParent(tetrominos);
+            currentTetromino.transform.position = tetrominoTransform.position + Vector3.up;
+            currentTetromino.transform.position += GetUnitsToMove(currentTetromino.transform);
+            currentTetromino.GetComponent<Tetromino>().enabled = true;
 
             DestroyImmediate(tetrominoTransform.gameObject);
             DestroyImmediate(tempSavedTetromino);
@@ -603,7 +603,7 @@ public class Game : MonoBehaviour
     private void SpawnGhostTetromino()
     {
         DestroyImmediate(GhostTetromino);
-        GhostTetromino = Instantiate(nextTetromino, nextTetromino.transform.position, nextTetromino.transform.rotation);
+        GhostTetromino = Instantiate(currentTetromino, currentTetromino.transform.position, currentTetromino.transform.rotation);
         GhostTetromino.name = "GhostTetromino";
         GhostTetromino.GetComponent<Tetromino>().enabled = false;
 
@@ -616,7 +616,7 @@ public class Game : MonoBehaviour
             renderer.material.color = color;
         }
 
-        MoveGhostTetromino((int)GhostTetromino.transform.position.x, nextTetromino.transform);
+        MoveGhostTetromino((int)GhostTetromino.transform.position.x, currentTetromino.transform);
     }
 
     /// <summary>
@@ -647,9 +647,9 @@ public class Game : MonoBehaviour
         {
             GhostTetromino.transform.position += Vector3.up;
 
-            if (GhostTetromino.transform.position.y > nextTetromino.transform.position.y)
+            if (GhostTetromino.transform.position.y > currentTetromino.transform.position.y)
             {
-                GhostTetromino.transform.position = nextTetromino.transform.position;
+                GhostTetromino.transform.position = currentTetromino.transform.position;
                 break;
             }
         }
@@ -706,10 +706,5 @@ public class Game : MonoBehaviour
     {
         UpdateHighscore();
         SceneManager.LoadScene("GameOver");
-    }
-
-    public void Shake()
-    {
-
     }
 }
