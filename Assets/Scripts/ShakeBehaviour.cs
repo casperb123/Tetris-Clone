@@ -16,7 +16,7 @@ public class ShakeBehaviour : MonoBehaviour
 
     // A measure of the magnitude for the shake
     [SerializeField]
-    private float shakeMagnitude = .2f;
+    private float shakeMagnitude = .1f;
 
     // A measure of how quickly the shake effect should evaporate
     [SerializeField]
