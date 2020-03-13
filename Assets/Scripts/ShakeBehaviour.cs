@@ -36,7 +36,7 @@ public class ShakeBehaviour : MonoBehaviour
         initialPosition = transform.localPosition;
     }
 
-    private void Update()
+    private void FixedUpdate()
     {
         if (duration > 0)
         {
