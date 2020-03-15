@@ -32,6 +32,7 @@ public class Game : MonoBehaviour
     public bool IsPaused;
     [HideInInspector]
     public bool IsGameOver;
+    private Options options;
 
     [Header("Game Settings")]
     public int GridWidth = 10;
@@ -82,6 +83,11 @@ public class Game : MonoBehaviour
     private void Start()
     {
         Time.timeScale = 1;
+        audioSource = GetComponent<AudioSource>();
+        options = GameObject.Find("PauseManager").GetComponent<Options>();
+
+        if (!options.BackgroundMusic)
+            audioSource.Stop();
 
         grid = new Transform[GridWidth, GridHeight];
         spawnPosition = new Vector2(GridWidth / 2, GridHeight);
@@ -90,7 +96,6 @@ public class Game : MonoBehaviour
         currentLevel = StartingLevel;
         startingHighScore = PlayerPrefs.GetInt("highscore");
 
-        audioSource = GetComponent<AudioSource>();
         tetrominos = GameObject.Find("Tetrominos").transform;
         SpawnTetromino();
     }

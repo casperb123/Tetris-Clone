@@ -18,11 +18,17 @@ public class ShakeBehaviour : MonoBehaviour
 
     // The initial position of the GameObject
     private Vector3 initialPosition;
+    private Options options;
 
     private void Awake()
     {
         if (transform is null)
             transform = GetComponent<Transform>();
+    }
+
+    private void Start()
+    {
+        options = GameObject.Find("PauseManager").GetComponent<Options>();
     }
 
     private void OnEnable()
@@ -52,8 +58,11 @@ public class ShakeBehaviour : MonoBehaviour
     /// <param name="damping">How quickly the shake should evaporate</param>
     public void TriggerShake(float duration = 1, float magnitude = 1, float damping = 1)
     {
-        shakeMagnitude = magnitude;
-        dampingSpeed = damping;
-        shakeDuration = duration;
+        if (options.ShakingEffect)
+        {
+            shakeMagnitude = magnitude;
+            dampingSpeed = damping;
+            shakeDuration = duration;
+        }
     }
 }

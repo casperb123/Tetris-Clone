@@ -3,6 +3,7 @@
 public class Tetromino : MonoBehaviour
 {
     private Game game;
+    private Options options;
 
     private float fallTimer = 0;                        // Countdown timer for the fall speed
     private float verticalTimer = 0;                    // Countdown timer for the vertical speed
@@ -36,6 +37,7 @@ public class Tetromino : MonoBehaviour
     private void Start()
     {
         game = Game.Instance;
+        options = GameObject.Find("PauseManager").GetComponent<Options>();
         audioSource = GetComponent<AudioSource>();
         individualScore = game.MaxIndividualScore;
     }
@@ -347,7 +349,8 @@ public class Tetromino : MonoBehaviour
     /// </summary>
     private void PlayMoveAudio()
     {
-        audioSource.PlayOneShot(moveSound);
+        if (options.SoundEffects)
+            audioSource.PlayOneShot(moveSound);
     }
 
     /// <summary>
@@ -355,6 +358,7 @@ public class Tetromino : MonoBehaviour
     /// </summary>
     private void PlayLandAudio()
     {
-        audioSource.PlayOneShot(landSound);
+        if (options.SoundEffects)
+            audioSource.PlayOneShot(landSound);
     }
 }
