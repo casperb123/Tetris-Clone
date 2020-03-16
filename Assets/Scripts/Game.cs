@@ -648,16 +648,32 @@ public class Game : MonoBehaviour
     {
         GhostTetromino.transform.position = new Vector2(x, 0);
 
-        while (!CheckIsValidPosition(GhostTetromino.transform, tetromino))
+        for (int i = 1; i < GridHeight; i++)
         {
-            GhostTetromino.transform.position += Vector3.up;
-
-            if (GhostTetromino.transform.position.y > currentTetromino.transform.position.y)
-            {
-                GhostTetromino.transform.position = currentTetromino.transform.position;
+            if (CheckIsValidPosition(GhostTetromino.transform, tetromino))
                 break;
+            else
+            {
+                GhostTetromino.transform.position += Vector3.up;
+
+                if (GhostTetromino.transform.position.y > currentTetromino.transform.position.y)
+                {
+                    GhostTetromino.transform.position = currentTetromino.transform.position;
+                    break;
+                }
             }
         }
+
+        //while (!CheckIsValidPosition(GhostTetromino.transform, tetromino))
+        //{
+        //    GhostTetromino.transform.position += Vector3.up;
+
+        //    if (GhostTetromino.transform.position.y > currentTetromino.transform.position.y)
+        //    {
+        //        GhostTetromino.transform.position = currentTetromino.transform.position;
+        //        break;
+        //    }
+        //}
     }
 
     public void RotateGhostTetromino(Quaternion rotation, Transform tetromino)

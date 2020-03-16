@@ -4,10 +4,7 @@ using UnityEngine.UI;
 
 public class Options : MonoBehaviour
 {
-    private bool backgroundMusic;
-    private bool soundEffects;
-    private bool shakingEffect;
-    private AudioSource audioSource;
+    public static Options Instance;
 
     [Header("UI Settings")]
     [SerializeField]
@@ -21,52 +18,50 @@ public class Options : MonoBehaviour
     [SerializeField]
     private Toggle shakingEffectToggle;
 
-    public bool BackgroundMusic
-    {
-        get => backgroundMusic;
-    }
+    private AudioSource audioSource;
 
-    public bool SoundEffects
-    {
-        get => soundEffects;
-    }
+    public bool BackgroundMusic { get; private set; }
 
-    public bool ShakingEffect
+    public bool SoundEffects { get; private set; }
+
+    public bool ShakingEffect { get; private set; }
+
+    private void Awake()
     {
-        get => shakingEffect;
+        Instance = this;
     }
 
     private void Start()
     {
         audioSource = GetComponent<AudioSource>();
 
-        backgroundMusic = Convert.ToBoolean(PlayerPrefs.GetInt("backgroundMusic"));
-        soundEffects = Convert.ToBoolean(PlayerPrefs.GetInt("soundEffects"));
-        shakingEffect = Convert.ToBoolean(PlayerPrefs.GetInt("shakingEffect"));
+        BackgroundMusic = Convert.ToBoolean(PlayerPrefs.GetInt("backgroundMusic"));
+        SoundEffects = Convert.ToBoolean(PlayerPrefs.GetInt("soundEffects"));
+        ShakingEffect = Convert.ToBoolean(PlayerPrefs.GetInt("shakingEffect"));
 
-        backgroundMusicToggle.isOn = backgroundMusic;
-        soundEffectsToggle.isOn = soundEffects;
-        shakingEffectToggle.isOn = shakingEffect;
+        backgroundMusicToggle.isOn = BackgroundMusic;
+        soundEffectsToggle.isOn = SoundEffects;
+        shakingEffectToggle.isOn = ShakingEffect;
     }
 
     public void ToggleBackgroundMusic(bool value)
     {
-        backgroundMusic = value;
-        PlayerPrefs.SetInt("backgroundMusic", Convert.ToInt32(backgroundMusic));
+        BackgroundMusic = value;
+        PlayerPrefs.SetInt("backgroundMusic", Convert.ToInt32(BackgroundMusic));
         audioSource.Play();
     }
 
     public void ToggleSoundEffects(bool value)
     {
-        soundEffects = value;
-        PlayerPrefs.SetInt("soundEffects", Convert.ToInt32(soundEffects));
+        SoundEffects = value;
+        PlayerPrefs.SetInt("soundEffects", Convert.ToInt32(SoundEffects));
         audioSource.Play();
     }
 
     public void ToggleShakingEffect(bool value)
     {
-        shakingEffect = value;
-        PlayerPrefs.SetInt("shakingEffect", Convert.ToInt32(shakingEffect));
+        ShakingEffect = value;
+        PlayerPrefs.SetInt("shakingEffect", Convert.ToInt32(ShakingEffect));
         audioSource.Play();
     }
 
