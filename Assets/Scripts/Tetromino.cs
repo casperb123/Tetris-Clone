@@ -244,7 +244,7 @@ public class Tetromino : MonoBehaviour
 
         for (int i = 1; i < Game.Instance.GridHeight; i++)
         {
-            if (Game.Instance.CheckIsValidPosition(transform))
+            if (Game.Instance.CheckIsValidPosition(transform, movedToBottom: true))
             {
                 Game.Instance.UpdateGrid(this);
                 break;

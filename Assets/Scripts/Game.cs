@@ -237,7 +237,7 @@ public class Game : MonoBehaviour
     /// <param name="tetromino">The tetromino to check</param>
     /// <param name="ignore">The tetromino to ignore</param>
     /// <returns><c>trye</c>, if the tetrominos position is valid, <c>false</c> otherwise</returns>
-    public bool CheckIsValidPosition(Transform tetromino, Transform ignore = null)
+    public bool CheckIsValidPosition(Transform tetromino, Transform ignore = null, bool movedToBottom = false)
     {
         foreach (Transform mino in tetromino)
         {
@@ -251,12 +251,15 @@ public class Game : MonoBehaviour
                 if (GetTransformAtGridPosition(pos) != null && GetTransformAtGridPosition(pos).parent != tetromino)
                     return false;
 
-                for (int y = (int)pos.y + 1; y < GridHeight; y++)
+                if (movedToBottom)
                 {
-                    Vector2 upPos = Round(new Vector2(pos.x, y));
+                    for (int y = (int)pos.y + 1; y < GridHeight; y++)
+                    {
+                        Vector2 upPos = Round(new Vector2(pos.x, y));
 
-                    if (GetTransformAtGridPosition(upPos) != null && GetTransformAtGridPosition(upPos).parent != tetromino)
-                        return false;
+                        if (GetTransformAtGridPosition(upPos) != null && GetTransformAtGridPosition(upPos).parent != tetromino)
+                            return false;
+                    }
                 }
             }
             else
