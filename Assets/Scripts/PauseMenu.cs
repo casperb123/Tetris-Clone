@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.SceneManagement;
 
 public class PauseMenu : MonoBehaviour
@@ -14,13 +12,11 @@ public class PauseMenu : MonoBehaviour
     private AudioSource audioSource;
     private AudioSource audioSourceGameLoop;
     private bool isPaused;
-    private Options options;
 
     private void Start()
     {
         audioSource = GetComponent<AudioSource>();
         audioSourceGameLoop = Game.Instance.GetComponent<AudioSource>();
-        options = GetComponent<Options>();
     }
 
     private void Update()
@@ -31,26 +27,46 @@ public class PauseMenu : MonoBehaviour
         }
     }
 
+    private void OnApplicationFocus(bool focus)
+    {
+        if (!focus)
+            Pause();
+    }
+
+    private void OnApplicationPause(bool pause)
+    {
+        if (pause)
+            Pause();
+        else
+            UnPause();
+    }
+
+    private void Pause()
+    {
+        pausePanel.SetActive(true);
+        audioSourceGameLoop.Stop();
+        isPaused = true;
+        Time.timeScale = 0;
+    }
+
+    private void UnPause()
+    {
+        pausePanel.SetActive(false);
+        optionsPanel.SetActive(false);
+        if (Options.Instance.BackgroundMusic)
+            audioSourceGameLoop.Play();
+        isPaused = false;
+        Time.timeScale = 1;
+    }
+
     public void PauseToggle()
     {
         audioSource.Play();
 
         if (isPaused)
-        {
-            pausePanel.SetActive(false);
-            optionsPanel.SetActive(false);
-            if (options.BackgroundMusic)
-                audioSourceGameLoop.Play();
-            isPaused = false;
-            Time.timeScale = 1;
-        }
+            UnPause();
         else
-        {
-            pausePanel.SetActive(true);
-            audioSourceGameLoop.Stop();
-            isPaused = true;
-            Time.timeScale = 0;
-        }
+            Pause();
     }
 
     public void Resume()
@@ -58,7 +74,7 @@ public class PauseMenu : MonoBehaviour
         PauseToggle();
     }
 
-    public void Options()
+    public void OptionsMenu()
     {
         pausePanel.SetActive(false);
         optionsPanel.SetActive(true);

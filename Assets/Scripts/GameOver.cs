@@ -18,6 +18,14 @@ public class GameOver : MonoBehaviour
 
     private void Start()
     {
+#if !DEBUG
+        if (Game.Instance is null)
+        {
+            SceneManager.LoadScene("GameMenu");
+            return;
+        }
+#endif
+
         highScore = PlayerPrefs.GetInt("highscore");
         audioSource = GetComponent<AudioSource>();
 
