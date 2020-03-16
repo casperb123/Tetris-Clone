@@ -250,6 +250,14 @@ public class Game : MonoBehaviour
             {
                 if (GetTransformAtGridPosition(pos) != null && GetTransformAtGridPosition(pos).parent != tetromino)
                     return false;
+
+                for (int y = (int)pos.y + 1; y < GridHeight; y++)
+                {
+                    Vector2 upPos = Round(new Vector2(pos.x, y));
+
+                    if (GetTransformAtGridPosition(upPos) != null && GetTransformAtGridPosition(upPos).parent != tetromino)
+                        return false;
+                }
             }
             else
             {
@@ -654,7 +662,7 @@ public class Game : MonoBehaviour
                 break;
             else
             {
-                GhostTetromino.transform.position += Vector3.up;
+                GhostTetromino.transform.position = new Vector2(x, i);
 
                 if (GhostTetromino.transform.position.y > currentTetromino.transform.position.y)
                 {
@@ -663,17 +671,6 @@ public class Game : MonoBehaviour
                 }
             }
         }
-
-        //while (!CheckIsValidPosition(GhostTetromino.transform, tetromino))
-        //{
-        //    GhostTetromino.transform.position += Vector3.up;
-
-        //    if (GhostTetromino.transform.position.y > currentTetromino.transform.position.y)
-        //    {
-        //        GhostTetromino.transform.position = currentTetromino.transform.position;
-        //        break;
-        //    }
-        //}
     }
 
     public void RotateGhostTetromino(Quaternion rotation, Transform tetromino)
