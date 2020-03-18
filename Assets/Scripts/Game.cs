@@ -45,6 +45,10 @@ public class Game : MonoBehaviour
     private int maxSwaps = 2;
     public int MaxIndividualScore = 100;
 
+    [Header("Touch Settings")]
+    public int TouchSensitivityHorizontal = 8;
+    public int TouchSensitivityVertical = 4;
+
     [Header("UI Settings")]
     [SerializeField]
     private TextMeshProUGUI scoreText;
@@ -237,7 +241,7 @@ public class Game : MonoBehaviour
     /// <param name="tetromino">The tetromino to check</param>
     /// <param name="ignore">The tetromino to ignore</param>
     /// <returns><c>trye</c>, if the tetrominos position is valid, <c>false</c> otherwise</returns>
-    public bool CheckIsValidPosition(Transform tetromino, Transform ignore = null, bool movedToBottom = false)
+    public bool CheckIsValidPosition(Transform tetromino, Transform ignore = null, bool checkMinosAbove = false)
     {
         foreach (Transform mino in tetromino)
         {
@@ -251,7 +255,7 @@ public class Game : MonoBehaviour
                 if (GetTransformAtGridPosition(pos) != null && GetTransformAtGridPosition(pos).parent != tetromino)
                     return false;
 
-                if (movedToBottom)
+                if (checkMinosAbove)
                 {
                     for (int y = (int)pos.y + 1; y < GridHeight; y++)
                     {
