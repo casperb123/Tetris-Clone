@@ -29,7 +29,7 @@ public class PauseMenu : MonoBehaviour
 
     private void OnApplicationFocus(bool focus)
     {
-        if (!focus)
+        if (!focus && !optionsPanel.activeSelf)
             Pause();
     }
 
@@ -37,7 +37,7 @@ public class PauseMenu : MonoBehaviour
     {
         if (pause)
             Pause();
-        else
+        else if (!pause && !optionsPanel.activeSelf)
             UnPause();
     }
 

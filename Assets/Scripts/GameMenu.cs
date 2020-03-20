@@ -12,6 +12,8 @@ public class GameMenu : MonoBehaviour
     private TextMeshProUGUI levelText;
     [SerializeField]
     private TextMeshProUGUI highScoreText;
+    [SerializeField]
+    private GameObject optionsPanel;
 
     [Header("Sound Settings")]
     [SerializeField]
@@ -39,6 +41,12 @@ public class GameMenu : MonoBehaviour
             Game.StartingAtLevelZero = false;
 
         SceneManager.LoadScene("Level");
+    }
+
+    public void Options()
+    {
+        optionsPanel.SetActive(true);
+        audioSource.PlayOneShot(buttonClick);
     }
 
     public void Quit()
