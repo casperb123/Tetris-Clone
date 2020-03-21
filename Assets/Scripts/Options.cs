@@ -44,6 +44,8 @@ public class Options : MonoBehaviour
     {
         if (Instance is null)
             Instance = this;
+
+        QualitySettings.vSyncCount = 0;
     }
 
     private void Start()
@@ -66,6 +68,7 @@ public class Options : MonoBehaviour
         int resolutionIndex = resolutions.IndexOf(resolutions.FirstOrDefault(x => x.width == width && x.height == height));
 
         Screen.SetResolution(width, height, Fullscreen, refreshRate);
+        Application.targetFrameRate = refreshRate;
 
         backgroundMusicToggle.isOn = BackgroundMusic;
         soundEffectsToggle.isOn = SoundEffects;
@@ -113,6 +116,7 @@ public class Options : MonoBehaviour
         PlayerPrefs.SetInt("resolutionWidth", resolution.width);
         PlayerPrefs.SetInt("resolutionHeight", resolution.height);
         Screen.SetResolution(resolution.width, resolution.height, Fullscreen, currentResolution.refreshRate);
+        audioSource.Play();
     }
 
     public void ChangeRefreshRate(int index)
@@ -120,7 +124,10 @@ public class Options : MonoBehaviour
         Resolution currentResolution = Screen.currentResolution;
         int refreshRate = refreshRates[index];
         PlayerPrefs.SetInt("refreshRate", refreshRate);
+
         Screen.SetResolution(currentResolution.width, currentResolution.height, Fullscreen, refreshRate);
+        Application.targetFrameRate = refreshRate;
+        audioSource.Play();
     }
 
     public void Back()
