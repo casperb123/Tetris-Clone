@@ -27,7 +27,6 @@ public class Options : MonoBehaviour
     [SerializeField]
     private TMP_Dropdown refreshRateDropdown;
 
-    private bool initiated;
     private AudioSource audioSource;
     private List<Resolution> resolutions;
     private List<int> refreshRates;
@@ -39,6 +38,12 @@ public class Options : MonoBehaviour
     public bool ShakingEffect { get; private set; }
 
     public bool Fullscreen { get; private set; }
+
+    public int Width { get; private set; }
+
+    public int Height { get; private set; }
+
+    public int RefreshRate { get; private set; }
 
     private void Awake()
     {
@@ -56,19 +61,16 @@ public class Options : MonoBehaviour
         resolutions.ForEach(x => resolutionDropdown.options.Add(new TMP_Dropdown.OptionData($"{x.width} x {x.height}")));
         refreshRates.ForEach(x => refreshRateDropdown.options.Add(new TMP_Dropdown.OptionData($"{x} hz")));
 
-        BackgroundMusic = PlayerPrefs.HasKey("backgroundMusic") ? Convert.ToBoolean(PlayerPrefs.GetInt("backgroundMusic")) : true;
-        SoundEffects = PlayerPrefs.HasKey("soundEffects") ? Convert.ToBoolean(PlayerPrefs.GetInt("soundEffects")) : true;
-        ShakingEffect = PlayerPrefs.HasKey("shakingEffect") ? Convert.ToBoolean(PlayerPrefs.GetInt("shakingEffect")) : true;
-        Fullscreen = PlayerPrefs.HasKey("fullscreen") ? Convert.ToBoolean(PlayerPrefs.GetInt("fullscreen")) : true;
+        BackgroundMusic = Convert.ToBoolean(PlayerPrefs.GetInt("backgroundMusic", 1));
+        SoundEffects = Convert.ToBoolean(PlayerPrefs.GetInt("soundEffects", 1));
+        ShakingEffect = Convert.ToBoolean(PlayerPrefs.GetInt("shakingEffect", 1));
+        Fullscreen = Convert.ToBoolean(PlayerPrefs.GetInt("fullscreen", 1));
+        Width = PlayerPrefs.GetInt("resolutionWidth", Screen.currentResolution.width);
+        Height = PlayerPrefs.GetInt("resolutionHeight", Screen.currentResolution.height);
+        RefreshRate = PlayerPrefs.GetInt("refreshRate", Screen.currentResolution.refreshRate);
 
-        int width = PlayerPrefs.HasKey("resolutionWidth") ? PlayerPrefs.GetInt("resolutionWidth") : Screen.currentResolution.width;
-        int height = PlayerPrefs.HasKey("resolutionHeight") ? PlayerPrefs.GetInt("resolutionHeight") : Screen.currentResolution.height;
-        int refreshRate = PlayerPrefs.HasKey("refreshRate") ? PlayerPrefs.GetInt("refreshRate") : Screen.currentResolution.refreshRate;
-        int refreshRateIndex = refreshRates.IndexOf(refreshRate);
-        int resolutionIndex = resolutions.IndexOf(resolutions.FirstOrDefault(x => x.width == width && x.height == height));
-
-        Screen.SetResolution(width, height, Fullscreen, refreshRate);
-        Application.targetFrameRate = refreshRate;
+        int refreshRateIndex = refreshRates.IndexOf(RefreshRate);
+        int resolutionIndex = resolutions.IndexOf(resolutions.FirstOrDefault(x => x.width == Width && x.height == Height));
 
         backgroundMusicToggle.isOn = BackgroundMusic;
         soundEffectsToggle.isOn = SoundEffects;
@@ -76,6 +78,19 @@ public class Options : MonoBehaviour
         resolutionDropdown.value = resolutionIndex;
         refreshRateDropdown.value = refreshRateIndex;
         fullscreenToggle.isOn = Fullscreen;
+    }
+
+    private void Update()
+    {
+        if (Screen.currentResolution.width != Width ||
+            Screen.currentResolution.height != Height ||
+            Screen.currentResolution.refreshRate != RefreshRate ||
+            Screen.fullScreen != Fullscreen ||
+            Application.targetFrameRate != RefreshRate)
+        {
+            Screen.SetResolution(Width, Height, Fullscreen, RefreshRate);
+            Application.targetFrameRate = RefreshRate;
+        }
     }
 
     public void ToggleBackgroundMusic(bool value)
@@ -101,10 +116,8 @@ public class Options : MonoBehaviour
 
     public void ToggleFullscreen(bool value)
     {
-        Resolution currentResolution = Screen.currentResolution;
         Fullscreen = value;
         PlayerPrefs.SetInt("fullscreen", Convert.ToInt32(Fullscreen));
-        Screen.SetResolution(currentResolution.width, currentResolution.height, Fullscreen, currentResolution.refreshRate);
     }
 
     public void ChangeResolution(int index)
@@ -112,21 +125,17 @@ public class Options : MonoBehaviour
         int width = resolutions[index].width;
         int height = resolutions[index].height;
         Resolution resolution = resolutions.FirstOrDefault(x => x.width == width && x.height == height);
-        Resolution currentResolution = Screen.currentResolution;
-        PlayerPrefs.SetInt("resolutionWidth", resolution.width);
-        PlayerPrefs.SetInt("resolutionHeight", resolution.height);
-        Screen.SetResolution(resolution.width, resolution.height, Fullscreen, currentResolution.refreshRate);
+        Width = resolution.width;
+        Height = resolution.height;
+        PlayerPrefs.SetInt("resolutionWidth", Width);
+        PlayerPrefs.SetInt("resolutionHeight", Height);
         audioSource.Play();
     }
 
     public void ChangeRefreshRate(int index)
     {
-        Resolution currentResolution = Screen.currentResolution;
-        int refreshRate = refreshRates[index];
-        PlayerPrefs.SetInt("refreshRate", refreshRate);
-
-        Screen.SetResolution(currentResolution.width, currentResolution.height, Fullscreen, refreshRate);
-        Application.targetFrameRate = refreshRate;
+        RefreshRate = refreshRates[index];
+        PlayerPrefs.SetInt("refreshRate", RefreshRate);
         audioSource.Play();
     }
 
