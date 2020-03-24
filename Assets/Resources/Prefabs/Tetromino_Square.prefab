@@ -131,7 +131,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   allowRotation: 0
   limitRotation: 0
-  CenterPosition: {x: 0.5, y: 0.5}
+  CenterPosition: {x: 0.5, y: 0.5, z: 0}
   moveSound: {fileID: 8300000, guid: 94dde17617e2a1547bdae08f74a1db58, type: 3}
   landSound: {fileID: 8300000, guid: 87a0347cbb4ffeb46973c6fa1f13ee40, type: 3}
 --- !u!82 &2111613073165852674

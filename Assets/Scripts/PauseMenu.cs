@@ -1,20 +1,25 @@
 ﻿using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class PauseMenu : MonoBehaviour
 {
     [Header("UI Settings")]
     [SerializeField]
-    private GameObject pausePanel;
+    private GameObject pauseMenu;
     [SerializeField]
-    private GameObject optionsPanel;
+    private GameObject optionsMenu;
+    [SerializeField]
+    private GameObject saveMenu;
 
     private AudioSource audioSource;
     private AudioSource audioSourceGameLoop;
     private bool isPaused;
+    private Game game;
 
     private void Start()
     {
+        game = Game.Instance;
         audioSource = GetComponent<AudioSource>();
         audioSourceGameLoop = Game.Instance.GetComponent<AudioSource>();
     }
@@ -29,7 +34,7 @@ public class PauseMenu : MonoBehaviour
 
     private void OnApplicationFocus(bool focus)
     {
-        if (!focus && !optionsPanel.activeSelf)
+        if (!focus && !optionsMenu.activeSelf && !saveMenu.activeSelf)
             Pause();
     }
 
@@ -37,13 +42,13 @@ public class PauseMenu : MonoBehaviour
     {
         if (pause)
             Pause();
-        else if (!pause && !optionsPanel.activeSelf)
+        else if (!pause && !optionsMenu.activeSelf && !saveMenu.activeSelf)
             UnPause();
     }
 
     private void Pause()
     {
-        pausePanel.SetActive(true);
+        pauseMenu.SetActive(true);
         audioSourceGameLoop.Stop();
         isPaused = true;
         Time.timeScale = 0;
@@ -51,8 +56,8 @@ public class PauseMenu : MonoBehaviour
 
     private void UnPause()
     {
-        pausePanel.SetActive(false);
-        optionsPanel.SetActive(false);
+        pauseMenu.SetActive(false);
+        optionsMenu.SetActive(false);
         if (Options.Instance.BackgroundMusic)
             audioSourceGameLoop.Play();
         isPaused = false;
@@ -76,9 +81,15 @@ public class PauseMenu : MonoBehaviour
 
     public void OptionsMenu()
     {
-        pausePanel.SetActive(false);
-        optionsPanel.SetActive(true);
+        pauseMenu.SetActive(false);
+        optionsMenu.SetActive(true);
         audioSource.Play();
+    }
+
+    public void SaveMenu()
+    {
+        pauseMenu.SetActive(false);
+        saveMenu.SetActive(true);
     }
 
     public void Menu()

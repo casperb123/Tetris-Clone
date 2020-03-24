@@ -1,18 +1,19 @@
-﻿using TMPro;
+﻿using System;
+using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using Random = UnityEngine.Random;
 
+[Serializable]
 public class Game : MonoBehaviour
 {
     public static Game Instance;
     public static bool StartingAtLevelZero;
     public static int StartingLevel;
 
-    public Transform[,] grid;
+    public Transform[,] Grid;
 
     private Transform tetrominos;
-    private int currentLevel;
-    private int totalLinesCleared;
     private int numberOfRowsThisTurn = 0;   // The number of rows cleared by a tetromino
     private AudioSource audioSource;
 
@@ -24,8 +25,14 @@ public class Game : MonoBehaviour
     private Vector2 spawnPosition;
 
     private bool gameStarted;
+
     [HideInInspector]
     public int CurrentScore;
+    [HideInInspector]
+    public int CurrentLevel;
+    [HideInInspector]
+    public int TotalLinesCleared;
+
     private int startingHighScore;
     private int currentSwaps;
     [HideInInspector]
@@ -88,19 +95,33 @@ public class Game : MonoBehaviour
     {
         Time.timeScale = 1;
         audioSource = GetComponent<AudioSource>();
-        options = GameObject.Find("PauseManager").GetComponent<Options>();
+        options = Options.Instance;
 
         if (!options.BackgroundMusic)
             audioSource.Stop();
 
-        grid = new Transform[GridWidth, GridHeight];
+        Grid = new Transform[GridWidth, GridHeight];
+
         spawnPosition = new Vector2(GridWidth / 2, GridHeight);
 
         CurrentScore = 0;
-        currentLevel = StartingLevel;
+        CurrentLevel = StartingLevel;
         startingHighScore = PlayerPrefs.GetInt("highscore");
 
         tetrominos = GameObject.Find("Tetrominos").transform;
+
+        if (GameMenu.SaveGame != null)
+        {
+            CurrentScore = GameMenu.SaveGame.Score;
+            TotalLinesCleared = GameMenu.SaveGame.Lines;
+
+            foreach (SavedMino savedMino in GameMenu.SaveGame.Minos)
+            {
+                GameObject mino = Instantiate(GetMino(savedMino.Name), new Vector3(savedMino.PosX, savedMino.PosY), Quaternion.identity, tetrominos);
+                Grid[savedMino.PosX, savedMino.PosY] = mino.transform;
+            }
+        }
+
         SpawnTetromino();
     }
 
@@ -127,16 +148,16 @@ public class Game : MonoBehaviour
 
     private void UpdateLevel()
     {
-        if (StartingAtLevelZero || !StartingAtLevelZero && totalLinesCleared / 10 > StartingLevel)
+        if (StartingAtLevelZero || !StartingAtLevelZero && TotalLinesCleared / 10 > StartingLevel)
         {
-            if (currentLevel <= 9)
-                currentLevel = totalLinesCleared / 10;
+            if (CurrentLevel <= 9)
+                CurrentLevel = TotalLinesCleared / 10;
         }
     }
 
     private void UpdateSpeed()
     {
-        FallSpeed = 1 - (currentLevel * .1f);
+        FallSpeed = 1 - (CurrentLevel * .1f);
     }
 
     /// <summary>
@@ -145,8 +166,8 @@ public class Game : MonoBehaviour
     private void UpdateUI()
     {
         scoreText.text = CurrentScore.ToString();
-        levelText.text = currentLevel.ToString();
-        linesText.text = totalLinesCleared.ToString();
+        levelText.text = CurrentLevel.ToString();
+        linesText.text = TotalLinesCleared.ToString();
     }
 
     /// <summary>
@@ -178,9 +199,9 @@ public class Game : MonoBehaviour
     /// </summary>
     private void ClearedOneLine()
     {
-        CurrentScore += scoreOneLine + (currentLevel * 20);
+        CurrentScore += scoreOneLine + (CurrentLevel * 20);
         PlayClearLineSound();
-        totalLinesCleared++;
+        TotalLinesCleared++;
     }
 
     /// <summary>
@@ -188,9 +209,9 @@ public class Game : MonoBehaviour
     /// </summary>
     private void ClearedTwoLines()
     {
-        CurrentScore += scoreTwoLines + (currentLevel * 25);
+        CurrentScore += scoreTwoLines + (CurrentLevel * 25);
         PlayClearLineSound();
-        totalLinesCleared += 2;
+        TotalLinesCleared += 2;
     }
 
     /// <summary>
@@ -198,9 +219,9 @@ public class Game : MonoBehaviour
     /// </summary>
     private void ClearedThreeLines()
     {
-        CurrentScore += scoreThreeLines + (currentLevel * 30);
+        CurrentScore += scoreThreeLines + (CurrentLevel * 30);
         PlayClearLineSound();
-        totalLinesCleared += 3;
+        TotalLinesCleared += 3;
     }
 
     /// <summary>
@@ -208,15 +229,18 @@ public class Game : MonoBehaviour
     /// </summary>
     private void ClearedFourLines()
     {
-        CurrentScore += scoreFourLines + (currentLevel * 40);
+        CurrentScore += scoreFourLines + (CurrentLevel * 40);
         PlayClearFourLinesSound();
-        totalLinesCleared += 4;
+        TotalLinesCleared += 4;
     }
 
     public void UpdateHighscore()
     {
         if (CurrentScore > startingHighScore)
+        {
             PlayerPrefs.SetInt("highscore", CurrentScore);
+            GameOver.NewHighScore = true;
+        }
     }
 
     /// <summary>
@@ -318,7 +342,7 @@ public class Game : MonoBehaviour
         for (int x = 0; x < GridWidth; x++)
         {
             // If we find a position that returns NULL instead of a transform, then we know that the row is not full
-            if (grid[x, y] == null)
+            if (Grid[x, y] == null)
                 // So we return false
                 return false;
         }
@@ -338,8 +362,8 @@ public class Game : MonoBehaviour
     {
         for (int x = 0; x < GridWidth; x++)
         {
-            Destroy(grid[x, y].gameObject);
-            grid[x, y] = null;
+            Destroy(Grid[x, y].gameObject);
+            Grid[x, y] = null;
         }
     }
 
@@ -351,11 +375,11 @@ public class Game : MonoBehaviour
     {
         for (int x = 0; x < GridWidth; x++)
         {
-            if (grid[x, y] != null)
+            if (Grid[x, y] != null)
             {
-                grid[x, y - 1] = grid[x, y];
-                grid[x, y] = null;
-                grid[x, y - 1].position += new Vector3(0, -1);
+                Grid[x, y - 1] = Grid[x, y];
+                Grid[x, y] = null;
+                Grid[x, y - 1].position += new Vector3(0, -1);
             }
         }
     }
@@ -398,11 +422,11 @@ public class Game : MonoBehaviour
         {
             for (int x = 0; x < GridWidth; x++)
             {
-                if (grid[x, y] != null)
+                if (Grid[x, y] != null)
                 {
-                    if (grid[x, y].parent == tetromino.transform)
+                    if (Grid[x, y].parent == tetromino.transform)
                     {
-                        grid[x, y] = null;
+                        Grid[x, y] = null;
                     }
                 }
             }
@@ -414,7 +438,7 @@ public class Game : MonoBehaviour
 
             if (pos.y < GridHeight)
             {
-                grid[(int)pos.x, (int)pos.y] = mino;
+                Grid[(int)pos.x, (int)pos.y] = mino;
             }
         }
     }
@@ -429,7 +453,7 @@ public class Game : MonoBehaviour
         if (pos.y > GridHeight - 1)
             return null;
 
-        return grid[(int)pos.x, (int)pos.y];
+        return Grid[(int)pos.x, (int)pos.y];
     }
 
     /// <summary>
@@ -724,10 +748,15 @@ public class Game : MonoBehaviour
         return $"Prefabs/{randomTetrominoName}";
     }
 
+    private GameObject GetMino(string name)
+    {
+        return (GameObject)Resources.Load($"Prefabs/{name}");
+    }
+
     /// <summary>
     /// Pretty self explanatory
     /// </summary>
-    public void GameOver()
+    public void GameOverScene()
     {
         UpdateHighscore();
         SceneManager.LoadScene("GameOver");

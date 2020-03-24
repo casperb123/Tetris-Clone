@@ -42,7 +42,7 @@ public class Tetromino : MonoBehaviour
     private void Start()
     {
         game = Game.Instance;
-        options = GameObject.Find("PauseManager").GetComponent<Options>();
+        options = Options.Instance;
         audioSource = GetComponent<AudioSource>();
         individualScore = game.MaxIndividualScore;
     }
@@ -282,7 +282,7 @@ public class Tetromino : MonoBehaviour
             // Check if there are any minos above the grid
             if (game.CheckIsAboveGrid(this))
             {
-                game.GameOver();
+                game.GameOverScene();
                 return;
             }
 
@@ -315,7 +315,7 @@ public class Tetromino : MonoBehaviour
 
             if (game.CheckIsAboveGrid(this))
             {
-                game.GameOver();
+                game.GameOverScene();
                 return;
             }
         }

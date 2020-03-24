@@ -1,15 +1,18 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using TMPro;
+﻿using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using UnityEngine.UI;
 
 public class GameOver : MonoBehaviour
 {
+    public static bool NewHighScore;
+
     [Header("UI Settings")]
     [SerializeField]
     private TextMeshProUGUI highScoreText;
+    [SerializeField]
+    private TextMeshProUGUI highScoreTextLabel;
+    [SerializeField]
+    private GameObject scoreContainer;
     [SerializeField]
     private TextMeshProUGUI scoreText;
 
@@ -31,6 +34,14 @@ public class GameOver : MonoBehaviour
 
         highScoreText.text = highScore.ToString();
         scoreText.text = Game.Instance.CurrentScore.ToString();
+
+        if (NewHighScore)
+        {
+            scoreContainer.SetActive(false);
+            highScoreTextLabel.text = "New Highscore!";
+            highScoreTextLabel.color = Color.green;
+            highScoreText.color = Color.green;
+        }
 
         if (Options.Instance.SoundEffects)
             audioSource.Play();

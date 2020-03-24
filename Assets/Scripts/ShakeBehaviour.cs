@@ -28,7 +28,7 @@ public class ShakeBehaviour : MonoBehaviour
 
     private void Start()
     {
-        options = GameObject.Find("PauseManager").GetComponent<Options>();
+        options = Options.Instance;
     }
 
     private void OnEnable()

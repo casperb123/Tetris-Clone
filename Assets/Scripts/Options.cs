@@ -11,9 +11,9 @@ public class Options : MonoBehaviour
 
     [Header("UI Settings")]
     [SerializeField]
-    private GameObject pausePanel;
+    private GameObject backMenu;
     [SerializeField]
-    private GameObject optionsPanel;
+    private GameObject optionsMenu;
     [SerializeField]
     private Toggle backgroundMusicToggle;
     [SerializeField]
@@ -47,9 +47,7 @@ public class Options : MonoBehaviour
 
     private void Awake()
     {
-        if (Instance is null)
-            Instance = this;
-
+        Instance = this;
         QualitySettings.vSyncCount = 0;
     }
 
@@ -141,9 +139,8 @@ public class Options : MonoBehaviour
 
     public void Back()
     {
-        optionsPanel.SetActive(false);
-        if (pausePanel != null)
-            pausePanel.SetActive(true);
+        optionsMenu.SetActive(false);
+        backMenu.SetActive(true);
         audioSource.Play();
     }
 }

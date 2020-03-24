@@ -1455,6 +1455,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   highScoreText: {fileID: 125120043}
+  highScoreTextLabel: {fileID: 1779145836}
+  scoreContainer: {fileID: 748028963}
   scoreText: {fileID: 799349893}
 --- !u!4 &1366133895
 Transform:

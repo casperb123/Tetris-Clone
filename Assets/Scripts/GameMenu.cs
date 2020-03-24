@@ -7,13 +7,19 @@ using UnityEngine.UI;
 
 public class GameMenu : MonoBehaviour
 {
+    public static MySaveGame SaveGame;
+
     [Header("UI Settings")]
     [SerializeField]
     private TextMeshProUGUI levelText;
     [SerializeField]
     private TextMeshProUGUI highScoreText;
     [SerializeField]
-    private GameObject optionsPanel;
+    private GameObject gameMenu;
+    [SerializeField]
+    private GameObject optionsMenu;
+    [SerializeField]
+    private GameObject loadMenu;
 
     [Header("Sound Settings")]
     [SerializeField]
@@ -26,6 +32,7 @@ public class GameMenu : MonoBehaviour
 
     private void Start()
     {
+        SaveGame = null;
         audioSource = GetComponent<AudioSource>();
         highScoreText.text = PlayerPrefs.GetInt("highscore").ToString();
     }
@@ -43,9 +50,17 @@ public class GameMenu : MonoBehaviour
         SceneManager.LoadScene("Level");
     }
 
-    public void Options()
+    public void LoadMenu()
     {
-        optionsPanel.SetActive(true);
+        gameMenu.SetActive(false);
+        loadMenu.SetActive(true);
+        audioSource.PlayOneShot(buttonClick);
+    }
+
+    public void OptionsMenu()
+    {
+        gameMenu.SetActive(false);
+        optionsMenu.SetActive(true);
         audioSource.PlayOneShot(buttonClick);
     }
 
