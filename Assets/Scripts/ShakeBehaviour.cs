@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class ShakeBehaviour : MonoBehaviour
 {
@@ -18,7 +16,7 @@ public class ShakeBehaviour : MonoBehaviour
 
     // The initial position of the GameObject
     private Vector3 initialPosition;
-    private Options options;
+    private OptionsMenu options;
 
     private void Awake()
     {
@@ -28,7 +26,7 @@ public class ShakeBehaviour : MonoBehaviour
 
     private void Start()
     {
-        options = Options.Instance;
+        options = OptionsMenu.Instance;
     }
 
     private void OnEnable()

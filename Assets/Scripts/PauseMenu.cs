@@ -58,7 +58,7 @@ public class PauseMenu : MonoBehaviour
     {
         pauseMenu.SetActive(false);
         optionsMenu.SetActive(false);
-        if (Options.Instance.BackgroundMusic)
+        if (global::OptionsMenu.Instance.BackgroundMusic)
             audioSourceGameLoop.Play();
         isPaused = false;
         Time.timeScale = 1;

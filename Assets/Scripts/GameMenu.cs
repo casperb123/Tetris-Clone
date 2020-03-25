@@ -1,14 +1,9 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using TMPro;
+﻿using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using UnityEngine.UI;
 
 public class GameMenu : MonoBehaviour
 {
-    public static MySaveGame SaveGame;
-
     [Header("UI Settings")]
     [SerializeField]
     private TextMeshProUGUI levelText;
@@ -32,7 +27,6 @@ public class GameMenu : MonoBehaviour
 
     private void Start()
     {
-        SaveGame = null;
         audioSource = GetComponent<AudioSource>();
         highScoreText.text = PlayerPrefs.GetInt("highscore").ToString();
     }

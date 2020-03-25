@@ -41,13 +41,14 @@ public class GameOver : MonoBehaviour
             highScoreTextLabel.text = "New Highscore!";
             highScoreTextLabel.color = Color.green;
             highScoreText.color = Color.green;
+            NewHighScore = false;
         }
 
-        if (Options.Instance.SoundEffects)
+        if (OptionsMenu.Instance.SoundEffects)
             audioSource.Play();
     }
 
-    public void Retry()
+    public void Menu()
     {
         SceneManager.LoadScene("GameMenu");
     }

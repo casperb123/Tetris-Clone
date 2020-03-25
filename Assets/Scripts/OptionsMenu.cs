@@ -5,9 +5,9 @@ using TMPro;
 using System.Linq;
 using System.Collections.Generic;
 
-public class Options : MonoBehaviour
+public class OptionsMenu : MonoBehaviour
 {
-    public static Options Instance;
+    public static OptionsMenu Instance;
 
     [Header("UI Settings")]
     [SerializeField]

@@ -1,11 +1,9 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEditor;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using System.Linq;
 using System.Globalization;
+using UnityEngine.SceneManagement;
 
 public class LoadMenu : MonoBehaviour
 {
@@ -64,8 +62,8 @@ public class LoadMenu : MonoBehaviour
 
     public void LoadGame(int slot)
     {
-        GameMenu.SaveGame = savedGames[slot - 1];
-        gameMenuScript.Play();
+        Game.SaveGame = savedGames[slot - 1];
+        SceneManager.LoadScene("Level");
     }
 
     public void DeleteSave(int slot)

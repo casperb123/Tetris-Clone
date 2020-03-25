@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using System.Globalization;
+﻿using System.Globalization;
 using System.Linq;
 using TMPro;
 using UnityEngine;
@@ -85,7 +83,7 @@ public class SaveMenu : MonoBehaviour
                 string name = mino.name.Replace("(Clone)", "");
                 int nameIndex = name.IndexOf(' ');
 
-                if (nameIndex > 0)
+                if (nameIndex != -1)
                     name = mino.name.Substring(0, nameIndex);
 
                 Vector2 pos = game.Round(mino.position);
