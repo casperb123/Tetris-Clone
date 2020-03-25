@@ -81,13 +81,14 @@ public class PauseMenu : MonoBehaviour
 
     public void OptionsMenu()
     {
+        audioSource.Play();
         pauseMenu.SetActive(false);
         optionsMenu.SetActive(true);
-        audioSource.Play();
     }
 
     public void SaveMenu()
     {
+        audioSource.Play();
         pauseMenu.SetActive(false);
         saveMenu.SetActive(true);
     }

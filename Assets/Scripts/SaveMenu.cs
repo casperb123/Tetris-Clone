@@ -167,6 +167,7 @@ public class SaveMenu : MonoBehaviour
 
     public void Back()
     {
+        audioSource.Play();
         saveMenu.SetActive(false);
         pauseMenu.SetActive(true);
     }

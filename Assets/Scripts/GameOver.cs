@@ -16,6 +16,10 @@ public class GameOver : MonoBehaviour
     [SerializeField]
     private TextMeshProUGUI scoreText;
 
+    [Header("Sound Settings")]
+    [SerializeField]
+    private AudioClip buttonClick;
+
     private int highScore;
     private AudioSource audioSource;
 
@@ -50,11 +54,13 @@ public class GameOver : MonoBehaviour
 
     public void Menu()
     {
+        audioSource.PlayOneShot(buttonClick);
         SceneManager.LoadScene("GameMenu");
     }
 
     public void Quit()
     {
+        audioSource.PlayOneShot(buttonClick);
         Application.Quit();
     }
 }

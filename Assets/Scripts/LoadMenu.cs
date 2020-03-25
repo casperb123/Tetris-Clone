@@ -62,6 +62,7 @@ public class LoadMenu : MonoBehaviour
 
     public void LoadGame(int slot)
     {
+        audioSource.PlayOneShot(buttonClick);
         Game.SaveGame = savedGames[slot - 1];
         SceneManager.LoadScene("Level");
     }
@@ -83,6 +84,7 @@ public class LoadMenu : MonoBehaviour
 
     public void Back()
     {
+        audioSource.PlayOneShot(buttonClick);
         loadMenu.SetActive(false);
         gameMenu.SetActive(true);
     }

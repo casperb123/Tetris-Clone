@@ -46,16 +46,16 @@ public class GameMenu : MonoBehaviour
 
     public void LoadMenu()
     {
+        audioSource.PlayOneShot(buttonClick);
         gameMenu.SetActive(false);
         loadMenu.SetActive(true);
-        audioSource.PlayOneShot(buttonClick);
     }
 
     public void OptionsMenu()
     {
+        audioSource.PlayOneShot(buttonClick);
         gameMenu.SetActive(false);
         optionsMenu.SetActive(true);
-        audioSource.PlayOneShot(buttonClick);
     }
 
     public void Quit()
@@ -66,8 +66,8 @@ public class GameMenu : MonoBehaviour
 
     public void ChangedLevel(float level)
     {
+        audioSource.PlayOneShot(sliderClick);
         startingLevel = (int)level;
         levelText.text = level.ToString();
-        audioSource.PlayOneShot(sliderClick);
     }
 }

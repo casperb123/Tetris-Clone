@@ -93,33 +93,35 @@ public class OptionsMenu : MonoBehaviour
 
     public void ToggleBackgroundMusic(bool value)
     {
+        audioSource.Play();
         BackgroundMusic = value;
         PlayerPrefs.SetInt("backgroundMusic", Convert.ToInt32(BackgroundMusic));
-        audioSource.Play();
     }
 
     public void ToggleSoundEffects(bool value)
     {
+        audioSource.Play();
         SoundEffects = value;
         PlayerPrefs.SetInt("soundEffects", Convert.ToInt32(SoundEffects));
-        audioSource.Play();
     }
 
     public void ToggleShakingEffect(bool value)
     {
+        audioSource.Play();
         ShakingEffect = value;
         PlayerPrefs.SetInt("shakingEffect", Convert.ToInt32(ShakingEffect));
-        audioSource.Play();
     }
 
     public void ToggleFullscreen(bool value)
     {
+        audioSource.Play();
         Fullscreen = value;
         PlayerPrefs.SetInt("fullscreen", Convert.ToInt32(Fullscreen));
     }
 
     public void ChangeResolution(int index)
     {
+        audioSource.Play();
         int width = resolutions[index].width;
         int height = resolutions[index].height;
         Resolution resolution = resolutions.FirstOrDefault(x => x.width == width && x.height == height);
@@ -127,20 +129,19 @@ public class OptionsMenu : MonoBehaviour
         Height = resolution.height;
         PlayerPrefs.SetInt("resolutionWidth", Width);
         PlayerPrefs.SetInt("resolutionHeight", Height);
-        audioSource.Play();
     }
 
     public void ChangeRefreshRate(int index)
     {
+        audioSource.Play();
         RefreshRate = refreshRates[index];
         PlayerPrefs.SetInt("refreshRate", RefreshRate);
-        audioSource.Play();
     }
 
     public void Back()
     {
+        audioSource.Play();
         optionsMenu.SetActive(false);
         backMenu.SetActive(true);
-        audioSource.Play();
     }
 }
