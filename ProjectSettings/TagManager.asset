@@ -7,6 +7,7 @@ TagManager:
   - GameManager
   - SavedTetromino
   - CurrentTetromino
+  - GhostTetromino
   layers:
   - Default
   - TransparentFX

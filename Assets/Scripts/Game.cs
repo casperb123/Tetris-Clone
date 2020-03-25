@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Text.RegularExpressions;
 using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -454,6 +456,22 @@ public class Game : MonoBehaviour
     }
 
     /// <summary>
+    /// Removes the tetromino from the grid
+    /// </summary>
+    /// <param name="tetromino">The tetromino to remove</param>
+    public void RemoveFromGrid(Transform tetromino)
+    {
+        for (int x = 0; x < GridWidth; x++)
+        {
+            for (int y = 0; y < GridHeight; y++)
+            {
+                if (Grid[x, y] != null && Grid[x, y].parent == tetromino)
+                    Grid[x, y] = null;
+            }
+        }
+    }
+
+    /// <summary>
     /// Gets the transform at a specific position in the grid
     /// </summary>
     /// <param name="pos">The position to get the transform from</param>
@@ -564,9 +582,6 @@ public class Game : MonoBehaviour
 
             if (rotationZ != -1)
                 CurrentTetromino.transform.rotation = Quaternion.Euler(0, 0, rotationZ);
-
-            CurrentTetromino.tag = "CurrentTetromino";
-            
         }
         else
         {
@@ -587,8 +602,10 @@ public class Game : MonoBehaviour
             }
 
             CurrentTetromino.GetComponent<Tetromino>().enabled = true;
-            CurrentTetromino.tag = "CurrentTetromino";
         }
+
+        CurrentTetromino.name = CurrentTetromino.name.Replace("(Clone)", "");
+        CurrentTetromino.tag = "CurrentTetromino";
 
         SpawnNextTetromino(nextTetrominoName);
         SpawnGhostTetromino();
@@ -603,6 +620,7 @@ public class Game : MonoBehaviour
         else
             NextTetromino = (GameObject)Instantiate(Resources.Load(GetTetromino(tetrominoName)), nextTetrominoTransform, false);
 
+        NextTetromino.name = NextTetromino.name.Replace("(Clone)", "");
         NextTetromino.transform.localPosition = -NextTetromino.GetComponent<Tetromino>().CenterPosition;
         NextTetromino.GetComponent<Tetromino>().enabled = false;
     }
@@ -633,6 +651,7 @@ public class Game : MonoBehaviour
             }
 
             SavedTetromino = Instantiate(tetromino, savedTetrominoTransform, false);
+            SavedTetromino.name = SavedTetromino.name.Replace("(Clone)", "");
             SavedTetromino.tag = "SavedTetromino";
             Tetromino savedTetrominoClass = SavedTetromino.GetComponent<Tetromino>();
             SavedTetromino.transform.localPosition = -savedTetrominoClass.CenterPosition;
@@ -640,11 +659,14 @@ public class Game : MonoBehaviour
             savedTetrominoClass.enabled = false;
 
             CurrentTetromino = Instantiate(tempSavedTetromino, tetrominos, true);
+            CurrentTetromino.name = CurrentTetromino.name.Replace("(Clone)", "");
             CurrentTetromino.tag = "CurrentTetromino";
             CurrentTetromino.transform.SetParent(tetrominos);
             CurrentTetromino.transform.position = tetromino.transform.position + Vector3.up;
             CurrentTetromino.transform.position += GetUnitsToMove(CurrentTetromino.transform);
             CurrentTetromino.GetComponent<Tetromino>().enabled = true;
+
+            RemoveFromGrid(tetromino.transform);
 
             DestroyImmediate(tetromino);
             DestroyImmediate(tempSavedTetromino);
@@ -662,6 +684,7 @@ public class Game : MonoBehaviour
                 SavedTetromino = Instantiate(currentTetromino, savedTetrominoTransform, false);
             }
 
+            SavedTetromino.name = SavedTetromino.name.Replace("(Clone)", "");
             SavedTetromino.tag = "SavedTetromino";
             SavedTetromino.transform.rotation = Quaternion.identity;
             Tetromino savedTetrominoClass = SavedTetromino.GetComponent<Tetromino>();
@@ -676,10 +699,15 @@ public class Game : MonoBehaviour
                 {
                     DestroyImmediate(SavedTetromino);
                     SavedTetromino = null;
-                    Instantiate(currentTetromino, currentTetromino.transform.position, currentTetromino.transform.rotation, tetrominos);
+                    GameObject newCurrentTetromino = Instantiate(currentTetromino, currentTetromino.transform.position, currentTetromino.transform.rotation, tetrominos);
+                    newCurrentTetromino.name = newCurrentTetromino.name.Replace("(Clone)", "");
+
+                    RemoveFromGrid(currentTetromino.transform);
+                    DestroyImmediate(currentTetromino);
                     return;
                 }
 
+                RemoveFromGrid(currentTetromino.transform);
                 DestroyImmediate(currentTetromino);
             }
         }
@@ -692,6 +720,7 @@ public class Game : MonoBehaviour
         DestroyImmediate(GhostTetromino);
         GhostTetromino = Instantiate(CurrentTetromino, CurrentTetromino.transform.position, CurrentTetromino.transform.rotation);
         GhostTetromino.name = "GhostTetromino";
+        GhostTetromino.tag = "GhostTetromino";
         GhostTetromino.GetComponent<Tetromino>().enabled = false;
 
         foreach (Transform mino in GhostTetromino.transform)

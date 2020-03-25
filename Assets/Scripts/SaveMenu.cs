@@ -82,12 +82,14 @@ public class SaveMenu : MonoBehaviour
             for (int y = 0; y < game.GridHeight; y++)
             {
                 Transform mino = game.Grid[x, y];
-                if (mino is null)
+                if (mino is null || mino.parent == null)
                     continue;
 
-                Tetromino tetromino = mino.GetComponentInParent<Tetromino>();
-                if (tetromino != null && tetromino.enabled)
-                    continue;
+                if (mino.parent.TryGetComponent(out Tetromino tetromino))
+                {
+                    if (tetromino.enabled)
+                        continue;
+                }
 
                 string name = mino.name.Replace("(Clone)", "");
                 int nameIndex = name.IndexOf(' ');
