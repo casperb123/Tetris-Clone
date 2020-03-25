@@ -61,11 +61,20 @@ public class SaveMenu : MonoBehaviour
     public void SaveGame(int slot)
     {
         audioSource.Play();
+        SavedTetromino currentTetromino = new SavedTetromino(game.CurrentTetromino.name.Replace("(Clone)", ""), game.CurrentTetromino.transform.position.x, game.CurrentTetromino.transform.position.y, (int)game.CurrentTetromino.transform.rotation.eulerAngles.z);
+        SavedTetromino nextTetromino = new SavedTetromino(game.NextTetromino.name.Replace("(Clone)", ""));
+        SavedTetromino savedTetromino = null;
+
+        if (game.SavedTetromino != null)
+            savedTetromino = new SavedTetromino(game.SavedTetromino.name.Replace("(Clone)", ""));
 
         MySaveGame saveGame = new MySaveGame
         {
             Score = game.CurrentScore,
-            Lines = game.TotalLinesCleared
+            Lines = game.TotalLinesCleared,
+            CurrentTetromino = currentTetromino,
+            NextTetromino = nextTetromino,
+            SavedTetromino = savedTetromino
         };
 
         for (int x = 0; x < game.GridWidth; x++)
@@ -91,8 +100,8 @@ public class SaveMenu : MonoBehaviour
                 SavedMino savedMino = new SavedMino
                 {
                     Name = name,
-                    PosX = (int)pos.x,
-                    PosY = (int)pos.y
+                    PositionX = (int)pos.x,
+                    PositionY = (int)pos.y
                 };
 
                 saveGame.Minos.Add(savedMino);

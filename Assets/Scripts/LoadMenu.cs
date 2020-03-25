@@ -25,12 +25,10 @@ public class LoadMenu : MonoBehaviour
     private AudioClip buttonClick;
 
     private MySaveGame[] savedGames;
-    private GameMenu gameMenuScript;
     private AudioSource audioSource;
 
     private void Start()
     {
-        gameMenuScript = GetComponent<GameMenu>();
         audioSource = GetComponent<AudioSource>();
         savedGames = new MySaveGame[] { null, null, null };
 
