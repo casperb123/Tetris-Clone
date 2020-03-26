@@ -36,7 +36,7 @@ public class LoadMenu : MonoBehaviour
     {
         audioSource = GetComponent<AudioSource>();
         savedGames = new MySaveGame[] { null, null, null };
-        ManageSaveButtons();
+        ManageLoadButtons();
     }
 
     public void LoadGame(int slot)
@@ -54,7 +54,7 @@ public class LoadMenu : MonoBehaviour
             File.Copy(importSavePath, newFilePath);
             importSavePath = null;
             title.text = "Load Game";
-            ManageSaveButtons();
+            ManageLoadButtons();
         }
     }
 
@@ -72,7 +72,7 @@ public class LoadMenu : MonoBehaviour
         }
     }
 
-    private void ManageSaveButtons()
+    private void ManageLoadButtons()
     {
         if (SaveGameSystem.DoesSaveGameExist("slot1"))
         {
@@ -128,5 +128,8 @@ public class LoadMenu : MonoBehaviour
         audioSource.PlayOneShot(buttonClick);
         loadMenu.SetActive(false);
         gameMenu.SetActive(true);
+        title.text = "Load Game";
+        importSavePath = null;
+        ManageLoadButtons();
     }
 }
