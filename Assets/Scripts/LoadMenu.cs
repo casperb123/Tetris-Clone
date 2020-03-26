@@ -148,51 +148,66 @@ public class LoadMenu : MonoBehaviour
     {
         if (SaveGameSystem.DoesSaveGameExist("slot1"))
         {
-            TMP_Text timeStampText = slotOneButton.GetComponentsInChildren<TMP_Text>(true).FirstOrDefault(x => x.gameObject.name == "TimestampText");
-            Button deleteButton = slotOneButton.GetComponentsInChildren<Button>(true).FirstOrDefault(x => x.gameObject.name == "DeleteButton");
+            var (isValid, game) = SaveGameSystem.LoadGame("slot1");
 
-            if (loadSaves && tempSavedGame is null)
-                savedGames[0] = SaveGameSystem.LoadGame("slot1") as MySaveGame;
-            else if (tempSavedGame != null)
-                savedGames[0] = tempSavedGame;
+            if (isValid)
+            {
+                TMP_Text timeStampText = slotOneButton.GetComponentsInChildren<TMP_Text>(true).FirstOrDefault(x => x.gameObject.name == "TimestampText");
+                Button deleteButton = slotOneButton.GetComponentsInChildren<Button>(true).FirstOrDefault(x => x.gameObject.name == "DeleteButton");
 
-            timeStampText.text = savedGames[0].TimeStamp.Value.ToString(CultureInfo.CurrentCulture);
-            deleteButton.gameObject.SetActive(true);
-            slotOneButton.gameObject.SetActive(true);
+                if (loadSaves && tempSavedGame is null)
+                    savedGames[0] = game as MySaveGame;
+                else if (tempSavedGame != null)
+                    savedGames[0] = tempSavedGame;
+
+                timeStampText.text = savedGames[0].TimeStamp.Value.ToString(CultureInfo.CurrentCulture);
+                deleteButton.gameObject.SetActive(true);
+                slotOneButton.gameObject.SetActive(true);
+            }
         }
         else
             slotOneButton.gameObject.SetActive(false);
 
         if (SaveGameSystem.DoesSaveGameExist("slot2"))
         {
-            TMP_Text timeStampText = slotTwoButton.GetComponentsInChildren<TMP_Text>(true).FirstOrDefault(x => x.gameObject.name == "TimestampText");
-            Button deleteButton = slotTwoButton.GetComponentsInChildren<Button>(true).FirstOrDefault(x => x.gameObject.name == "DeleteButton");
+            var (isValid, game) = SaveGameSystem.LoadGame("slot2");
 
-            if (loadSaves && tempSavedGame is null)
-                savedGames[1] = SaveGameSystem.LoadGame("slot2") as MySaveGame;
-            else if (tempSavedGame != null)
-                savedGames[1] = tempSavedGame;
+            if (isValid)
+            {
+                TMP_Text timeStampText = slotTwoButton.GetComponentsInChildren<TMP_Text>(true).FirstOrDefault(x => x.gameObject.name == "TimestampText");
+                Button deleteButton = slotTwoButton.GetComponentsInChildren<Button>(true).FirstOrDefault(x => x.gameObject.name == "DeleteButton");
 
-            timeStampText.text = savedGames[1].TimeStamp.Value.ToString(CultureInfo.CurrentCulture);
-            deleteButton.gameObject.SetActive(true);
-            slotTwoButton.gameObject.SetActive(true);
+                if (loadSaves && tempSavedGame is null)
+                    savedGames[1] = game as MySaveGame;
+                else if (tempSavedGame != null)
+                    savedGames[1] = tempSavedGame;
+
+                timeStampText.text = savedGames[1].TimeStamp.Value.ToString(CultureInfo.CurrentCulture);
+                deleteButton.gameObject.SetActive(true);
+                slotTwoButton.gameObject.SetActive(true);
+            }
         }
         else
             slotTwoButton.gameObject.SetActive(false);
 
         if (SaveGameSystem.DoesSaveGameExist("slot3"))
         {
-            TMP_Text timeStampText = slotThreeButton.GetComponentsInChildren<TMP_Text>(true).FirstOrDefault(x => x.gameObject.name == "TimestampText");
-            Button deleteButton = slotThreeButton.GetComponentsInChildren<Button>(true).FirstOrDefault(x => x.gameObject.name == "DeleteButton");
+            var (isValid, game) = SaveGameSystem.LoadGame("slot3");
 
-            if (loadSaves && tempSavedGame is null)
-                savedGames[2] = SaveGameSystem.LoadGame("slot3") as MySaveGame;
-            else if (tempSavedGame != null)
-                savedGames[2] = tempSavedGame;
+            if (isValid)
+            {
+                TMP_Text timeStampText = slotThreeButton.GetComponentsInChildren<TMP_Text>(true).FirstOrDefault(x => x.gameObject.name == "TimestampText");
+                Button deleteButton = slotThreeButton.GetComponentsInChildren<Button>(true).FirstOrDefault(x => x.gameObject.name == "DeleteButton");
 
-            timeStampText.text = savedGames[2].TimeStamp.Value.ToString(CultureInfo.CurrentCulture);
-            deleteButton.gameObject.SetActive(true);
-            slotThreeButton.gameObject.SetActive(true);
+                if (loadSaves && tempSavedGame is null)
+                    savedGames[2] = game as MySaveGame;
+                else if (tempSavedGame != null)
+                    savedGames[2] = tempSavedGame;
+
+                timeStampText.text = savedGames[2].TimeStamp.Value.ToString(CultureInfo.CurrentCulture);
+                deleteButton.gameObject.SetActive(true);
+                slotThreeButton.gameObject.SetActive(true);
+            }
         }
         else
             slotThreeButton.gameObject.SetActive(false);

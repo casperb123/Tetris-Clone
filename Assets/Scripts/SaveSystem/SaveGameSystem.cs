@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
 using UnityEngine;
 
@@ -16,7 +17,7 @@ public static class SaveGameSystem
     /// <param name="saveGame">The game to save</param>
     /// <param name="name">The save name</param>
     /// <returns>True if the save was a success, false if it wasn't</returns>
-    public static bool SaveGame(SaveGame saveGame, string name)
+    public static bool Save(SaveGame saveGame, string name)
     {
         BinaryFormatter formatter = new BinaryFormatter();
         MemoryStream stream = new MemoryStream();
@@ -39,15 +40,22 @@ public static class SaveGameSystem
     /// </summary>
     /// <param name="name">The name on the saved game</param>
     /// <returns>The saved game if it exists</returns>
-    public static SaveGame LoadGame(string name)
+    public static (bool isValid, SaveGame game) LoadGame(string name)
     {
-        BinaryFormatter formatter = new BinaryFormatter();
-        MemoryStream stream = new MemoryStream();
-        byte[] bytes = File.ReadAllBytes(GetSavePath(name));
+        try
+        {
+            BinaryFormatter formatter = new BinaryFormatter();
+            MemoryStream stream = new MemoryStream();
+            byte[] bytes = File.ReadAllBytes(GetSavePath(name));
 
-        stream.Write(bytes, 0, bytes.Length);
-        stream.Position = 0;
-        return formatter.Deserialize(stream) as SaveGame;
+            stream.Write(bytes, 0, bytes.Length);
+            stream.Position = 0;
+            return (true, formatter.Deserialize(stream) as SaveGame);
+        }
+        catch (SerializationException)
+        {
+            return (false, null);
+        }
     }
 
     /// <summary>

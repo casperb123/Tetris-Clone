@@ -31,30 +31,45 @@ public class SaveMenu : MonoBehaviour
 
         if (SaveGameSystem.DoesSaveGameExist("slot1"))
         {
-            TMP_Text timeStampText = slotOneButton.GetComponentsInChildren<TMP_Text>().FirstOrDefault(x => x.gameObject.name == "TimestampText");
-            Button deleteButton = slotOneButton.GetComponentsInChildren<Button>(true).FirstOrDefault(x => x.gameObject.name == "DeleteButton");
+            var (isValid, game) = SaveGameSystem.LoadGame("slot1");
 
-            savedGames[0] = SaveGameSystem.LoadGame("slot1") as MySaveGame;
-            timeStampText.text = savedGames[0].TimeStamp.Value.ToString(CultureInfo.CurrentCulture);
-            deleteButton.gameObject.SetActive(true);
+            if (isValid)
+            {
+                TMP_Text timeStampText = slotOneButton.GetComponentsInChildren<TMP_Text>().FirstOrDefault(x => x.gameObject.name == "TimestampText");
+                Button deleteButton = slotOneButton.GetComponentsInChildren<Button>(true).FirstOrDefault(x => x.gameObject.name == "DeleteButton");
+
+                savedGames[0] = game as MySaveGame;
+                timeStampText.text = savedGames[0].TimeStamp.Value.ToString(CultureInfo.CurrentCulture);
+                deleteButton.gameObject.SetActive(true);
+            }
         }
         if (SaveGameSystem.DoesSaveGameExist("slot2"))
         {
-            TMP_Text timeStampText = slotTwoButton.GetComponentsInChildren<TMP_Text>().FirstOrDefault(x => x.gameObject.name == "TimestampText");
-            Button deleteButton = slotTwoButton.GetComponentsInChildren<Button>(true).FirstOrDefault(x => x.gameObject.name == "DeleteButton");
+            var (isValid, game) = SaveGameSystem.LoadGame("slot1");
 
-            savedGames[1] = SaveGameSystem.LoadGame("slot2") as MySaveGame;
-            timeStampText.text = savedGames[1].TimeStamp.Value.ToString(CultureInfo.CurrentCulture);
-            deleteButton.gameObject.SetActive(true);
+            if (isValid)
+            {
+                TMP_Text timeStampText = slotTwoButton.GetComponentsInChildren<TMP_Text>().FirstOrDefault(x => x.gameObject.name == "TimestampText");
+                Button deleteButton = slotTwoButton.GetComponentsInChildren<Button>(true).FirstOrDefault(x => x.gameObject.name == "DeleteButton");
+
+                savedGames[1] = game as MySaveGame;
+                timeStampText.text = savedGames[1].TimeStamp.Value.ToString(CultureInfo.CurrentCulture);
+                deleteButton.gameObject.SetActive(true);
+            }
         }
         if (SaveGameSystem.DoesSaveGameExist("slot3"))
         {
-            TMP_Text timeStampText = slotThreeButton.GetComponentsInChildren<TMP_Text>().FirstOrDefault(x => x.gameObject.name == "TimestampText");
-            Button deleteButton = slotThreeButton.GetComponentsInChildren<Button>(true).FirstOrDefault(x => x.gameObject.name == "DeleteButton");
+            var (isValid, game) = SaveGameSystem.LoadGame("slot1");
 
-            savedGames[2] = SaveGameSystem.LoadGame("slot3") as MySaveGame;
-            timeStampText.text = savedGames[2].TimeStamp.Value.ToString(CultureInfo.CurrentCulture);
-            deleteButton.gameObject.SetActive(true);
+            if (isValid)
+            {
+                TMP_Text timeStampText = slotThreeButton.GetComponentsInChildren<TMP_Text>().FirstOrDefault(x => x.gameObject.name == "TimestampText");
+                Button deleteButton = slotThreeButton.GetComponentsInChildren<Button>(true).FirstOrDefault(x => x.gameObject.name == "DeleteButton");
+
+                savedGames[2] = game as MySaveGame;
+                timeStampText.text = savedGames[2].TimeStamp.Value.ToString(CultureInfo.CurrentCulture);
+                deleteButton.gameObject.SetActive(true);
+            }
         }
     }
 
@@ -115,7 +130,7 @@ public class SaveMenu : MonoBehaviour
         }
 
         savedGames[slot - 1] = saveGame;
-        SaveGameSystem.SaveGame(savedGames[slot - 1], $"slot{slot}");
+        SaveGameSystem.Save(savedGames[slot - 1], $"slot{slot}");
         ActivateSaveSlot(slot);
     }
 
