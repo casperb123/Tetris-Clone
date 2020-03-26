@@ -41,9 +41,6 @@ public static class SaveGameSystem
     /// <returns>The saved game if it exists</returns>
     public static SaveGame LoadGame(string name)
     {
-        if (!DoesSaveGameExist(name))
-            return null;
-
         BinaryFormatter formatter = new BinaryFormatter();
         MemoryStream stream = new MemoryStream();
         byte[] bytes = File.ReadAllBytes(GetSavePath(name));

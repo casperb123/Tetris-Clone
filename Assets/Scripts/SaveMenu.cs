@@ -35,7 +35,7 @@ public class SaveMenu : MonoBehaviour
             Button deleteButton = slotOneButton.GetComponentsInChildren<Button>(true).FirstOrDefault(x => x.gameObject.name == "DeleteButton");
 
             savedGames[0] = SaveGameSystem.LoadGame("slot1") as MySaveGame;
-            timeStampText.text = savedGames[0].TimeStamp.ToString(CultureInfo.CurrentCulture);
+            timeStampText.text = savedGames[0].TimeStamp.Value.ToString(CultureInfo.CurrentCulture);
             deleteButton.gameObject.SetActive(true);
         }
         if (SaveGameSystem.DoesSaveGameExist("slot2"))
@@ -44,7 +44,7 @@ public class SaveMenu : MonoBehaviour
             Button deleteButton = slotTwoButton.GetComponentsInChildren<Button>(true).FirstOrDefault(x => x.gameObject.name == "DeleteButton");
 
             savedGames[1] = SaveGameSystem.LoadGame("slot2") as MySaveGame;
-            timeStampText.text = savedGames[1].TimeStamp.ToString(CultureInfo.CurrentCulture);
+            timeStampText.text = savedGames[1].TimeStamp.Value.ToString(CultureInfo.CurrentCulture);
             deleteButton.gameObject.SetActive(true);
         }
         if (SaveGameSystem.DoesSaveGameExist("slot3"))
@@ -53,7 +53,7 @@ public class SaveMenu : MonoBehaviour
             Button deleteButton = slotThreeButton.GetComponentsInChildren<Button>(true).FirstOrDefault(x => x.gameObject.name == "DeleteButton");
 
             savedGames[2] = SaveGameSystem.LoadGame("slot3") as MySaveGame;
-            timeStampText.text = savedGames[2].TimeStamp.ToString(CultureInfo.CurrentCulture);
+            timeStampText.text = savedGames[2].TimeStamp.Value.ToString(CultureInfo.CurrentCulture);
             deleteButton.gameObject.SetActive(true);
         }
     }
@@ -131,7 +131,7 @@ public class SaveMenu : MonoBehaviour
             TMP_Text timeStampText = slotOneButton.GetComponentsInChildren<TMP_Text>().FirstOrDefault(x => x.gameObject.name == "TimestampText");
 
             deleteButton.gameObject.SetActive(true);
-            timeStampText.text = savedGames[slot - 1].TimeStamp.ToString(CultureInfo.CurrentCulture);
+            timeStampText.text = savedGames[slot - 1].TimeStamp.Value.ToString(CultureInfo.CurrentCulture);
         }
         else if (slot == 2)
         {
@@ -139,7 +139,7 @@ public class SaveMenu : MonoBehaviour
             TMP_Text timeStampText = slotTwoButton.GetComponentsInChildren<TMP_Text>().FirstOrDefault(x => x.gameObject.name == "TimestampText");
 
             deleteButton.gameObject.SetActive(true);
-            timeStampText.text = savedGames[slot - 1].TimeStamp.ToString(CultureInfo.CurrentCulture);
+            timeStampText.text = savedGames[slot - 1].TimeStamp.Value.ToString(CultureInfo.CurrentCulture);
         }
         else if (slot == 3)
         {
@@ -147,7 +147,7 @@ public class SaveMenu : MonoBehaviour
             TMP_Text timeStampText = slotThreeButton.GetComponentsInChildren<TMP_Text>().FirstOrDefault(x => x.gameObject.name == "TimestampText");
 
             deleteButton.gameObject.SetActive(true);
-            timeStampText.text = savedGames[slot - 1].TimeStamp.ToString(CultureInfo.CurrentCulture);
+            timeStampText.text = savedGames[slot - 1].TimeStamp.Value.ToString(CultureInfo.CurrentCulture);
         }
     }
 
