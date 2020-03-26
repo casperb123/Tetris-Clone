@@ -4,6 +4,8 @@ using TMPro;
 using System.Linq;
 using System.Globalization;
 using UnityEngine.SceneManagement;
+using SFB;
+using System.IO;
 
 public class LoadMenu : MonoBehaviour
 {
@@ -12,6 +14,8 @@ public class LoadMenu : MonoBehaviour
     private GameObject gameMenu;
     [SerializeField]
     private GameObject loadMenu;
+    [SerializeField]
+    private TextMeshProUGUI title;
 
     [SerializeField]
     private Button slotOneButton;
@@ -26,12 +30,50 @@ public class LoadMenu : MonoBehaviour
 
     private MySaveGame[] savedGames;
     private AudioSource audioSource;
+    private string importSavePath = null;
 
     private void Start()
     {
         audioSource = GetComponent<AudioSource>();
         savedGames = new MySaveGame[] { null, null, null };
+        ManageSaveButtons();
+    }
 
+    public void LoadGame(int slot)
+    {
+        audioSource.PlayOneShot(buttonClick);
+
+        if (importSavePath is null)
+        {
+            Game.SaveGame = savedGames[slot - 1];
+            SceneManager.LoadScene("Level");
+        }
+        else
+        {
+            string newFilePath = Path.Combine(Application.persistentDataPath, $"slot{slot}.sav");
+            File.Copy(importSavePath, newFilePath);
+            importSavePath = null;
+            title.text = "Load Game";
+            ManageSaveButtons();
+        }
+    }
+
+    public void ImportSave()
+    {
+        string[] files = StandaloneFileBrowser.OpenFilePanel("Open Save File", "", "sav", false);
+
+        if (files.Length == 1)
+        {
+            title.text = "Select Slot";
+            importSavePath = files[0];
+            slotOneButton.gameObject.SetActive(true);
+            slotTwoButton.gameObject.SetActive(true);
+            slotThreeButton.gameObject.SetActive(true);
+        }
+    }
+
+    private void ManageSaveButtons()
+    {
         if (SaveGameSystem.DoesSaveGameExist("slot1"))
         {
             TMP_Text timeStampText = slotOneButton.GetComponentsInChildren<TMP_Text>().FirstOrDefault(x => x.gameObject.name == "TimestampText");
@@ -40,6 +82,9 @@ public class LoadMenu : MonoBehaviour
             timeStampText.text = savedGames[0].TimeStamp.ToString(CultureInfo.CurrentCulture);
             slotOneButton.gameObject.SetActive(true);
         }
+        else
+            slotOneButton.gameObject.SetActive(false);
+
         if (SaveGameSystem.DoesSaveGameExist("slot2"))
         {
             TMP_Text timeStampText = slotTwoButton.GetComponentsInChildren<TMP_Text>().FirstOrDefault(x => x.gameObject.name == "TimestampText");
@@ -48,6 +93,9 @@ public class LoadMenu : MonoBehaviour
             timeStampText.text = savedGames[1].TimeStamp.ToString(CultureInfo.CurrentCulture);
             slotTwoButton.gameObject.SetActive(true);
         }
+        else
+            slotTwoButton.gameObject.SetActive(false);
+
         if (SaveGameSystem.DoesSaveGameExist("slot3"))
         {
             TMP_Text timeStampText = slotThreeButton.GetComponentsInChildren<TMP_Text>().FirstOrDefault(x => x.gameObject.name == "TimestampText");
@@ -56,13 +104,8 @@ public class LoadMenu : MonoBehaviour
             timeStampText.text = savedGames[2].TimeStamp.ToString(CultureInfo.CurrentCulture);
             slotThreeButton.gameObject.SetActive(true);
         }
-    }
-
-    public void LoadGame(int slot)
-    {
-        audioSource.PlayOneShot(buttonClick);
-        Game.SaveGame = savedGames[slot - 1];
-        SceneManager.LoadScene("Level");
+        else
+            slotThreeButton.gameObject.SetActive(false);
     }
 
     public void DeleteSave(int slot)

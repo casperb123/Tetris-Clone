@@ -450,6 +450,7 @@ MonoBehaviour:
   pauseMenu: {fileID: 377001441}
   optionsMenu: {fileID: 1469329016}
   saveMenu: {fileID: 413376122}
+  loadMenu: {fileID: 0}
 --- !u!82 &46614606
 AudioSource:
   m_ObjectHideFlags: 0
@@ -2734,7 +2735,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 46614605}
-        m_MethodName: OptionsMenu
+        m_MethodName: Options
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -7873,7 +7874,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 46614605}
-        m_MethodName: SaveMenu
+        m_MethodName: Save
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}

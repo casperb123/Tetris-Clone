@@ -15,11 +15,9 @@ public class PauseMenu : MonoBehaviour
     private AudioSource audioSource;
     private AudioSource audioSourceGameLoop;
     private bool isPaused;
-    private Game game;
 
     private void Start()
     {
-        game = Game.Instance;
         audioSource = GetComponent<AudioSource>();
         audioSourceGameLoop = Game.Instance.GetComponent<AudioSource>();
     }
@@ -58,7 +56,8 @@ public class PauseMenu : MonoBehaviour
     {
         pauseMenu.SetActive(false);
         optionsMenu.SetActive(false);
-        if (global::OptionsMenu.Instance.BackgroundMusic)
+        saveMenu.SetActive(false);
+        if (OptionsMenu.Instance.BackgroundMusic)
             audioSourceGameLoop.Play();
         isPaused = false;
         Time.timeScale = 1;
@@ -79,14 +78,14 @@ public class PauseMenu : MonoBehaviour
         PauseToggle();
     }
 
-    public void OptionsMenu()
+    public void Options()
     {
         audioSource.Play();
         pauseMenu.SetActive(false);
         optionsMenu.SetActive(true);
     }
 
-    public void SaveMenu()
+    public void Save()
     {
         audioSource.Play();
         pauseMenu.SetActive(false);
