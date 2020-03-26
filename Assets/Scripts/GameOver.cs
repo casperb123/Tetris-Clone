@@ -52,12 +52,18 @@ public class GameOver : MonoBehaviour
             audioSource.Play();
     }
 
+    /// <summary>
+    /// Goes back to the game menu
+    /// </summary>
     public void Menu()
     {
         audioSource.PlayOneShot(buttonClick);
         SceneManager.LoadScene("GameMenu");
     }
 
+    /// <summary>
+    /// Quits the game
+    /// </summary>
     public void Quit()
     {
         audioSource.PlayOneShot(buttonClick);

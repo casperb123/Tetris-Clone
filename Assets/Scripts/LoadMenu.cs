@@ -43,6 +43,10 @@ public class LoadMenu : MonoBehaviour
         ManageSaves();
     }
 
+    /// <summary>
+    /// Loades the game saved on the save slot
+    /// </summary>
+    /// <param name="slot">The save slot to load from</param>
     public void LoadGame(int slot)
     {
         audioSource.PlayOneShot(buttonClick);
@@ -63,6 +67,9 @@ public class LoadMenu : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Imports a unity save file to the game
+    /// </summary>
     public void ImportSave()
     {
         ExtensionFilter[] extensionFilters = new ExtensionFilter[]
@@ -108,6 +115,10 @@ public class LoadMenu : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Checks if any of the save slots exists and activates the save slots
+    /// </summary>
+    /// <param name="loadSaves">If it should load the games from the save slots</param>
     private void ManageSaves(bool loadSaves = true)
     {
         if (SaveGameSystem.DoesSaveGameExist("slot1"))
@@ -161,6 +172,10 @@ public class LoadMenu : MonoBehaviour
             noSavedGamesText.gameObject.SetActive(false);
     }
 
+    /// <summary>
+    /// Deletes a save slot
+    /// </summary>
+    /// <param name="slot">The save slot to delete</param>
     public void DeleteSave(int slot)
     {
         audioSource.PlayOneShot(buttonClick);
@@ -170,6 +185,9 @@ public class LoadMenu : MonoBehaviour
         ManageSaves(false);
     }
 
+    /// <summary>
+    /// Goes back to the game menu
+    /// </summary>
     public void Back()
     {
         audioSource.PlayOneShot(buttonClick);

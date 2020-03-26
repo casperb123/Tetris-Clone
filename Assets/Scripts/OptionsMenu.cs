@@ -91,6 +91,10 @@ public class OptionsMenu : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Toggles the background music
+    /// </summary>
+    /// <param name="value">If it should be enable or disabled</param>
     public void ToggleBackgroundMusic(bool value)
     {
         audioSource.Play();
@@ -98,6 +102,10 @@ public class OptionsMenu : MonoBehaviour
         PlayerPrefs.SetInt("backgroundMusic", Convert.ToInt32(BackgroundMusic));
     }
 
+    /// <summary>
+    /// Toggles the sound effects
+    /// </summary>
+    /// <param name="value">If it should be enable or disabled</param>
     public void ToggleSoundEffects(bool value)
     {
         audioSource.Play();
@@ -105,6 +113,10 @@ public class OptionsMenu : MonoBehaviour
         PlayerPrefs.SetInt("soundEffects", Convert.ToInt32(SoundEffects));
     }
 
+    /// <summary>
+    /// Toggles the shaking effect
+    /// </summary>
+    /// <param name="value">If it should be enable or disabled</param>
     public void ToggleShakingEffect(bool value)
     {
         audioSource.Play();
@@ -112,6 +124,10 @@ public class OptionsMenu : MonoBehaviour
         PlayerPrefs.SetInt("shakingEffect", Convert.ToInt32(ShakingEffect));
     }
 
+    /// <summary>
+    /// Toggles if the game should be in fullscreen
+    /// </summary>
+    /// <param name="value">If it should be enable or disabled</param>
     public void ToggleFullscreen(bool value)
     {
         audioSource.Play();
@@ -119,6 +135,10 @@ public class OptionsMenu : MonoBehaviour
         PlayerPrefs.SetInt("fullscreen", Convert.ToInt32(Fullscreen));
     }
 
+    /// <summary>
+    /// Changes the game resolution
+    /// </summary>
+    /// <param name="index">The resolution index</param>
     public void ChangeResolution(int index)
     {
         audioSource.Play();
@@ -131,6 +151,10 @@ public class OptionsMenu : MonoBehaviour
         PlayerPrefs.SetInt("resolutionHeight", Height);
     }
 
+    /// <summary>
+    /// Changes the game refresh rate
+    /// </summary>
+    /// <param name="index">The refresh rate index</param>
     public void ChangeRefreshRate(int index)
     {
         audioSource.Play();
@@ -138,6 +162,9 @@ public class OptionsMenu : MonoBehaviour
         PlayerPrefs.SetInt("refreshRate", RefreshRate);
     }
 
+    /// <summary>
+    /// Goes back to the pause or game menu
+    /// </summary>
     public void Back()
     {
         audioSource.Play();

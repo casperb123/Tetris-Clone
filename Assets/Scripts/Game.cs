@@ -151,6 +151,9 @@ public class Game : MonoBehaviour
         CheckUserInput();
     }
 
+    /// <summary>
+    /// Checks the users input
+    /// </summary>
     private void CheckUserInput()
     {
         if (Input.GetKeyUp(KeyCode.Space))
@@ -160,6 +163,9 @@ public class Game : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Updates the current level according to the total lines cleared
+    /// </summary>
     private void UpdateLevel()
     {
         if (StartingAtLevelZero || !StartingAtLevelZero && TotalLinesCleared / 10 > StartingLevel)
@@ -169,6 +175,9 @@ public class Game : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Updates the speed according to the current level
+    /// </summary>
     private void UpdateSpeed()
     {
         FallSpeed = 1 - (CurrentLevel * .1f);
@@ -249,6 +258,9 @@ public class Game : MonoBehaviour
         TotalLinesCleared += 4;
     }
 
+    /// <summary>
+    /// Updates the current highscore
+    /// </summary>
     public void UpdateHighscore()
     {
         if (CurrentScore > startingHighScore)
@@ -613,6 +625,10 @@ public class Game : MonoBehaviour
         return true;
     }
 
+    /// <summary>
+    /// Spawns the next tetromino
+    /// </summary>
+    /// <param name="tetrominoName">The tetromino to spawn</param>
     private void SpawnNextTetromino(string tetrominoName = null)
     {
         if (tetrominoName is null)
@@ -625,6 +641,11 @@ public class Game : MonoBehaviour
         NextTetromino.GetComponent<Tetromino>().enabled = false;
     }
 
+    /// <summary>
+    /// Saves the current tetromino
+    /// </summary>
+    /// <param name="tetromino">The tetromino to save</param>
+    /// <param name="loadedGame">If the current game is loaded from a saved game</param>
     private void SaveTetromino(GameObject tetromino, bool loadedGame = false)
     {
         if (!loadedGame)
@@ -715,6 +736,9 @@ public class Game : MonoBehaviour
         SpawnGhostTetromino();
     }
 
+    /// <summary>
+    /// Spawns the ghost tetromino
+    /// </summary>
     private void SpawnGhostTetromino()
     {
         DestroyImmediate(GhostTetromino);
@@ -755,6 +779,11 @@ public class Game : MonoBehaviour
         return new Vector2(Mathf.Round(pos.x), Mathf.Round(pos.y));
     }
 
+    /// <summary>
+    /// Moves the ghost tetromino
+    /// </summary>
+    /// <param name="x">The x position to move the tetromino to</param>
+    /// <param name="tetromino">The tetromino to ignore</param>
     public void MoveGhostTetromino(int x, Transform tetromino)
     {
         GhostTetromino.transform.position = new Vector2(x, 0);
@@ -776,6 +805,11 @@ public class Game : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Rotates the ghost tetromino
+    /// </summary>
+    /// <param name="rotation">The rotation to rotate it to</param>
+    /// <param name="tetromino">The tetromino to ignore</param>
     public void RotateGhostTetromino(Quaternion rotation, Transform tetromino)
     {
         GhostTetromino.transform.rotation = rotation;
@@ -826,6 +860,11 @@ public class Game : MonoBehaviour
         return $"Prefabs/{tetrominoName}";
     }
 
+    /// <summary>
+    /// Gets the mino prefab with the name
+    /// </summary>
+    /// <param name="name">The mino name</param>
+    /// <returns>A mino prefab</returns>
     private GameObject GetMino(string name)
     {
         return (GameObject)Resources.Load($"Prefabs/{name}");

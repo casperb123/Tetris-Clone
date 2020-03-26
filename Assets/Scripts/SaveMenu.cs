@@ -58,6 +58,10 @@ public class SaveMenu : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Saves the current game
+    /// </summary>
+    /// <param name="slot">The slot to save to</param>
     public void SaveGame(int slot)
     {
         audioSource.Play();
@@ -115,6 +119,10 @@ public class SaveMenu : MonoBehaviour
         ActivateSaveSlot(slot);
     }
 
+    /// <summary>
+    /// Activates the save slot
+    /// </summary>
+    /// <param name="slot">The slot to activate</param>
     private void ActivateSaveSlot(int slot)
     {
         if (slot == 1)
@@ -143,6 +151,10 @@ public class SaveMenu : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Deletes the game saved on the save slot
+    /// </summary>
+    /// <param name="slot">The save slot to delete</param>
     public void DeleteSave(int slot)
     {
         audioSource.Play();
@@ -176,6 +188,9 @@ public class SaveMenu : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Goes back to the pause menu
+    /// </summary>
     public void Back()
     {
         audioSource.Play();

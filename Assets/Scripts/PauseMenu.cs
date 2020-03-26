@@ -44,6 +44,9 @@ public class PauseMenu : MonoBehaviour
             UnPause();
     }
 
+    /// <summary>
+    /// Pauses the game
+    /// </summary>
     private void Pause()
     {
         pauseMenu.SetActive(true);
@@ -52,6 +55,9 @@ public class PauseMenu : MonoBehaviour
         Time.timeScale = 0;
     }
 
+    /// <summary>
+    /// Unpauses the game
+    /// </summary>
     private void UnPause()
     {
         pauseMenu.SetActive(false);
@@ -63,6 +69,9 @@ public class PauseMenu : MonoBehaviour
         Time.timeScale = 1;
     }
 
+    /// <summary>
+    /// Toggles the pause state
+    /// </summary>
     public void PauseToggle()
     {
         audioSource.Play();
@@ -73,11 +82,17 @@ public class PauseMenu : MonoBehaviour
             Pause();
     }
 
+    /// <summary>
+    /// Resumes the game
+    /// </summary>
     public void Resume()
     {
         PauseToggle();
     }
 
+    /// <summary>
+    /// Opens the options menu
+    /// </summary>
     public void Options()
     {
         audioSource.Play();
@@ -85,6 +100,9 @@ public class PauseMenu : MonoBehaviour
         optionsMenu.SetActive(true);
     }
 
+    /// <summary>
+    /// Opens the save menu
+    /// </summary>
     public void Save()
     {
         audioSource.Play();
@@ -92,12 +110,18 @@ public class PauseMenu : MonoBehaviour
         saveMenu.SetActive(true);
     }
 
+    /// <summary>
+    /// Goes to the game menu
+    /// </summary>
     public void Menu()
     {
         audioSource.Play();
         SceneManager.LoadScene("GameMenu");
     }
 
+    /// <summary>
+    /// Quits the game
+    /// </summary>
     public void Quit()
     {
         audioSource.Play();

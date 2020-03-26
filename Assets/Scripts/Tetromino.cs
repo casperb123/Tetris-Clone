@@ -57,7 +57,7 @@ public class Tetromino : MonoBehaviour
     }
 
     /// <summary>
-    /// Updates the individual score for when the tetromino lands
+    /// Updates the individual score
     /// </summary>
     private void UpdateIndividualScore()
     {
