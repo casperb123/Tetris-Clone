@@ -287,6 +287,7 @@ MonoBehaviour:
   slotOneButton: {fileID: 570463596}
   slotTwoButton: {fileID: 1582563998}
   slotThreeButton: {fileID: 1918096256}
+  importButton: {fileID: 73732044}
   buttonClick: {fileID: 8300000, guid: 8c258dca7e08fb1438113b0b75348f71, type: 3}
 --- !u!1 &73732042
 GameObject:

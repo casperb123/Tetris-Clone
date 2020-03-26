@@ -23,6 +23,8 @@ public class LoadMenu : MonoBehaviour
     private Button slotTwoButton;
     [SerializeField]
     private Button slotThreeButton;
+    [SerializeField]
+    private Button importButton;
 
     [Header("Sound Settings")]
     [SerializeField]
@@ -54,6 +56,7 @@ public class LoadMenu : MonoBehaviour
             File.Copy(importSavePath, newFilePath);
             importSavePath = null;
             title.text = "Load Game";
+            importButton.interactable = true;
             ManageLoadButtons();
         }
     }
@@ -66,6 +69,7 @@ public class LoadMenu : MonoBehaviour
         {
             title.text = "Select Slot";
             importSavePath = files[0];
+            importButton.interactable = false;
             slotOneButton.gameObject.SetActive(true);
             slotTwoButton.gameObject.SetActive(true);
             slotThreeButton.gameObject.SetActive(true);
@@ -130,6 +134,7 @@ public class LoadMenu : MonoBehaviour
         gameMenu.SetActive(true);
         title.text = "Load Game";
         importSavePath = null;
+        importButton.interactable = true;
         ManageLoadButtons();
     }
 }
