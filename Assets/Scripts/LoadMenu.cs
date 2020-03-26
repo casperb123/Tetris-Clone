@@ -65,7 +65,12 @@ public class LoadMenu : MonoBehaviour
 
     public void ImportSave()
     {
-        string[] files = StandaloneFileBrowser.OpenFilePanel("Open Save File", "", "sav", false);
+        ExtensionFilter[] extensionFilters = new ExtensionFilter[]
+        {
+            new ExtensionFilter("Unity Save Files", "sav")
+        };
+
+        string[] files = StandaloneFileBrowser.OpenFilePanel("Open Save File", "", extensionFilters, false);
 
         if (files.Length == 1)
         {
