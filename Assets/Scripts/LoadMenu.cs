@@ -16,6 +16,8 @@ public class LoadMenu : MonoBehaviour
     private GameObject loadMenu;
     [SerializeField]
     private TextMeshProUGUI title;
+    [SerializeField]
+    private TextMeshProUGUI noSavedGamesText;
 
     [SerializeField]
     private Button slotOneButton;
@@ -38,7 +40,7 @@ public class LoadMenu : MonoBehaviour
     {
         audioSource = GetComponent<AudioSource>();
         savedGames = new MySaveGame[] { null, null, null };
-        ManageLoadButtons();
+        ManageSaves();
     }
 
     public void LoadGame(int slot)
@@ -57,7 +59,7 @@ public class LoadMenu : MonoBehaviour
             importSavePath = null;
             title.text = "Load Game";
             importButton.interactable = true;
-            ManageLoadButtons();
+            ManageSaves();
         }
     }
 
@@ -76,13 +78,15 @@ public class LoadMenu : MonoBehaviour
         }
     }
 
-    private void ManageLoadButtons()
+    private void ManageSaves(bool loadSaves = true)
     {
         if (SaveGameSystem.DoesSaveGameExist("slot1"))
         {
             TMP_Text timeStampText = slotOneButton.GetComponentsInChildren<TMP_Text>().FirstOrDefault(x => x.gameObject.name == "TimestampText");
 
-            savedGames[0] = SaveGameSystem.LoadGame("slot1") as MySaveGame;
+            if (loadSaves)
+                savedGames[0] = SaveGameSystem.LoadGame("slot1") as MySaveGame;
+
             timeStampText.text = savedGames[0].TimeStamp.ToString(CultureInfo.CurrentCulture);
             slotOneButton.gameObject.SetActive(true);
         }
@@ -93,7 +97,9 @@ public class LoadMenu : MonoBehaviour
         {
             TMP_Text timeStampText = slotTwoButton.GetComponentsInChildren<TMP_Text>().FirstOrDefault(x => x.gameObject.name == "TimestampText");
 
-            savedGames[1] = SaveGameSystem.LoadGame("slot2") as MySaveGame;
+            if (loadSaves)
+                savedGames[1] = SaveGameSystem.LoadGame("slot2") as MySaveGame;
+
             timeStampText.text = savedGames[1].TimeStamp.ToString(CultureInfo.CurrentCulture);
             slotTwoButton.gameObject.SetActive(true);
         }
@@ -104,12 +110,19 @@ public class LoadMenu : MonoBehaviour
         {
             TMP_Text timeStampText = slotThreeButton.GetComponentsInChildren<TMP_Text>().FirstOrDefault(x => x.gameObject.name == "TimestampText");
 
-            savedGames[2] = SaveGameSystem.LoadGame("slot3") as MySaveGame;
+            if (loadSaves)
+                savedGames[2] = SaveGameSystem.LoadGame("slot3") as MySaveGame;
+
             timeStampText.text = savedGames[2].TimeStamp.ToString(CultureInfo.CurrentCulture);
             slotThreeButton.gameObject.SetActive(true);
         }
         else
             slotThreeButton.gameObject.SetActive(false);
+
+        if (savedGames[0] == null && savedGames[1] == null && savedGames[2] == null)
+            noSavedGamesText.gameObject.SetActive(true);
+        else
+            noSavedGamesText.gameObject.SetActive(false);
     }
 
     public void DeleteSave(int slot)
@@ -118,13 +131,7 @@ public class LoadMenu : MonoBehaviour
         string slotName = $"slot{slot}";
         SaveGameSystem.DeleteSaveGame(slotName);
         savedGames[slot - 1] = null;
-
-        if (slot == 1)
-            slotOneButton.gameObject.SetActive(false);
-        else if (slot == 2)
-            slotTwoButton.gameObject.SetActive(false);
-        else if (slot == 3)
-            slotThreeButton.gameObject.SetActive(false);
+        ManageSaves(false);
     }
 
     public void Back()
@@ -135,6 +142,6 @@ public class LoadMenu : MonoBehaviour
         title.text = "Load Game";
         importSavePath = null;
         importButton.interactable = true;
-        ManageLoadButtons();
+        ManageSaves(false);
     }
 }
