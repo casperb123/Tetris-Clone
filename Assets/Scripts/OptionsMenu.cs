@@ -35,6 +35,7 @@ public class OptionsMenu : MonoBehaviour
     private List<int> refreshRates;
 
     private SavedOptions options;
+    private bool optionsChanged;
 
     private void Awake()
     {
@@ -72,15 +73,20 @@ public class OptionsMenu : MonoBehaviour
         options.OptionsChanged.AddListener(() =>
         {
             applyButton.gameObject.SetActive(true);
+            optionsChanged = true;
         });
         options.Resolution.ResolutionChanged.AddListener(() =>
         {
             applyButton.gameObject.SetActive(true);
+            optionsChanged = true;
         });
     }
 
     private void Update()
     {
+        if (optionsChanged)
+            return;
+
         if (Screen.currentResolution.width != options.Resolution.Width ||
             Screen.currentResolution.height != options.Resolution.Height ||
             Screen.currentResolution.refreshRate != options.Resolution.RefreshRate ||
@@ -163,6 +169,7 @@ public class OptionsMenu : MonoBehaviour
     {
         audioSource.Play();
         SaveSystem.SaveOptions(options);
+        optionsChanged = false;
         applyButton.gameObject.SetActive(false);
     }
 
