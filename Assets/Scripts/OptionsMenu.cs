@@ -1,15 +1,11 @@
-﻿using System;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using System.Linq;
 using System.Collections.Generic;
-using UnityEngine.SceneManagement;
 
 public class OptionsMenu : MonoBehaviour
 {
-    public static OptionsMenu Instance;
-
     [Header("UI Settings")]
     [SerializeField]
     private GameObject backMenu;
@@ -28,7 +24,11 @@ public class OptionsMenu : MonoBehaviour
     [SerializeField]
     private TMP_Dropdown refreshRateDropdown;
     [SerializeField]
+    private Button backButton;
+    [SerializeField]
     private Button applyButton;
+    [SerializeField]
+    private Button cancelButton;
 
     private AudioSource audioSource;
     private List<Resolution> resolutions;
@@ -36,10 +36,10 @@ public class OptionsMenu : MonoBehaviour
 
     private SavedOptions options;
     private bool optionsChanged;
+    private bool changeOptions = true;
 
     private void Awake()
     {
-        Instance = this;
         QualitySettings.vSyncCount = 0;
     }
 
@@ -70,16 +70,16 @@ public class OptionsMenu : MonoBehaviour
         refreshRateDropdown.value = refreshRateIndex;
         fullscreenToggle.isOn = options.Fullscreen;
 
-        options.OptionsChanged.AddListener(() =>
-        {
-            applyButton.gameObject.SetActive(true);
-            optionsChanged = true;
-        });
-        options.Resolution.ResolutionChanged.AddListener(() =>
-        {
-            applyButton.gameObject.SetActive(true);
-            optionsChanged = true;
-        });
+        options.OptionsChanged.AddListener(OptionsChanged);
+        options.Resolution.ResolutionChanged.AddListener(OptionsChanged);
+    }
+
+    private void OptionsChanged()
+    {
+        applyButton.gameObject.SetActive(true);
+        cancelButton.gameObject.SetActive(true);
+        backButton.gameObject.SetActive(false);
+        optionsChanged = true;
     }
 
     private void Update()
@@ -104,6 +104,9 @@ public class OptionsMenu : MonoBehaviour
     /// <param name="value">If it should be enable or disabled</param>
     public void ToggleBackgroundMusic(bool value)
     {
+        if (!changeOptions)
+            return;
+
         audioSource.Play();
         options.BackgroundMusic = value;
     }
@@ -114,6 +117,9 @@ public class OptionsMenu : MonoBehaviour
     /// <param name="value">If it should be enable or disabled</param>
     public void ToggleSoundEffects(bool value)
     {
+        if (!changeOptions)
+            return;
+
         audioSource.Play();
         options.SoundEffects = value;
     }
@@ -124,6 +130,9 @@ public class OptionsMenu : MonoBehaviour
     /// <param name="value">If it should be enable or disabled</param>
     public void ToggleShakingEffect(bool value)
     {
+        if (!changeOptions)
+            return;
+
         audioSource.Play();
         options.ShakingEffect = value;
     }
@@ -134,6 +143,9 @@ public class OptionsMenu : MonoBehaviour
     /// <param name="value">If it should be enable or disabled</param>
     public void ToggleFullscreen(bool value)
     {
+        if (!changeOptions)
+            return;
+
         audioSource.Play();
         options.Fullscreen = value;
     }
@@ -144,6 +156,9 @@ public class OptionsMenu : MonoBehaviour
     /// <param name="index">The resolution index</param>
     public void ChangeResolution(int index)
     {
+        if (!changeOptions)
+            return;
+
         audioSource.Play();
         int width = resolutions[index].width;
         int height = resolutions[index].height;
@@ -158,6 +173,9 @@ public class OptionsMenu : MonoBehaviour
     /// <param name="index">The refresh rate index</param>
     public void ChangeRefreshRate(int index)
     {
+        if (!changeOptions)
+            return;
+
         audioSource.Play();
         options.Resolution.RefreshRate = refreshRates[index];
     }
@@ -171,6 +189,36 @@ public class OptionsMenu : MonoBehaviour
         SaveSystem.SaveOptions(options);
         optionsChanged = false;
         applyButton.gameObject.SetActive(false);
+        cancelButton.gameObject.SetActive(false);
+        backButton.gameObject.SetActive(true);
+    }
+
+    /// <summary>
+    /// Cancels the changes
+    /// </summary>
+    public void Cancel()
+    {
+        audioSource.Play();
+        options = SaveSystem.GetOptions();
+        options.OptionsChanged.AddListener(OptionsChanged);
+        options.Resolution.ResolutionChanged.AddListener(OptionsChanged);
+
+        int refreshRateIndex = refreshRates.IndexOf(options.Resolution.RefreshRate);
+        int resolutionIndex = resolutions.IndexOf(resolutions.FirstOrDefault(x => x.width == options.Resolution.Width && x.height == options.Resolution.Height));
+        changeOptions = false;
+
+        backgroundMusicToggle.isOn = options.BackgroundMusic;
+        soundEffectsToggle.isOn = options.SoundEffects;
+        shakingEffectToggle.isOn = options.ShakingEffect;
+        resolutionDropdown.value = resolutionIndex;
+        refreshRateDropdown.value = refreshRateIndex;
+        fullscreenToggle.isOn = options.Fullscreen;
+
+        optionsChanged = false;
+        changeOptions = true;
+        applyButton.gameObject.SetActive(false);
+        cancelButton.gameObject.SetActive(false);
+        backButton.gameObject.SetActive(true);
     }
 
     /// <summary>
