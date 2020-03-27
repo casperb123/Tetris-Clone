@@ -27,8 +27,10 @@ public class GameMenu : MonoBehaviour
 
     private void Start()
     {
+        SavedHighscore highscore = SaveSystem.GetHighscore();
+
         audioSource = GetComponent<AudioSource>();
-        highScoreText.text = PlayerPrefs.GetInt("highscore").ToString();
+        highScoreText.text = highscore.Score.ToString();
     }
 
     /// <summary>

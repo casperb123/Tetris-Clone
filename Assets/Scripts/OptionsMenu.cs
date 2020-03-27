@@ -4,6 +4,7 @@ using UnityEngine.UI;
 using TMPro;
 using System.Linq;
 using System.Collections.Generic;
+using UnityEngine.SceneManagement;
 
 public class OptionsMenu : MonoBehaviour
 {
@@ -26,24 +27,14 @@ public class OptionsMenu : MonoBehaviour
     private TMP_Dropdown resolutionDropdown;
     [SerializeField]
     private TMP_Dropdown refreshRateDropdown;
+    [SerializeField]
+    private Button applyButton;
 
     private AudioSource audioSource;
     private List<Resolution> resolutions;
     private List<int> refreshRates;
 
-    public bool BackgroundMusic { get; private set; }
-
-    public bool SoundEffects { get; private set; }
-
-    public bool ShakingEffect { get; private set; }
-
-    public bool Fullscreen { get; private set; }
-
-    public int Width { get; private set; }
-
-    public int Height { get; private set; }
-
-    public int RefreshRate { get; private set; }
+    private SavedOptions options;
 
     private void Awake()
     {
@@ -59,35 +50,45 @@ public class OptionsMenu : MonoBehaviour
         resolutions.ForEach(x => resolutionDropdown.options.Add(new TMP_Dropdown.OptionData($"{x.width} x {x.height}")));
         refreshRates.ForEach(x => refreshRateDropdown.options.Add(new TMP_Dropdown.OptionData($"{x} hz")));
 
-        BackgroundMusic = Convert.ToBoolean(PlayerPrefs.GetInt("backgroundMusic", 1));
-        SoundEffects = Convert.ToBoolean(PlayerPrefs.GetInt("soundEffects", 1));
-        ShakingEffect = Convert.ToBoolean(PlayerPrefs.GetInt("shakingEffect", 1));
-        Fullscreen = Convert.ToBoolean(PlayerPrefs.GetInt("fullscreen", 1));
-        Width = PlayerPrefs.GetInt("resolutionWidth", Screen.currentResolution.width);
-        Height = PlayerPrefs.GetInt("resolutionHeight", Screen.currentResolution.height);
-        RefreshRate = PlayerPrefs.GetInt("refreshRate", Screen.currentResolution.refreshRate);
+        options = SaveSystem.GetOptions();
 
-        int refreshRateIndex = refreshRates.IndexOf(RefreshRate);
-        int resolutionIndex = resolutions.IndexOf(resolutions.FirstOrDefault(x => x.width == Width && x.height == Height));
+        if (options.Resolution.Width == 0 || options.Resolution.Height == 0 || options.Resolution.RefreshRate == 0)
+        {
+            options.Resolution.Width = Screen.currentResolution.width;
+            options.Resolution.Height = Screen.currentResolution.height;
+            options.Resolution.RefreshRate = Screen.currentResolution.refreshRate;
+        }
 
-        backgroundMusicToggle.isOn = BackgroundMusic;
-        soundEffectsToggle.isOn = SoundEffects;
-        shakingEffectToggle.isOn = ShakingEffect;
+        int refreshRateIndex = refreshRates.IndexOf(options.Resolution.RefreshRate);
+        int resolutionIndex = resolutions.IndexOf(resolutions.FirstOrDefault(x => x.width == options.Resolution.Width && x.height == options.Resolution.Height));
+
+        backgroundMusicToggle.isOn = options.BackgroundMusic;
+        soundEffectsToggle.isOn = options.SoundEffects;
+        shakingEffectToggle.isOn = options.ShakingEffect;
         resolutionDropdown.value = resolutionIndex;
         refreshRateDropdown.value = refreshRateIndex;
-        fullscreenToggle.isOn = Fullscreen;
+        fullscreenToggle.isOn = options.Fullscreen;
+
+        options.OptionsChanged.AddListener(() =>
+        {
+            applyButton.gameObject.SetActive(true);
+        });
+        options.Resolution.ResolutionChanged.AddListener(() =>
+        {
+            applyButton.gameObject.SetActive(true);
+        });
     }
 
     private void Update()
     {
-        if (Screen.currentResolution.width != Width ||
-            Screen.currentResolution.height != Height ||
-            Screen.currentResolution.refreshRate != RefreshRate ||
-            Screen.fullScreen != Fullscreen ||
-            Application.targetFrameRate != RefreshRate)
+        if (Screen.currentResolution.width != options.Resolution.Width ||
+            Screen.currentResolution.height != options.Resolution.Height ||
+            Screen.currentResolution.refreshRate != options.Resolution.RefreshRate ||
+            Screen.fullScreen != options.Fullscreen ||
+            Application.targetFrameRate != options.Resolution.RefreshRate)
         {
-            Screen.SetResolution(Width, Height, Fullscreen, RefreshRate);
-            Application.targetFrameRate = RefreshRate;
+            Screen.SetResolution(options.Resolution.Width, options.Resolution.Height, options.Fullscreen, options.Resolution.RefreshRate);
+            Application.targetFrameRate = options.Resolution.RefreshRate;
         }
     }
 
@@ -98,8 +99,7 @@ public class OptionsMenu : MonoBehaviour
     public void ToggleBackgroundMusic(bool value)
     {
         audioSource.Play();
-        BackgroundMusic = value;
-        PlayerPrefs.SetInt("backgroundMusic", Convert.ToInt32(BackgroundMusic));
+        options.BackgroundMusic = value;
     }
 
     /// <summary>
@@ -109,8 +109,7 @@ public class OptionsMenu : MonoBehaviour
     public void ToggleSoundEffects(bool value)
     {
         audioSource.Play();
-        SoundEffects = value;
-        PlayerPrefs.SetInt("soundEffects", Convert.ToInt32(SoundEffects));
+        options.SoundEffects = value;
     }
 
     /// <summary>
@@ -120,8 +119,7 @@ public class OptionsMenu : MonoBehaviour
     public void ToggleShakingEffect(bool value)
     {
         audioSource.Play();
-        ShakingEffect = value;
-        PlayerPrefs.SetInt("shakingEffect", Convert.ToInt32(ShakingEffect));
+        options.ShakingEffect = value;
     }
 
     /// <summary>
@@ -131,8 +129,7 @@ public class OptionsMenu : MonoBehaviour
     public void ToggleFullscreen(bool value)
     {
         audioSource.Play();
-        Fullscreen = value;
-        PlayerPrefs.SetInt("fullscreen", Convert.ToInt32(Fullscreen));
+        options.Fullscreen = value;
     }
 
     /// <summary>
@@ -145,10 +142,8 @@ public class OptionsMenu : MonoBehaviour
         int width = resolutions[index].width;
         int height = resolutions[index].height;
         Resolution resolution = resolutions.FirstOrDefault(x => x.width == width && x.height == height);
-        Width = resolution.width;
-        Height = resolution.height;
-        PlayerPrefs.SetInt("resolutionWidth", Width);
-        PlayerPrefs.SetInt("resolutionHeight", Height);
+        options.Resolution.Width = resolution.width;
+        options.Resolution.Height = resolution.height;
     }
 
     /// <summary>
@@ -158,8 +153,17 @@ public class OptionsMenu : MonoBehaviour
     public void ChangeRefreshRate(int index)
     {
         audioSource.Play();
-        RefreshRate = refreshRates[index];
-        PlayerPrefs.SetInt("refreshRate", RefreshRate);
+        options.Resolution.RefreshRate = refreshRates[index];
+    }
+
+    /// <summary>
+    /// Applies and saves the options
+    /// </summary>
+    public void Apply()
+    {
+        audioSource.Play();
+        SaveSystem.SaveOptions(options);
+        applyButton.gameObject.SetActive(false);
     }
 
     /// <summary>

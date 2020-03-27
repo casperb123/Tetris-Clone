@@ -20,7 +20,8 @@ public class GameOver : MonoBehaviour
     [SerializeField]
     private AudioClip buttonClick;
 
-    private int highScore;
+    private SavedHighscore highScore;
+    private SavedOptions options;
     private AudioSource audioSource;
 
     private void Start()
@@ -33,10 +34,11 @@ public class GameOver : MonoBehaviour
         }
 #endif
 
-        highScore = PlayerPrefs.GetInt("highscore");
+        options = SaveSystem.GetOptions();
+        highScore = SaveSystem.GetHighscore();
         audioSource = GetComponent<AudioSource>();
 
-        highScoreText.text = highScore.ToString();
+        highScoreText.text = highScore.Score.ToString();
         scoreText.text = Game.Instance.CurrentScore.ToString();
 
         if (NewHighScore)
@@ -48,7 +50,7 @@ public class GameOver : MonoBehaviour
             NewHighScore = false;
         }
 
-        if (OptionsMenu.Instance.SoundEffects)
+        if (options.SoundEffects)
             audioSource.Play();
     }
 

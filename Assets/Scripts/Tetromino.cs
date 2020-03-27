@@ -2,18 +2,6 @@
 
 public class Tetromino : MonoBehaviour
 {
-    private Game game;
-    private OptionsMenu options;
-
-    private float fallTimer = 0;                        // Countdown timer for the fall speed
-    private float verticalTimer = 0;                    // Countdown timer for the vertical speed
-    private float horizontalTimer = 0;                  // Countdown timer for the horizontal speed
-    private float buttonDownWaitTimerHorizontal = 0;    // How long to wait before the tetromino recognizes that the left or right arrow is being held down
-    private float buttonDownWaitTimerVertical = 0;      // How long to wait before the tetromino recognizes that the down arrow is being held down
-
-    private bool movedImmediateHorizontal;
-    private bool movedImmediateVertical;
-
     [Header("Rotation Settings")]
     [SerializeField]
     private bool allowRotation = true;                  // We use this to specofy if we want to allow the tetromino to rotate
@@ -31,6 +19,18 @@ public class Tetromino : MonoBehaviour
     [SerializeField]
     private AudioClip landSound;                        // Sound for when the tetromino lands
 
+    private Game game;
+    private SavedOptions options;
+
+    private float fallTimer = 0;                        // Countdown timer for the fall speed
+    private float verticalTimer = 0;                    // Countdown timer for the vertical speed
+    private float horizontalTimer = 0;                  // Countdown timer for the horizontal speed
+    private float buttonDownWaitTimerHorizontal = 0;    // How long to wait before the tetromino recognizes that the left or right arrow is being held down
+    private float buttonDownWaitTimerVertical = 0;      // How long to wait before the tetromino recognizes that the down arrow is being held down
+
+    private bool movedImmediateHorizontal;
+    private bool movedImmediateVertical;
+
     private int individualScore;
     private float individualScoreTime;
 
@@ -42,7 +42,7 @@ public class Tetromino : MonoBehaviour
     private void Start()
     {
         game = Game.Instance;
-        options = OptionsMenu.Instance;
+        options = SaveSystem.GetOptions();
         audioSource = GetComponent<AudioSource>();
         individualScore = game.MaxIndividualScore;
     }

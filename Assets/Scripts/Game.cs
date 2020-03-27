@@ -13,22 +13,7 @@ public class Game : MonoBehaviour
     public static Game Instance;
     public static bool StartingAtLevelZero;
     public static int StartingLevel;
-    public static MySaveGame SaveGame;
-
-    [HideInInspector]
-    public int CurrentScore;
-    [HideInInspector]
-    public int CurrentLevel;
-    [HideInInspector]
-    public int TotalLinesCleared;
-
-    private int startingHighScore;
-    private int currentSwaps;
-    [HideInInspector]
-    public bool IsPaused;
-    [HideInInspector]
-    public bool IsGameOver;
-    private OptionsMenu options;
+    public static SavedGame SaveGame;
 
     [Header("Game Settings")]
     public int GridWidth = 10;
@@ -75,6 +60,21 @@ public class Game : MonoBehaviour
     public float HorizontalSpeed = .1f;     // The speed at which the tetromino will move when the left or right arrow is held down
     public float ButtonDownWaitMax = .2f;   // How long to wait before the tetromino recognizes that a button is being held down
 
+    [HideInInspector]
+    public int CurrentScore;
+    [HideInInspector]
+    public int CurrentLevel;
+    [HideInInspector]
+    public int TotalLinesCleared;
+
+    public SavedHighscore HighScore;
+    private int currentSwaps;
+    [HideInInspector]
+    public bool IsPaused;
+    [HideInInspector]
+    public bool IsGameOver;
+    private SavedOptions options;
+
     public Transform[,] Grid;
 
     private Transform tetrominos;
@@ -100,9 +100,18 @@ public class Game : MonoBehaviour
 
     private void Start()
     {
+        Application.quitting += () =>
+        {
+            SaveSystem.SaveHighscore(HighScore);
+        };
+        SceneManager.activeSceneChanged += (currentScene, newScene) =>
+        {
+            SaveSystem.SaveHighscore(HighScore);
+        };
+
         Time.timeScale = 1;
         audioSource = GetComponent<AudioSource>();
-        options = OptionsMenu.Instance;
+        options = SaveSystem.GetOptions();
 
         if (!options.BackgroundMusic)
             audioSource.Stop();
@@ -113,7 +122,7 @@ public class Game : MonoBehaviour
 
         CurrentScore = 0;
         CurrentLevel = StartingLevel;
-        startingHighScore = PlayerPrefs.GetInt("highscore");
+        HighScore = SaveSystem.GetHighscore();
 
         tetrominos = GameObject.Find("Tetrominos").transform;
 
@@ -198,7 +207,7 @@ public class Game : MonoBehaviour
     /// </summary>
     public void UpdateScore()
     {
-        if (CurrentScore > startingHighScore)
+        if (CurrentScore > HighScore.Score)
             scoreText.color = Color.green;
 
         if (numberOfRowsThisTurn > 0)
@@ -263,8 +272,8 @@ public class Game : MonoBehaviour
     /// </summary>
     public void UpdateHighscore()
     {
-        if (CurrentScore > startingHighScore)
-            PlayerPrefs.SetInt("highscore", CurrentScore);
+        if (CurrentScore > HighScore.Score)
+            HighScore.Score = CurrentScore;
     }
 
     /// <summary>
@@ -876,7 +885,7 @@ public class Game : MonoBehaviour
     public void GameOverScene()
     {
         UpdateHighscore();
-        if (CurrentScore > startingHighScore)
+        if (CurrentScore > HighScore.Score)
             GameOver.NewHighScore = true;
 
         SceneManager.LoadScene("GameOver");

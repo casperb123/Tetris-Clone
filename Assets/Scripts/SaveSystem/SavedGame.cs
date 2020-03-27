@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 
 [Serializable]
-public class MySaveGame : SaveGame
+public class SavedGame
 {
     public DateTime? TimeStamp { get; set; }
     public int Score { get; set; }
@@ -12,7 +12,7 @@ public class MySaveGame : SaveGame
     public SavedTetromino NextTetromino { get; set; }
     public SavedTetromino SavedTetromino { get; set; }
 
-    public MySaveGame()
+    public SavedGame()
     {
         TimeStamp = DateTime.Now;
         Minos = new List<SavedMino>();

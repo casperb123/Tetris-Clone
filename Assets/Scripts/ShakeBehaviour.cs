@@ -16,7 +16,7 @@ public class ShakeBehaviour : MonoBehaviour
 
     // The initial position of the GameObject
     private Vector3 initialPosition;
-    private OptionsMenu options;
+    private SavedOptions options;
 
     private void Awake()
     {
@@ -26,7 +26,7 @@ public class ShakeBehaviour : MonoBehaviour
 
     private void Start()
     {
-        options = OptionsMenu.Instance;
+        options = SaveSystem.GetOptions();
     }
 
     private void OnEnable()

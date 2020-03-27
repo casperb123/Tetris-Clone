@@ -20,53 +20,53 @@ public class SaveMenu : MonoBehaviour
     private Button slotThreeButton;
 
     private Game game;
-    private MySaveGame[] savedGames;
+    private SavedGame[] savedGames;
     private AudioSource audioSource;
 
     private void Start()
     {
         game = Game.Instance;
-        savedGames = new MySaveGame[] { null, null, null };
+        savedGames = new SavedGame[] { null, null, null };
         audioSource = GetComponent<AudioSource>();
 
-        if (SaveGameSystem.DoesSaveGameExist("slot1"))
+        if (SaveSystem.DoesSaveGameExist("slot1"))
         {
-            var (isValid, game) = SaveGameSystem.LoadGame("slot1");
+            var (isValid, game) = SaveSystem.LoadGame("slot1");
 
             if (isValid)
             {
                 TMP_Text timeStampText = slotOneButton.GetComponentsInChildren<TMP_Text>().FirstOrDefault(x => x.gameObject.name == "TimestampText");
                 Button deleteButton = slotOneButton.GetComponentsInChildren<Button>(true).FirstOrDefault(x => x.gameObject.name == "DeleteButton");
 
-                savedGames[0] = game as MySaveGame;
+                savedGames[0] = game as SavedGame;
                 timeStampText.text = savedGames[0].TimeStamp.Value.ToString(CultureInfo.CurrentCulture);
                 deleteButton.gameObject.SetActive(true);
             }
         }
-        if (SaveGameSystem.DoesSaveGameExist("slot2"))
+        if (SaveSystem.DoesSaveGameExist("slot2"))
         {
-            var (isValid, game) = SaveGameSystem.LoadGame("slot1");
+            var (isValid, game) = SaveSystem.LoadGame("slot1");
 
             if (isValid)
             {
                 TMP_Text timeStampText = slotTwoButton.GetComponentsInChildren<TMP_Text>().FirstOrDefault(x => x.gameObject.name == "TimestampText");
                 Button deleteButton = slotTwoButton.GetComponentsInChildren<Button>(true).FirstOrDefault(x => x.gameObject.name == "DeleteButton");
 
-                savedGames[1] = game as MySaveGame;
+                savedGames[1] = game as SavedGame;
                 timeStampText.text = savedGames[1].TimeStamp.Value.ToString(CultureInfo.CurrentCulture);
                 deleteButton.gameObject.SetActive(true);
             }
         }
-        if (SaveGameSystem.DoesSaveGameExist("slot3"))
+        if (SaveSystem.DoesSaveGameExist("slot3"))
         {
-            var (isValid, game) = SaveGameSystem.LoadGame("slot1");
+            var (isValid, game) = SaveSystem.LoadGame("slot1");
 
             if (isValid)
             {
                 TMP_Text timeStampText = slotThreeButton.GetComponentsInChildren<TMP_Text>().FirstOrDefault(x => x.gameObject.name == "TimestampText");
                 Button deleteButton = slotThreeButton.GetComponentsInChildren<Button>(true).FirstOrDefault(x => x.gameObject.name == "DeleteButton");
 
-                savedGames[2] = game as MySaveGame;
+                savedGames[2] = game as SavedGame;
                 timeStampText.text = savedGames[2].TimeStamp.Value.ToString(CultureInfo.CurrentCulture);
                 deleteButton.gameObject.SetActive(true);
             }
@@ -87,7 +87,7 @@ public class SaveMenu : MonoBehaviour
         if (game.SavedTetromino != null)
             savedTetromino = new SavedTetromino(game.SavedTetromino.name.Replace("(Clone)", ""));
 
-        MySaveGame saveGame = new MySaveGame
+        SavedGame saveGame = new SavedGame
         {
             Score = game.CurrentScore,
             Lines = game.TotalLinesCleared,
@@ -130,7 +130,7 @@ public class SaveMenu : MonoBehaviour
         }
 
         savedGames[slot - 1] = saveGame;
-        SaveGameSystem.Save(savedGames[slot - 1], $"slot{slot}");
+        SaveSystem.SaveGame(savedGames[slot - 1], $"slot{slot}");
         ActivateSaveSlot(slot);
     }
 
@@ -174,7 +174,7 @@ public class SaveMenu : MonoBehaviour
     {
         audioSource.Play();
         string slotName = $"slot{slot}";
-        SaveGameSystem.DeleteSaveGame(slotName);
+        SaveSystem.DeleteSaveGame(slotName);
         savedGames[slot - 1] = null;
 
         if (slot == 1)

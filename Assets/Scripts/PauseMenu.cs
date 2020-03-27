@@ -15,9 +15,11 @@ public class PauseMenu : MonoBehaviour
     private AudioSource audioSource;
     private AudioSource audioSourceGameLoop;
     private bool isPaused;
+    private SavedOptions options;
 
     private void Start()
     {
+        options = SaveSystem.GetOptions();
         audioSource = GetComponent<AudioSource>();
         audioSourceGameLoop = Game.Instance.GetComponent<AudioSource>();
     }
@@ -63,7 +65,7 @@ public class PauseMenu : MonoBehaviour
         pauseMenu.SetActive(false);
         optionsMenu.SetActive(false);
         saveMenu.SetActive(false);
-        if (OptionsMenu.Instance.BackgroundMusic)
+        if (options != null && options.BackgroundMusic)
             audioSourceGameLoop.Play();
         isPaused = false;
         Time.timeScale = 1;
