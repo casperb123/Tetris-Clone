@@ -273,7 +273,10 @@ public class Game : MonoBehaviour
     public void UpdateHighscore()
     {
         if (CurrentScore > HighScore.Score)
+        {
             HighScore.Score = CurrentScore;
+            GameOver.NewHighscore = true;
+        }
     }
 
     /// <summary>
@@ -885,9 +888,6 @@ public class Game : MonoBehaviour
     public void GameOverScene()
     {
         UpdateHighscore();
-        if (CurrentScore > HighScore.Score)
-            GameOver.NewHighScore = true;
-
         SceneManager.LoadScene("GameOver");
     }
 }

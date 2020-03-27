@@ -4,7 +4,7 @@ using UnityEngine.SceneManagement;
 
 public class GameOver : MonoBehaviour
 {
-    public static bool NewHighScore;
+    public static bool NewHighscore;
 
     [Header("UI Settings")]
     [SerializeField]
@@ -41,13 +41,13 @@ public class GameOver : MonoBehaviour
         highScoreText.text = highScore.Score.ToString();
         scoreText.text = Game.Instance.CurrentScore.ToString();
 
-        if (NewHighScore)
+        if (NewHighscore)
         {
             scoreContainer.SetActive(false);
             highScoreTextLabel.text = "New Highscore!";
             highScoreTextLabel.color = Color.green;
             highScoreText.color = Color.green;
-            NewHighScore = false;
+            NewHighscore = false;
         }
 
         if (options.SoundEffects)
