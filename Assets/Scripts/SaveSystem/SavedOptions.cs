@@ -8,6 +8,7 @@ public class SavedOptions
     private bool soundEffects;
     private bool shakingEffect;
     private bool fullscreen;
+    private bool autoPauseOnFocusLose;
 
     public bool BackgroundMusic
     {
@@ -18,6 +19,7 @@ public class SavedOptions
             OptionsChanged.Invoke();
         }
     }
+
     public bool SoundEffects
     {
         get => soundEffects;
@@ -27,6 +29,7 @@ public class SavedOptions
             OptionsChanged.Invoke();
         }
     }
+
     public bool ShakingEffect
     {
         get => shakingEffect;
@@ -36,6 +39,7 @@ public class SavedOptions
             OptionsChanged.Invoke();
         }
     }
+
     public bool Fullscreen
     {
         get => fullscreen;
@@ -45,6 +49,17 @@ public class SavedOptions
             OptionsChanged.Invoke();
         }
     }
+
+    public bool AutoPauseOnFocusLose
+    {
+        get => autoPauseOnFocusLose;
+        set
+        {
+            autoPauseOnFocusLose = value;
+            OptionsChanged.Invoke();
+        }
+    }
+
     public SavedResolution Resolution { get; set; }
 
     [NonSerialized]
@@ -53,10 +68,11 @@ public class SavedOptions
     public SavedOptions()
     {
         OptionsChanged = new UnityEvent();
-        BackgroundMusic = true;
-        SoundEffects = true;
-        ShakingEffect = true;
-        Fullscreen = true;
+        backgroundMusic = true;
+        soundEffects = true;
+        shakingEffect = true;
+        fullscreen = true;
+        autoPauseOnFocusLose = true;
         Resolution = new SavedResolution();
     }
 }

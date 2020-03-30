@@ -1,6 +1,5 @@
 ﻿using UnityEngine;
 using UnityEngine.SceneManagement;
-using UnityEngine.UI;
 
 public class PauseMenu : MonoBehaviour
 {
@@ -16,25 +15,25 @@ public class PauseMenu : MonoBehaviour
     private AudioSource audioSourceGameLoop;
     private bool isPaused;
     private SavedOptions options;
+    private OptionsMenu optionsMenuScript;
 
     private void Start()
     {
         options = SaveSystem.GetOptions();
         audioSource = GetComponent<AudioSource>();
-        audioSourceGameLoop = Game.Instance.GetComponent<AudioSource>();
+        optionsMenuScript = GetComponent<OptionsMenu>();
+        audioSourceGameLoop = GameObject.FindGameObjectWithTag("GameManager").GetComponent<AudioSource>();
     }
 
     private void Update()
     {
         if (Input.GetKeyDown(KeyCode.Escape))
-        {
             PauseToggle();
-        }
     }
 
     private void OnApplicationFocus(bool focus)
     {
-        if (!focus && !optionsMenu.activeSelf && !saveMenu.activeSelf)
+        if (!focus && !optionsMenu.activeSelf && !saveMenu.activeSelf && options.AutoPauseOnFocusLose)
             Pause();
     }
 
@@ -51,6 +50,7 @@ public class PauseMenu : MonoBehaviour
     /// </summary>
     private void Pause()
     {
+        audioSource.Play();
         pauseMenu.SetActive(true);
         audioSourceGameLoop.Stop();
         isPaused = true;
@@ -62,6 +62,10 @@ public class PauseMenu : MonoBehaviour
     /// </summary>
     private void UnPause()
     {
+        if (optionsMenuScript is null || optionsMenuScript.OptionsChanged)
+            return;
+
+        audioSource.Play();
         pauseMenu.SetActive(false);
         optionsMenu.SetActive(false);
         saveMenu.SetActive(false);
@@ -76,8 +80,6 @@ public class PauseMenu : MonoBehaviour
     /// </summary>
     public void PauseToggle()
     {
-        audioSource.Play();
-
         if (isPaused)
             UnPause();
         else

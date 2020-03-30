@@ -73,7 +73,6 @@ public class Game : MonoBehaviour
     public bool IsPaused;
     [HideInInspector]
     public bool IsGameOver;
-    private SavedOptions options;
 
     public Transform[,] Grid;
 
@@ -92,6 +91,7 @@ public class Game : MonoBehaviour
     private Vector2 spawnPosition;
 
     private bool gameStarted;
+    private SavedOptions options;
 
     private void Awake()
     {
@@ -113,8 +113,8 @@ public class Game : MonoBehaviour
         audioSource = GetComponent<AudioSource>();
         options = SaveSystem.GetOptions();
 
-        if (!options.BackgroundMusic)
-            audioSource.Stop();
+        if (options.BackgroundMusic)
+            audioSource.Play();
 
         Grid = new Transform[GridWidth, GridHeight];
 

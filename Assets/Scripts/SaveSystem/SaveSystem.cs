@@ -6,6 +6,8 @@ using UnityEngine;
 
 public static class SaveSystem
 {
+    private static SavedOptions options;
+
     /// <summary>
     /// Saves the game
     /// </summary>
@@ -98,6 +100,7 @@ public static class SaveSystem
     /// <returns>If saving the options was a success</returns>
     public static bool SaveOptions(SavedOptions options)
     {
+        SaveSystem.options = options;
         BinaryFormatter formatter = new BinaryFormatter();
         MemoryStream stream = new MemoryStream();
 
@@ -119,6 +122,9 @@ public static class SaveSystem
     /// <returns>The saved options</returns>
     public static SavedOptions GetOptions()
     {
+        if (SaveSystem.options != null)
+            return SaveSystem.options;
+
         SavedOptions options = new SavedOptions();
         BinaryFormatter formatter = new BinaryFormatter();
         MemoryStream stream = new MemoryStream();
@@ -136,6 +142,7 @@ public static class SaveSystem
                 options.SoundEffects = loadedOptions.SoundEffects;
                 options.ShakingEffect = loadedOptions.ShakingEffect;
                 options.Fullscreen = loadedOptions.Fullscreen;
+                options.AutoPauseOnFocusLose = loadedOptions.AutoPauseOnFocusLose;
 
                 options.Resolution.Width = loadedOptions.Resolution.Width;
                 options.Resolution.Height = loadedOptions.Resolution.Height;
@@ -149,6 +156,7 @@ public static class SaveSystem
             SaveOptions(options);
         }
 
+        SaveSystem.options = options;
         return options;
     }
 

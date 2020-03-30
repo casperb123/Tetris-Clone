@@ -20,6 +20,8 @@ public class OptionsMenu : MonoBehaviour
     [SerializeField]
     private Toggle fullscreenToggle;
     [SerializeField]
+    private Toggle autoPauseToggle;
+    [SerializeField]
     private TMP_Dropdown resolutionDropdown;
     [SerializeField]
     private TMP_Dropdown refreshRateDropdown;
@@ -35,7 +37,8 @@ public class OptionsMenu : MonoBehaviour
     private List<int> refreshRates;
 
     private SavedOptions options;
-    private bool optionsChanged;
+    [HideInInspector]
+    public bool OptionsChanged;
     private bool changeOptions = true;
 
     private void Awake()
@@ -60,31 +63,22 @@ public class OptionsMenu : MonoBehaviour
             options.Resolution.RefreshRate = Screen.currentResolution.refreshRate;
         }
 
-        int refreshRateIndex = refreshRates.IndexOf(options.Resolution.RefreshRate);
-        int resolutionIndex = resolutions.IndexOf(resolutions.FirstOrDefault(x => x.width == options.Resolution.Width && x.height == options.Resolution.Height));
-
-        backgroundMusicToggle.isOn = options.BackgroundMusic;
-        soundEffectsToggle.isOn = options.SoundEffects;
-        shakingEffectToggle.isOn = options.ShakingEffect;
-        resolutionDropdown.value = resolutionIndex;
-        refreshRateDropdown.value = refreshRateIndex;
-        fullscreenToggle.isOn = options.Fullscreen;
-
-        options.OptionsChanged.AddListener(OptionsChanged);
-        options.Resolution.ResolutionChanged.AddListener(OptionsChanged);
+        SetOptionValues();
+        options.OptionsChanged.AddListener(OptionsUpdated);
+        options.Resolution.ResolutionChanged.AddListener(OptionsUpdated);
     }
 
-    private void OptionsChanged()
+    private void OptionsUpdated()
     {
         applyButton.gameObject.SetActive(true);
         cancelButton.gameObject.SetActive(true);
         backButton.gameObject.SetActive(false);
-        optionsChanged = true;
+        OptionsChanged = true;
     }
 
     private void Update()
     {
-        if (optionsChanged)
+        if (OptionsChanged)
             return;
 
         if (Screen.currentResolution.width != options.Resolution.Width ||
@@ -151,6 +145,19 @@ public class OptionsMenu : MonoBehaviour
     }
 
     /// <summary>
+    /// Toggles auto pause when focus is lost
+    /// </summary>
+    /// <param name="value">If it should be enabled or disabled</param>
+    public void ToggleAutoPause(bool value)
+    {
+        if (!changeOptions)
+            return;
+
+        audioSource.Play();
+        options.AutoPauseOnFocusLose = value;
+    }
+
+    /// <summary>
     /// Changes the game resolution
     /// </summary>
     /// <param name="index">The resolution index</param>
@@ -187,7 +194,7 @@ public class OptionsMenu : MonoBehaviour
     {
         audioSource.Play();
         SaveSystem.SaveOptions(options);
-        optionsChanged = false;
+        OptionsChanged = false;
         applyButton.gameObject.SetActive(false);
         cancelButton.gameObject.SetActive(false);
         backButton.gameObject.SetActive(true);
@@ -200,12 +207,23 @@ public class OptionsMenu : MonoBehaviour
     {
         audioSource.Play();
         options = SaveSystem.GetOptions();
-        options.OptionsChanged.AddListener(OptionsChanged);
-        options.Resolution.ResolutionChanged.AddListener(OptionsChanged);
+        options.OptionsChanged.AddListener(OptionsUpdated);
+        options.Resolution.ResolutionChanged.AddListener(OptionsUpdated);
 
+        changeOptions = false;
+        SetOptionValues();
+
+        OptionsChanged = false;
+        changeOptions = true;
+        applyButton.gameObject.SetActive(false);
+        cancelButton.gameObject.SetActive(false);
+        backButton.gameObject.SetActive(true);
+    }
+
+    private void SetOptionValues()
+    {
         int refreshRateIndex = refreshRates.IndexOf(options.Resolution.RefreshRate);
         int resolutionIndex = resolutions.IndexOf(resolutions.FirstOrDefault(x => x.width == options.Resolution.Width && x.height == options.Resolution.Height));
-        changeOptions = false;
 
         backgroundMusicToggle.isOn = options.BackgroundMusic;
         soundEffectsToggle.isOn = options.SoundEffects;
@@ -213,12 +231,7 @@ public class OptionsMenu : MonoBehaviour
         resolutionDropdown.value = resolutionIndex;
         refreshRateDropdown.value = refreshRateIndex;
         fullscreenToggle.isOn = options.Fullscreen;
-
-        optionsChanged = false;
-        changeOptions = true;
-        applyButton.gameObject.SetActive(false);
-        cancelButton.gameObject.SetActive(false);
-        backButton.gameObject.SetActive(true);
+        autoPauseToggle.isOn = options.AutoPauseOnFocusLose;
     }
 
     /// <summary>

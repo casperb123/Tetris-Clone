@@ -21,8 +21,8 @@ public class GameOver : MonoBehaviour
     private AudioClip buttonClick;
 
     private SavedHighscore highScore;
-    private SavedOptions options;
     private AudioSource audioSource;
+    private SavedOptions options;
 
     private void Start()
     {
@@ -34,9 +34,9 @@ public class GameOver : MonoBehaviour
         }
 #endif
 
-        options = SaveSystem.GetOptions();
         highScore = SaveSystem.GetHighscore();
         audioSource = GetComponent<AudioSource>();
+        options = SaveSystem.GetOptions();
 
         highScoreText.text = highScore.Score.ToString();
         scoreText.text = Game.Instance.CurrentScore.ToString();
