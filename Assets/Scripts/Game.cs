@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
-using System.Text.RegularExpressions;
 using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -25,6 +25,7 @@ public class Game : MonoBehaviour
     [SerializeField]
     private int maxSwaps = 2;
     public int MaxIndividualScore = 100;
+    public string Name;
 
     [Header("Touch Settings")]
     public int TouchSensitivityHorizontal = 8;
@@ -37,6 +38,10 @@ public class Game : MonoBehaviour
     private TextMeshProUGUI levelText;
     [SerializeField]
     private TextMeshProUGUI linesText;
+    [SerializeField]
+    private GameObject playMenu;
+    [SerializeField]
+    private TMP_InputField nameField;
 
     [Header("Score Settings")]
     [SerializeField]
@@ -53,6 +58,8 @@ public class Game : MonoBehaviour
     private AudioClip clearLineSound;
     [SerializeField]
     private AudioClip clearFourLinesSound;
+    [SerializeField]
+    private AudioClip buttonClick;
 
     [Header("Speed Settings")]
     public float FallSpeed = 1;             // The speed at which the tetromino will fall if the down arrow isn't being held down
@@ -67,7 +74,8 @@ public class Game : MonoBehaviour
     [HideInInspector]
     public int TotalLinesCleared;
 
-    public SavedHighscore HighScore;
+    [HideInInspector]
+    public List<SavedHighscore> HighScores;
     private int currentSwaps;
     [HideInInspector]
     public bool IsPaused;
@@ -79,6 +87,7 @@ public class Game : MonoBehaviour
     private Transform tetrominos;
     private int numberOfRowsThisTurn;
     private AudioSource audioSource;
+    private AudioSource buttonAudioSource;
 
     [HideInInspector]
     public GameObject NextTetromino;
@@ -92,6 +101,7 @@ public class Game : MonoBehaviour
 
     private bool gameStarted;
     private SavedOptions options;
+    private bool highScoreSaved;
 
     private void Awake()
     {
@@ -102,34 +112,34 @@ public class Game : MonoBehaviour
     {
         Application.quitting += () =>
         {
-            SaveSystem.SaveHighscore(HighScore);
+            UpdateHighscores();
         };
         SceneManager.activeSceneChanged += (currentScene, newScene) =>
         {
-            SaveSystem.SaveHighscore(HighScore);
+            if (currentScene.name == "Level")
+                UpdateHighscores();
         };
 
-        Time.timeScale = 1;
-        audioSource = GetComponent<AudioSource>();
+        audioSource = GetComponents<AudioSource>().FirstOrDefault(x => x.clip.name == "gameloop");
+        buttonAudioSource = GetComponents<AudioSource>().FirstOrDefault(x => x.clip.name == "buttonclick");
         options = SaveSystem.GetOptions();
-
-        if (options.BackgroundMusic)
-            audioSource.Play();
-
         Grid = new Transform[GridWidth, GridHeight];
-
         spawnPosition = new Vector2(GridWidth / 2, GridHeight);
 
         CurrentScore = 0;
         CurrentLevel = StartingLevel;
-        HighScore = SaveSystem.GetHighscore();
+        HighScores = SaveSystem.GetHighscores();
 
         tetrominos = GameObject.Find("Tetrominos").transform;
 
         if (SaveGame != null)
         {
+            if (options.BackgroundMusic)
+                audioSource.Play();
+
             CurrentScore = SaveGame.Score;
             TotalLinesCleared = SaveGame.Lines;
+            Name = SaveGame.Name;
 
             foreach (SavedMino savedMino in SaveGame.Minos)
             {
@@ -143,9 +153,14 @@ public class Game : MonoBehaviour
                 SaveTetromino((GameObject)Resources.Load(GetTetromino(SaveGame.SavedTetromino.Name)), true);
 
             SaveGame = null;
+            Time.timeScale = 1;
         }
         else
-            SpawnTetromino();
+        {
+            Time.timeScale = 0;
+            playMenu.SetActive(true);
+            nameField.Select();
+        }
     }
 
     private void Update()
@@ -160,6 +175,11 @@ public class Game : MonoBehaviour
         CheckUserInput();
     }
 
+    private string AddCommas(int number)
+    {
+        return string.Format(CultureInfo.InvariantCulture, "{0:n0}", number);
+    }
+
     /// <summary>
     /// Checks the users input
     /// </summary>
@@ -170,6 +190,24 @@ public class Game : MonoBehaviour
             GameObject tempTetromino = GameObject.FindGameObjectWithTag("CurrentTetromino");
             SaveTetromino(tempTetromino);
         }
+
+        if (Input.GetKeyDown(KeyCode.Return) && playMenu.activeSelf)
+            Play();
+    }
+
+    public void Play()
+    {
+        buttonAudioSource.Play();
+        if (string.IsNullOrWhiteSpace(nameField.text))
+            return;
+
+        Name = nameField.text;
+        playMenu.SetActive(false);
+        Time.timeScale = 1;
+        SpawnTetromino();
+
+        if (options.BackgroundMusic)
+            audioSource.Play();
     }
 
     /// <summary>
@@ -197,9 +235,9 @@ public class Game : MonoBehaviour
     /// </summary>
     private void UpdateUI()
     {
-        scoreText.text = CurrentScore.ToString();
+        scoreText.text = AddCommas(CurrentScore);
         levelText.text = CurrentLevel.ToString();
-        linesText.text = TotalLinesCleared.ToString();
+        linesText.text = AddCommas(TotalLinesCleared);
     }
 
     /// <summary>
@@ -207,8 +245,8 @@ public class Game : MonoBehaviour
     /// </summary>
     public void UpdateScore()
     {
-        if (CurrentScore > HighScore.Score)
-            scoreText.color = Color.green;
+        //if (CurrentScore > HighScore.Score)
+        //    scoreText.color = Color.green;
 
         if (numberOfRowsThisTurn > 0)
         {
@@ -223,8 +261,6 @@ public class Game : MonoBehaviour
 
             numberOfRowsThisTurn = 0;
         }
-
-        UpdateHighscore();
     }
 
     /// <summary>
@@ -270,13 +306,30 @@ public class Game : MonoBehaviour
     /// <summary>
     /// Updates the current highscore
     /// </summary>
-    public void UpdateHighscore()
+    public void UpdateHighscores()
     {
-        if (CurrentScore > HighScore.Score)
+        if (string.IsNullOrWhiteSpace(Name) || CurrentScore == 0 || highScoreSaved)
+            return;
+
+        SavedHighscore highscore = new SavedHighscore(Name, CurrentScore);
+
+        if (HighScores.Count == 0)
         {
-            HighScore.Score = CurrentScore;
-            GameOver.NewHighscore = true;
+            HighScores.Add(highscore);
+            return;
         }
+
+        for (int i = 0; i < HighScores.Count; i++)
+        {
+            if (CurrentScore > HighScores[i].Score)
+            {
+                HighScores.Insert(i, highscore);
+                break;
+            }
+        }
+
+        SaveSystem.SaveHighscores(HighScores);
+        highScoreSaved = true;
     }
 
     /// <summary>
@@ -887,7 +940,6 @@ public class Game : MonoBehaviour
     /// </summary>
     public void GameOverScene()
     {
-        UpdateHighscore();
         SceneManager.LoadScene("GameOver");
     }
 }

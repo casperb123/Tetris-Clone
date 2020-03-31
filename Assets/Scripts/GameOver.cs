@@ -8,19 +8,14 @@ public class GameOver : MonoBehaviour
 
     [Header("UI Settings")]
     [SerializeField]
-    private TextMeshProUGUI highScoreText;
+    private GameObject gameOverMenu;
     [SerializeField]
-    private TextMeshProUGUI highScoreTextLabel;
-    [SerializeField]
-    private GameObject scoreContainer;
-    [SerializeField]
-    private TextMeshProUGUI scoreText;
+    private GameObject highscoresMenu;
 
     [Header("Sound Settings")]
     [SerializeField]
     private AudioClip buttonClick;
 
-    private SavedHighscore highScore;
     private AudioSource audioSource;
     private SavedOptions options;
 
@@ -34,22 +29,8 @@ public class GameOver : MonoBehaviour
         }
 #endif
 
-        highScore = SaveSystem.GetHighscore();
         audioSource = GetComponent<AudioSource>();
         options = SaveSystem.GetOptions();
-
-        highScoreText.text = highScore.Score.ToString();
-        scoreText.text = Game.Instance.CurrentScore.ToString();
-
-        if (NewHighscore)
-        {
-            scoreContainer.SetActive(false);
-            highScoreTextLabel.text = "New Highscore!";
-            highScoreTextLabel.color = Color.green;
-            highScoreText.color = Color.green;
-            NewHighscore = false;
-        }
-
         if (options.SoundEffects)
             audioSource.Play();
     }
@@ -61,6 +42,13 @@ public class GameOver : MonoBehaviour
     {
         audioSource.PlayOneShot(buttonClick);
         SceneManager.LoadScene("GameMenu");
+    }
+
+    public void HighscoresMenu()
+    {
+        audioSource.PlayOneShot(buttonClick);
+        gameOverMenu.SetActive(false);
+        highscoresMenu.SetActive(true);
     }
 
     /// <summary>

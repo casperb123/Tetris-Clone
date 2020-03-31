@@ -91,6 +91,7 @@ public class SaveMenu : MonoBehaviour
         {
             Score = game.CurrentScore,
             Lines = game.TotalLinesCleared,
+            Name = game.Name,
             CurrentTetromino = currentTetromino,
             NextTetromino = nextTetromino,
             SavedTetromino = savedTetromino

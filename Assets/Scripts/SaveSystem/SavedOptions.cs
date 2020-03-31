@@ -75,14 +75,24 @@ public class SavedOptions
         autoPauseOnFocusLose = true;
         Resolution = new SavedResolution();
     }
+
+    public SavedOptions(SavedOptions options) : this()
+    {
+        backgroundMusic = options.BackgroundMusic;
+        soundEffects = options.SoundEffects;
+        shakingEffect = options.ShakingEffect;
+        fullscreen = options.Fullscreen;
+        autoPauseOnFocusLose = options.AutoPauseOnFocusLose;
+        Resolution = new SavedResolution(options.Resolution);
+    }
 }
 
 [Serializable]
 public class SavedResolution
 {
-    private int width;
-    private int height;
-    private int refreshRate;
+    protected int width;
+    protected int height;
+    protected int refreshRate;
 
     public int Width
     {
@@ -118,5 +128,12 @@ public class SavedResolution
     public SavedResolution()
     {
         ResolutionChanged = new UnityEvent();
+    }
+
+    public SavedResolution(SavedResolution resolution) : this()
+    {
+        width = resolution.Width;
+        height = resolution.Height;
+        refreshRate = resolution.RefreshRate;
     }
 }

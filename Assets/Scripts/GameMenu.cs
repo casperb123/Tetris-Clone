@@ -15,6 +15,8 @@ public class GameMenu : MonoBehaviour
     private GameObject optionsMenu;
     [SerializeField]
     private GameObject loadMenu;
+    [SerializeField]
+    private GameObject highscoresMenu;
 
     [Header("Sound Settings")]
     [SerializeField]
@@ -27,10 +29,7 @@ public class GameMenu : MonoBehaviour
 
     private void Start()
     {
-        SavedHighscore highscore = SaveSystem.GetHighscore();
-
         audioSource = GetComponent<AudioSource>();
-        highScoreText.text = highscore.Score.ToString();
     }
 
     /// <summary>
@@ -67,6 +66,13 @@ public class GameMenu : MonoBehaviour
         audioSource.PlayOneShot(buttonClick);
         gameMenu.SetActive(false);
         optionsMenu.SetActive(true);
+    }
+
+    public void HighscoresMenu()
+    {
+        audioSource.PlayOneShot(buttonClick);
+        gameMenu.SetActive(false);
+        highscoresMenu.SetActive(true);
     }
 
     /// <summary>
