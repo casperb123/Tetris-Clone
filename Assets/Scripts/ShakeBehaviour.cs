@@ -2,19 +2,10 @@
 
 public class ShakeBehaviour : MonoBehaviour
 {
-    // Transform of the GameObject you want to shake
     private Transform transform;
-
-    // Desired duration of the shake effect
     private float shakeDuration;
-
-    // A measure of the magnitude for the shake
     private float shakeMagnitude;
-
-    // A measure of how quickly the shake effect should evaporate
     private float dampingSpeed;
-
-    // The initial position of the GameObject
     private Vector3 initialPosition;
     private SavedOptions options;
 

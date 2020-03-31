@@ -114,11 +114,6 @@ public class Game : MonoBehaviour
         {
             UpdateHighscores();
         };
-        SceneManager.activeSceneChanged += (currentScene, newScene) =>
-        {
-            if (currentScene.name == "Level")
-                UpdateHighscores();
-        };
 
         audioSource = GetComponents<AudioSource>().FirstOrDefault(x => x.clip.name == "gameloop");
         buttonAudioSource = GetComponents<AudioSource>().FirstOrDefault(x => x.clip.name == "buttonclick");
@@ -940,6 +935,7 @@ public class Game : MonoBehaviour
     /// </summary>
     public void GameOverScene()
     {
+        UpdateHighscores();
         SceneManager.LoadScene("GameOver");
     }
 }

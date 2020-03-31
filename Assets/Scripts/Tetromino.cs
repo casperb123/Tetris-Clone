@@ -19,7 +19,6 @@ public class Tetromino : MonoBehaviour
     [SerializeField]
     private AudioClip landSound;                        // Sound for when the tetromino lands
 
-    private Game game;
     private SavedOptions options;
 
     private float fallTimer = 0;                        // Countdown timer for the fall speed
@@ -41,15 +40,14 @@ public class Tetromino : MonoBehaviour
 
     private void Start()
     {
-        game = Game.Instance;
         options = SaveSystem.GetOptions();
         audioSource = GetComponent<AudioSource>();
-        individualScore = game.MaxIndividualScore;
+        individualScore = Game.Instance.MaxIndividualScore;
     }
 
     private void Update()
     {
-        if (game.IsGameOver || game.IsPaused)
+        if (Game.Instance.IsGameOver || Game.Instance.IsPaused)
             return;
 
         CheckUserInput();
@@ -95,21 +93,21 @@ public class Tetromino : MonoBehaviour
                 Vector2 touchDeltaPosition = touch.deltaPosition;
                 direction = touchDeltaPosition.normalized;
 
-                if (Mathf.Abs(touch.position.x - previousUnitPosition.x) >= game.TouchSensitivityHorizontal && direction.x < 0 && touch.deltaPosition.y > -10 && touch.deltaPosition.y < 10)
+                if (Mathf.Abs(touch.position.x - previousUnitPosition.x) >= Game.Instance.TouchSensitivityHorizontal && direction.x < 0 && touch.deltaPosition.y > -10 && touch.deltaPosition.y < 10)
                 {
                     // Move Left
                     MoveLeft();
                     previousUnitPosition = touch.position;
                     moved = true;
                 }
-                else if (Mathf.Abs(touch.position.x - previousUnitPosition.x) >= game.TouchSensitivityHorizontal && direction.x > 0 && touch.deltaPosition.y > -10 && touch.deltaPosition.y < 10)
+                else if (Mathf.Abs(touch.position.x - previousUnitPosition.x) >= Game.Instance.TouchSensitivityHorizontal && direction.x > 0 && touch.deltaPosition.y > -10 && touch.deltaPosition.y < 10)
                 {
                     // Move Right
                     MoveRight();
                     previousUnitPosition = touch.position;
                     moved = true;
                 }
-                else if (Mathf.Abs(touch.position.y - previousUnitPosition.y) >= game.TouchSensitivityVertical && direction.y < 0 && touch.deltaPosition.x > -10 && touch.deltaPosition.x < 10)
+                else if (Mathf.Abs(touch.position.y - previousUnitPosition.y) >= Game.Instance.TouchSensitivityVertical && direction.y < 0 && touch.deltaPosition.x > -10 && touch.deltaPosition.x < 10)
                 {
                     // Move Down
                     MoveDown();
@@ -128,7 +126,7 @@ public class Tetromino : MonoBehaviour
             }
         }
 
-        if (Time.time - fallTimer >= game.FallSpeed)
+        if (Time.time - fallTimer >= Game.Instance.FallSpeed)
             MoveDown();
 
 #else
@@ -156,7 +154,7 @@ public class Tetromino : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.UpArrow))
             Rotate();
 
-        if (Input.GetKey(KeyCode.DownArrow) || Time.time - fallTimer >= game.FallSpeed)
+        if (Input.GetKey(KeyCode.DownArrow) || Time.time - fallTimer >= Game.Instance.FallSpeed)
             MoveDown();
 
         if (Input.GetKeyDown(KeyCode.LeftAlt))
@@ -171,13 +169,13 @@ public class Tetromino : MonoBehaviour
     {
         if (movedImmediateHorizontal)
         {
-            if (buttonDownWaitTimerHorizontal < game.ButtonDownWaitMax)
+            if (buttonDownWaitTimerHorizontal < Game.Instance.ButtonDownWaitMax)
             {
                 buttonDownWaitTimerHorizontal += Time.deltaTime;
                 return;
             }
 
-            if (horizontalTimer < game.HorizontalSpeed)
+            if (horizontalTimer < Game.Instance.HorizontalSpeed)
             {
                 horizontalTimer += Time.deltaTime;
                 return;
@@ -192,12 +190,12 @@ public class Tetromino : MonoBehaviour
         transform.position += Vector3.left;
 
         // We then check if the tetromino is at a valid position
-        if (game.CheckIsValidPosition(transform))
+        if (Game.Instance.CheckIsValidPosition(transform))
         {
             // if it is, we then call the UpdateGrid method which records this tetrominos new position
-            game.UpdateGrid(this);
+            Game.Instance.UpdateGrid(this);
             PlayMoveAudio();
-            game.MoveGhostTetromino((int)transform.position.x, transform);
+            Game.Instance.MoveGhostTetromino((int)transform.position.x, transform);
         }
         else
             // If it isn't we move the tetromino back to the right
@@ -211,13 +209,13 @@ public class Tetromino : MonoBehaviour
     {
         if (movedImmediateHorizontal)
         {
-            if (buttonDownWaitTimerHorizontal < game.ButtonDownWaitMax)
+            if (buttonDownWaitTimerHorizontal < Game.Instance.ButtonDownWaitMax)
             {
                 buttonDownWaitTimerHorizontal += Time.deltaTime;
                 return;
             }
 
-            if (horizontalTimer < game.HorizontalSpeed)
+            if (horizontalTimer < Game.Instance.HorizontalSpeed)
             {
                 horizontalTimer += Time.deltaTime;
                 return;
@@ -230,11 +228,11 @@ public class Tetromino : MonoBehaviour
 
         transform.position += Vector3.right;
 
-        if (game.CheckIsValidPosition(transform))
+        if (Game.Instance.CheckIsValidPosition(transform))
         {
-            game.UpdateGrid(this);
+            Game.Instance.UpdateGrid(this);
             PlayMoveAudio();
-            game.MoveGhostTetromino((int)transform.position.x, transform);
+            Game.Instance.MoveGhostTetromino((int)transform.position.x, transform);
         }
         else
             transform.position += Vector3.left;
@@ -247,13 +245,13 @@ public class Tetromino : MonoBehaviour
     {
         if (movedImmediateVertical)
         {
-            if (buttonDownWaitTimerVertical < game.ButtonDownWaitMax)
+            if (buttonDownWaitTimerVertical < Game.Instance.ButtonDownWaitMax)
             {
                 buttonDownWaitTimerVertical += Time.deltaTime;
                 return;
             }
 
-            if (verticalTimer < game.VerticalSpeed)
+            if (verticalTimer < Game.Instance.VerticalSpeed)
             {
                 verticalTimer += Time.deltaTime;
                 return;
@@ -266,10 +264,10 @@ public class Tetromino : MonoBehaviour
 
         transform.position += Vector3.down;
 
-        if (game.CheckIsValidPosition(transform))
+        if (Game.Instance.CheckIsValidPosition(transform))
         {
-            game.UpdateGrid(this);
-            game.MoveGhostTetromino((int)transform.position.x, transform);
+            Game.Instance.UpdateGrid(this);
+            Game.Instance.MoveGhostTetromino((int)transform.position.x, transform);
 
             if (Input.GetKey(KeyCode.DownArrow))
                 PlayMoveAudio();
@@ -277,17 +275,17 @@ public class Tetromino : MonoBehaviour
         else
         {
             transform.position += Vector3.up;
-            game.DeleteRow();
+            Game.Instance.DeleteRow();
 
             // Check if there are any minos above the grid
-            if (game.CheckIsAboveGrid(this))
+            if (Game.Instance.CheckIsAboveGrid(this))
             {
-                game.GameOverScene();
+                Game.Instance.GameOverScene();
                 return;
             }
 
-            game.CurrentScore += individualScore;
-            game.SpawnTetromino();
+            Game.Instance.CurrentScore += individualScore;
+            Game.Instance.SpawnTetromino();
             PlayLandAudio();
             tag = "Untagged";
             enabled = false;
@@ -303,28 +301,28 @@ public class Tetromino : MonoBehaviour
     {
         transform.position = new Vector2(transform.position.x, 0);
 
-        for (int i = 1; i < game.GridHeight; i++)
+        for (int i = 1; i < Game.Instance.GridHeight; i++)
         {
-            if (game.CheckIsValidPosition(transform, checkMinosAbove: true))
+            if (Game.Instance.CheckIsValidPosition(transform, checkMinosAbove: true))
             {
-                game.UpdateGrid(this);
+                Game.Instance.UpdateGrid(this);
                 break;
             }
 
             transform.position = new Vector2(transform.position.x, i);
 
-            if (game.CheckIsAboveGrid(this))
+            if (Game.Instance.CheckIsAboveGrid(this))
             {
-                game.GameOverScene();
+                Game.Instance.GameOverScene();
                 return;
             }
         }
 
         Camera.main.GetComponent<ShakeBehaviour>().TriggerShake(.5f, .1f, 5);
 
-        game.DeleteRow();
-        game.CurrentScore += individualScore;
-        game.SpawnTetromino();
+        Game.Instance.DeleteRow();
+        Game.Instance.CurrentScore += individualScore;
+        Game.Instance.SpawnTetromino();
         PlayLandAudio();
         tag = "Untagged";
         enabled = false;
@@ -347,21 +345,21 @@ public class Tetromino : MonoBehaviour
             else
                 transform.Rotate(0, 0, 90);
 
-            if (game.CheckIsValidPosition(transform))
+            if (Game.Instance.CheckIsValidPosition(transform))
             {
-                game.UpdateGrid(this);
+                Game.Instance.UpdateGrid(this);
                 PlayMoveAudio();
 
-                game.RotateGhostTetromino(transform.rotation, transform);
+                Game.Instance.RotateGhostTetromino(transform.rotation, transform);
             }
             else
             {
-                Vector3 toMove = game.GetUnitsToMove(transform);
+                Vector3 toMove = Game.Instance.GetUnitsToMove(transform);
 
                 if (toMove.x != 0 || toMove.y != 0)
                 {
                     transform.position += toMove;
-                    if (game.IsOtherMinoInTheWay(transform))
+                    if (Game.Instance.IsOtherMinoInTheWay(transform))
                     {
                         transform.position -= toMove;
 
@@ -378,11 +376,11 @@ public class Tetromino : MonoBehaviour
                         return;
                     }
 
-                    game.UpdateGrid(this);
+                    Game.Instance.UpdateGrid(this);
                     PlayMoveAudio();
 
-                    game.RotateGhostTetromino(transform.rotation, transform);
-                    game.MoveGhostTetromino((int)transform.position.x, transform);
+                    Game.Instance.RotateGhostTetromino(transform.rotation, transform);
+                    Game.Instance.MoveGhostTetromino((int)transform.position.x, transform);
                 }
                 else
                 {

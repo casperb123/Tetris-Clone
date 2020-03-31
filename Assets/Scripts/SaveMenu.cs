@@ -19,13 +19,11 @@ public class SaveMenu : MonoBehaviour
     [SerializeField]
     private Button slotThreeButton;
 
-    private Game game;
     private SavedGame[] savedGames;
     private AudioSource audioSource;
 
     private void Start()
     {
-        game = Game.Instance;
         savedGames = new SavedGame[] { null, null, null };
         audioSource = GetComponent<AudioSource>();
 
@@ -80,28 +78,28 @@ public class SaveMenu : MonoBehaviour
     public void SaveGame(int slot)
     {
         audioSource.Play();
-        SavedTetromino currentTetromino = new SavedTetromino(game.CurrentTetromino.name.Replace("(Clone)", ""), game.CurrentTetromino.transform.position.x, game.CurrentTetromino.transform.position.y, (int)game.CurrentTetromino.transform.rotation.eulerAngles.z);
-        SavedTetromino nextTetromino = new SavedTetromino(game.NextTetromino.name.Replace("(Clone)", ""));
+        SavedTetromino currentTetromino = new SavedTetromino(Game.Instance.CurrentTetromino.name.Replace("(Clone)", ""), Game.Instance.CurrentTetromino.transform.position.x, Game.Instance.CurrentTetromino.transform.position.y, (int)Game.Instance.CurrentTetromino.transform.rotation.eulerAngles.z);
+        SavedTetromino nextTetromino = new SavedTetromino(Game.Instance.NextTetromino.name.Replace("(Clone)", ""));
         SavedTetromino savedTetromino = null;
 
-        if (game.SavedTetromino != null)
-            savedTetromino = new SavedTetromino(game.SavedTetromino.name.Replace("(Clone)", ""));
+        if (Game.Instance.SavedTetromino != null)
+            savedTetromino = new SavedTetromino(Game.Instance.SavedTetromino.name.Replace("(Clone)", ""));
 
         SavedGame saveGame = new SavedGame
         {
-            Score = game.CurrentScore,
-            Lines = game.TotalLinesCleared,
-            Name = game.Name,
+            Score = Game.Instance.CurrentScore,
+            Lines = Game.Instance.TotalLinesCleared,
+            Name = Game.Instance.Name,
             CurrentTetromino = currentTetromino,
             NextTetromino = nextTetromino,
             SavedTetromino = savedTetromino
         };
 
-        for (int x = 0; x < game.GridWidth; x++)
+        for (int x = 0; x < Game.Instance.GridWidth; x++)
         {
-            for (int y = 0; y < game.GridHeight; y++)
+            for (int y = 0; y < Game.Instance.GridHeight; y++)
             {
-                Transform mino = game.Grid[x, y];
+                Transform mino = Game.Instance.Grid[x, y];
                 if (mino is null || mino.parent == null)
                     continue;
 
@@ -117,7 +115,7 @@ public class SaveMenu : MonoBehaviour
                 if (nameIndex != -1)
                     name = mino.name.Substring(0, nameIndex);
 
-                Vector2 pos = game.Round(mino.position);
+                Vector2 pos = Game.Instance.Round(mino.position);
 
                 SavedMino savedMino = new SavedMino
                 {
