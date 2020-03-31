@@ -33,6 +33,8 @@ public class PauseMenu : MonoBehaviour
 
     private void OnApplicationFocus(bool focus)
     {
+        options = SaveSystem.GetOptions();
+
         if (!focus && !optionsMenu.activeSelf && !saveMenu.activeSelf && options.AutoPauseOnFocusLose)
             Pause();
     }
@@ -65,6 +67,7 @@ public class PauseMenu : MonoBehaviour
         if (optionsMenuScript is null || optionsMenuScript.OptionsChanged)
             return;
 
+        options = SaveSystem.GetOptions();
         audioSource.Play();
         pauseMenu.SetActive(false);
         optionsMenu.SetActive(false);

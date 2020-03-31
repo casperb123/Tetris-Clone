@@ -47,6 +47,8 @@ public class ShakeBehaviour : MonoBehaviour
     /// <param name="damping">How quickly the shake should evaporate</param>
     public void TriggerShake(float duration = 1, float magnitude = 1, float damping = 1)
     {
+        options = SaveSystem.GetOptions();
+
         if (options.ShakingEffect)
         {
             shakeMagnitude = magnitude;
