@@ -311,6 +311,7 @@ public class Game : MonoBehaviour
         if (HighScores.Count == 0)
         {
             HighScores.Add(highscore);
+            highScoreSaved = true;
             return;
         }
 
@@ -319,12 +320,12 @@ public class Game : MonoBehaviour
             if (CurrentScore > HighScores[i].Score)
             {
                 HighScores.Insert(i, highscore);
+                highScoreSaved = true;
                 break;
             }
         }
 
         SaveSystem.SaveHighscores(HighScores);
-        highScoreSaved = true;
     }
 
     /// <summary>
@@ -936,6 +937,9 @@ public class Game : MonoBehaviour
     public void GameOverScene()
     {
         UpdateHighscores();
+        GameOver.Score = CurrentScore;
+        GameOver.NewHighscore = highScoreSaved;
+
         SceneManager.LoadScene("GameOver");
     }
 }

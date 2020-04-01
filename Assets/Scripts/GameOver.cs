@@ -1,9 +1,11 @@
-﻿using TMPro;
+﻿using System.Globalization;
+using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
 public class GameOver : MonoBehaviour
 {
+    public static int Score;
     public static bool NewHighscore;
 
     [Header("UI Settings")]
@@ -11,6 +13,10 @@ public class GameOver : MonoBehaviour
     private GameObject gameOverMenu;
     [SerializeField]
     private GameObject highscoresMenu;
+    [SerializeField]
+    private TMP_Text scoreTextLabel;
+    [SerializeField]
+    private TMP_Text scoreText;
 
     [Header("Sound Settings")]
     [SerializeField]
@@ -29,10 +35,24 @@ public class GameOver : MonoBehaviour
         }
 #endif
 
+        if (NewHighscore)
+        {
+            scoreTextLabel.text = "New Highscore!";
+            scoreTextLabel.color = Color.green;
+            scoreText.color = Color.green;
+        }
+
         audioSource = GetComponent<AudioSource>();
         options = SaveSystem.GetOptions();
+        scoreText.text = AddCommas(Score);
+
         if (options.SoundEffects)
             audioSource.Play();
+    }
+
+    private string AddCommas(int number)
+    {
+        return string.Format(CultureInfo.InvariantCulture, "{0:n0}", number);
     }
 
     /// <summary>
