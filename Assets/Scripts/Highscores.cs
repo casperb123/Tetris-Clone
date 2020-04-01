@@ -6,25 +6,35 @@ using System.Globalization;
 public class Highscores : MonoBehaviour
 {
     [Header("General Settings")]
-    [SerializeField]
-    private int top = 10;
+    public int Top = 10;
 
     [Header("UI Settings")]
     [SerializeField]
     private GameObject template;
+    [SerializeField]
+    private GameObject showButton;
+
+    [HideInInspector]
+    public List<SavedHighscore> HighscoresList;
 
     private void Start()
     {
         GetHighScores();
     }
 
-    private void GetHighScores()
+    public void GetHighScores()
     {
-        List<SavedHighscore> highscores = SaveSystem.GetHighscores();
-        int amount = highscores.Count;
+        foreach (Transform child in transform)
+        {
+            if (child != template.transform)
+                Destroy(child.gameObject);
+        }
 
-        if (top < amount)
-            amount = top;
+        HighscoresList = SaveSystem.GetHighscores();
+        int amount = HighscoresList.Count;
+
+        if (amount > Top)
+            amount = Top;
 
         for (int i = 0; i < amount; i++)
         {
@@ -32,10 +42,13 @@ public class Highscores : MonoBehaviour
             TMP_Text positionNameText = highscoreObject.transform.GetChild(0).GetComponent<TMP_Text>();
             TMP_Text scoreText = highscoreObject.transform.GetChild(1).GetComponent<TMP_Text>();
 
-            positionNameText.text = $"{i + 1}. {highscores[i].Name}";
-            scoreText.text = AddCommas(highscores[i].Score);
+            positionNameText.text = $"{i + 1}. {HighscoresList[i].Name}";
+            scoreText.text = AddCommas(HighscoresList[i].Score);
             highscoreObject.SetActive(true);
         }
+
+        if (showButton != null && HighscoresList.Count > 10)
+            showButton.SetActive(true);
     }
 
     private string AddCommas(int number)

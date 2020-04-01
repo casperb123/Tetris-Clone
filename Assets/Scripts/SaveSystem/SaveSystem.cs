@@ -214,8 +214,8 @@ public static class SaveSystem
     /// <returns>If saving the highscores was a success</returns>
     public static bool SaveHighscores(List<SavedHighscore> highscores)
     {
-        if (highscores.Count > 10)
-            highscores = highscores.Take(10).ToList();
+        if (highscores.Count > 100)
+            highscores = highscores.Take(100).ToList();
 
         SaveSystem.highscores = highscores;
         BinaryFormatter formatter = new BinaryFormatter();
@@ -233,62 +233,6 @@ public static class SaveSystem
         }
     }
 
-    ///// <summary>
-    ///// Saves the highscore
-    ///// </summary>
-    ///// <param name="highscore">The highscore to save</param>
-    ///// <returns>If saving the highscore was a success</returns>
-    //public static bool SaveHighscore(SavedHighscore highscore)
-    //{
-    //    BinaryFormatter formatter = new BinaryFormatter();
-    //    MemoryStream stream = new MemoryStream();
-
-    //    try
-    //    {
-    //        formatter.Serialize(stream, highscore);
-    //        File.WriteAllBytes(GetHighscorePath(), stream.ToArray());
-    //        return true;
-    //    }
-    //    catch (SerializationException)
-    //    {
-    //        return false;
-    //    }
-    //}
-
-    ///// <summary>
-    ///// Gets the saved highscore
-    ///// </summary>
-    ///// <returns>The saved highscore</returns>
-    //public static SavedHighscore GetHighscore()
-    //{
-    //    SavedHighscore highscore = new SavedHighscore();
-    //    BinaryFormatter formatter = new BinaryFormatter();
-    //    MemoryStream stream = new MemoryStream();
-
-    //    try
-    //    {
-    //        if (File.Exists(GetHighscorePath()))
-    //        {
-    //            byte[] bytes = File.ReadAllBytes(GetHighscorePath());
-    //            stream.Write(bytes, 0, bytes.Length);
-    //            stream.Position = 0;
-    //            highscore = formatter.Deserialize(stream) as SavedHighscore;
-    //        }
-    //        else
-    //            SaveHighscore(highscore);
-    //    }
-    //    catch (SerializationException)
-    //    {
-    //        SaveHighscore(highscore);
-    //    }
-
-    //    return highscore;
-    //}
-
-    /// <summary>
-    /// Gets the path for the highscore file
-    /// </summary>
-    /// <returns>The path for the highscore file</returns>
     private static string GetHighscorePath()
     {
         return Path.Combine(Application.persistentDataPath, "highscores.bin");
