@@ -15,9 +15,9 @@ public static class SaveSystem
     /// Saves the game
     /// </summary>
     /// <param name="saveGame">The game to save</param>
-    /// <param name="name">The save name</param>
+    /// <param name="slot">The slot to save in</param>
     /// <returns>True if the save was a success, false if it wasn't</returns>
-    public static bool SaveGame(SavedGame saveGame, string name)
+    public static bool SaveGame(SavedGame saveGame, int slot)
     {
         BinaryFormatter formatter = new BinaryFormatter();
         MemoryStream stream = new MemoryStream();
@@ -25,7 +25,7 @@ public static class SaveSystem
         try
         {
             formatter.Serialize(stream, saveGame);
-            File.WriteAllBytes(GetSavePath(name), stream.ToArray());
+            File.WriteAllBytes(GetSavePath(slot), stream.ToArray());
             return true;
         }
         catch (Exception)
@@ -37,15 +37,18 @@ public static class SaveSystem
     /// <summary>
     /// Loads a saved game
     /// </summary>
-    /// <param name="name">The name on the saved game</param>
+    /// <param name="slot">The save slot to load</param>
     /// <returns>The saved game if it exists</returns>
-    public static (bool isValid, SavedGame game) LoadGame(string name)
+    public static (bool isValid, SavedGame game) LoadGame(int slot)
     {
         try
         {
+            if (!DoesSaveGameExist(slot))
+                return (false, null);
+
             BinaryFormatter formatter = new BinaryFormatter();
             MemoryStream stream = new MemoryStream();
-            byte[] bytes = File.ReadAllBytes(GetSavePath(name));
+            byte[] bytes = File.ReadAllBytes(GetSavePath(slot));
 
             stream.Write(bytes, 0, bytes.Length);
             stream.Position = 0;
@@ -60,13 +63,16 @@ public static class SaveSystem
     /// <summary>
     /// Deletes a saved game
     /// </summary>
-    /// <param name="name">The name on the save to delete</param>
+    /// <param name="slot">The save slot to delete</param>
     /// <returns>True if the save was deleted, false if it wasn't</returns>
-    public static bool DeleteSaveGame(string name)
+    public static bool DeleteSaveGame(int slot)
     {
         try
         {
-            File.Delete(GetSavePath(name));
+            if (!DoesSaveGameExist(slot))
+                return false;
+
+            File.Delete(GetSavePath(slot));
         }
         catch (Exception)
         {
@@ -79,20 +85,21 @@ public static class SaveSystem
     /// <summary>
     /// Checks if a saved game with the name exists
     /// </summary>
-    /// <param name="name">The name on the saved game</param>
+    /// <param name="slot">The save slot to check</param>
     /// <returns>True if the saved game exists, false if it doesn't</returns>
-    public static bool DoesSaveGameExist(string name)
+    public static bool DoesSaveGameExist(int slot)
     {
-        return File.Exists(GetSavePath(name));
+        return File.Exists(GetSavePath(slot));
     }
 
     /// <summary>
     /// Gets the path to the saved game
     /// </summary>
-    /// <param name="name">The name on the saved game</param>
+    /// <param name="slot">The save slot to get</param>
     /// <returns>The path of the saved game</returns>
-    private static string GetSavePath(string name)
+    private static string GetSavePath(int slot)
     {
+        string name = $"slot{slot}";
         return Path.Combine(Application.persistentDataPath, $"{name}.sav");
     }
 

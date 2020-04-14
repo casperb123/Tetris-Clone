@@ -39,6 +39,8 @@ public class Game : MonoBehaviour
     [SerializeField]
     private TextMeshProUGUI linesText;
     [SerializeField]
+    private TextMeshProUGUI playerText;
+    [SerializeField]
     private GameObject playMenu;
     [SerializeField]
     private TMP_InputField nameField;
@@ -230,9 +232,13 @@ public class Game : MonoBehaviour
     /// </summary>
     private void UpdateUI()
     {
+        if (string.IsNullOrWhiteSpace(Name))
+            return;
+
         scoreText.text = AddCommas(CurrentScore);
         levelText.text = CurrentLevel.ToString();
         linesText.text = AddCommas(TotalLinesCleared);
+        playerText.text = $"Player: {Name}";
     }
 
     /// <summary>

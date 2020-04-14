@@ -4,7 +4,21 @@ using System.Collections.Generic;
 [Serializable]
 public class SavedGame
 {
-    public DateTime? TimeStamp { get; set; }
+    private DateTime timeStamp;
+
+    public DateTime TimeStamp
+    {
+        get => timeStamp;
+        set
+        {
+            if (value < DateTime.Now)
+                throw new ArgumentOutOfRangeException(nameof(TimeStamp), "The timestamp can't be lower than the current date and time");
+
+            timeStamp = value;
+        }
+    }
+
+    public DateTime? LastLoaded { get; set; }
     public string Name { get; set; }
     public int Score { get; set; }
     public int Lines { get; set; }
@@ -15,7 +29,7 @@ public class SavedGame
 
     public SavedGame()
     {
-        TimeStamp = DateTime.Now;
+        timeStamp = DateTime.Now;
         Minos = new List<SavedMino>();
     }
 }

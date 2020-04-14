@@ -57,6 +57,9 @@ public class LoadMenu : MonoBehaviour
 
         if (importSavePath is null)
         {
+            savedGames[slot - 1].LastLoaded = DateTime.Now;
+            SaveSystem.SaveGame(savedGames[slot - 1], slot);
+
             Game.SaveGame = savedGames[slot - 1];
             SceneManager.LoadScene("Level");
         }
@@ -103,7 +106,7 @@ public class LoadMenu : MonoBehaviour
                 isValid = false;
             }
 
-            if (isValid && tempSavedGame != null && tempSavedGame.CurrentTetromino != null && tempSavedGame.NextTetromino != null && tempSavedGame.TimeStamp.HasValue && tempSavedGame.Minos != null)
+            if (isValid && tempSavedGame != null && tempSavedGame.CurrentTetromino != null && tempSavedGame.NextTetromino != null && tempSavedGame.Minos != null)
             {
                 title.text = "Select Slot";
                 importSavePath = files[0];
@@ -112,7 +115,7 @@ public class LoadMenu : MonoBehaviour
                 slotTwoButton.gameObject.SetActive(true);
                 slotThreeButton.gameObject.SetActive(true);
 
-                if (!SaveSystem.DoesSaveGameExist("slot1"))
+                if (!SaveSystem.DoesSaveGameExist(1))
                 {
                     TMP_Text timeStampText = slotOneButton.GetComponentsInChildren<TMP_Text>(true).FirstOrDefault(x => x.gameObject.name == "TimestampText");
                     Button deleteButton = slotOneButton.GetComponentsInChildren<Button>(true).FirstOrDefault(x => x.gameObject.name == "DeleteButton");
@@ -120,7 +123,7 @@ public class LoadMenu : MonoBehaviour
                     timeStampText.text = "";
                     deleteButton.gameObject.SetActive(false);
                 }
-                if (!SaveSystem.DoesSaveGameExist("slot2"))
+                if (!SaveSystem.DoesSaveGameExist(2))
                 {
                     TMP_Text timeStampText = slotTwoButton.GetComponentsInChildren<TMP_Text>(true).FirstOrDefault(x => x.gameObject.name == "TimestampText");
                     Button deleteButton = slotTwoButton.GetComponentsInChildren<Button>(true).FirstOrDefault(x => x.gameObject.name == "DeleteButton");
@@ -128,7 +131,7 @@ public class LoadMenu : MonoBehaviour
                     timeStampText.text = "";
                     deleteButton.gameObject.SetActive(false);
                 }
-                if (!SaveSystem.DoesSaveGameExist("slot3"))
+                if (!SaveSystem.DoesSaveGameExist(3))
                 {
                     TMP_Text timeStampText = slotThreeButton.GetComponentsInChildren<TMP_Text>(true).FirstOrDefault(x => x.gameObject.name == "TimestampText");
                     Button deleteButton = slotThreeButton.GetComponentsInChildren<Button>(true).FirstOrDefault(x => x.gameObject.name == "DeleteButton");
@@ -146,9 +149,9 @@ public class LoadMenu : MonoBehaviour
     /// <param name="loadSaves">If it should load the games from the save slots</param>
     private void ManageSaves(bool loadSaves = true)
     {
-        if (SaveSystem.DoesSaveGameExist("slot1"))
+        if (SaveSystem.DoesSaveGameExist(1))
         {
-            var (isValid, game) = SaveSystem.LoadGame("slot1");
+            var (isValid, game) = SaveSystem.LoadGame(1);
 
             if (isValid)
             {
@@ -160,7 +163,7 @@ public class LoadMenu : MonoBehaviour
                 else if (tempSavedGame != null)
                     savedGames[0] = tempSavedGame;
 
-                timeStampText.text = savedGames[0].TimeStamp.Value.ToString(CultureInfo.CurrentCulture);
+                timeStampText.text = savedGames[0].TimeStamp.ToString(CultureInfo.CurrentCulture);
                 deleteButton.gameObject.SetActive(true);
                 slotOneButton.gameObject.SetActive(true);
             }
@@ -168,9 +171,9 @@ public class LoadMenu : MonoBehaviour
         else
             slotOneButton.gameObject.SetActive(false);
 
-        if (SaveSystem.DoesSaveGameExist("slot2"))
+        if (SaveSystem.DoesSaveGameExist(2))
         {
-            var (isValid, game) = SaveSystem.LoadGame("slot2");
+            var (isValid, game) = SaveSystem.LoadGame(2);
 
             if (isValid)
             {
@@ -182,7 +185,7 @@ public class LoadMenu : MonoBehaviour
                 else if (tempSavedGame != null)
                     savedGames[1] = tempSavedGame;
 
-                timeStampText.text = savedGames[1].TimeStamp.Value.ToString(CultureInfo.CurrentCulture);
+                timeStampText.text = savedGames[1].TimeStamp.ToString(CultureInfo.CurrentCulture);
                 deleteButton.gameObject.SetActive(true);
                 slotTwoButton.gameObject.SetActive(true);
             }
@@ -190,9 +193,9 @@ public class LoadMenu : MonoBehaviour
         else
             slotTwoButton.gameObject.SetActive(false);
 
-        if (SaveSystem.DoesSaveGameExist("slot3"))
+        if (SaveSystem.DoesSaveGameExist(3))
         {
-            var (isValid, game) = SaveSystem.LoadGame("slot3");
+            var (isValid, game) = SaveSystem.LoadGame(3);
 
             if (isValid)
             {
@@ -204,7 +207,7 @@ public class LoadMenu : MonoBehaviour
                 else if (tempSavedGame != null)
                     savedGames[2] = tempSavedGame;
 
-                timeStampText.text = savedGames[2].TimeStamp.Value.ToString(CultureInfo.CurrentCulture);
+                timeStampText.text = savedGames[2].TimeStamp.ToString(CultureInfo.CurrentCulture);
                 deleteButton.gameObject.SetActive(true);
                 slotThreeButton.gameObject.SetActive(true);
             }
@@ -227,8 +230,7 @@ public class LoadMenu : MonoBehaviour
     public void DeleteSave(int slot)
     {
         audioSource.PlayOneShot(buttonClick);
-        string slotName = $"slot{slot}";
-        SaveSystem.DeleteSaveGame(slotName);
+        SaveSystem.DeleteSaveGame(slot);
         savedGames[slot - 1] = null;
         ManageSaves(false);
     }

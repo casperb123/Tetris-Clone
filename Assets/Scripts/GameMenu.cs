@@ -1,6 +1,7 @@
 ﻿using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class GameMenu : MonoBehaviour
 {
@@ -17,6 +18,8 @@ public class GameMenu : MonoBehaviour
     private GameObject loadMenu;
     [SerializeField]
     private GameObject highscoresMenu;
+    [SerializeField]
+    private Button continueButton;
 
     [Header("Sound Settings")]
     [SerializeField]
@@ -26,10 +29,47 @@ public class GameMenu : MonoBehaviour
 
     private AudioSource audioSource;
     private int startingLevel;
+    private SavedGame lastLoadedGame;
 
     private void Start()
     {
         audioSource = GetComponent<AudioSource>();
+        lastLoadedGame = GetLastLoadedGame();
+
+        if (lastLoadedGame != null)
+            continueButton.gameObject.SetActive(true);
+    }
+
+    /// <summary>
+    /// Gets the last loaded game
+    /// </summary>
+    /// <returns>The last loaded game if a saved game exists, otherwise null</returns>
+    private SavedGame GetLastLoadedGame()
+    {
+        SavedGame lastLoaded = null;
+
+        for (int i = 1; i <= 3; i++)
+        {
+            var (isValid, savedGame) = SaveSystem.LoadGame(i);
+            if (!isValid)
+                continue;
+
+            if (lastLoaded != null && savedGame.LastLoaded.Value < lastLoaded.LastLoaded.Value)
+                continue;
+
+            lastLoaded = savedGame;
+        }
+
+        return lastLoaded;
+    }
+
+    /// <summary>
+    /// Loads the last loaded game
+    /// </summary>
+    public void Continue()
+    {
+        Game.SaveGame = lastLoadedGame;
+        SceneManager.LoadScene("Level");
     }
 
     /// <summary>
