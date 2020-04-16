@@ -314,11 +314,9 @@ public class Game : MonoBehaviour
         if (string.IsNullOrWhiteSpace(Name) || CurrentScore == 0 || highScoreSaved || SaveGame is null)
             return;
 
-        SavedHighscore highscore = new SavedHighscore(Name, CurrentScore, SaveGame.Slot);
-
         if (HighScores.Count == 0)
         {
-            HighScores.Add(highscore);
+            HighScores.Add(new SavedHighscore(Name, CurrentScore, SaveGame.Slot));
             highScoreSaved = true;
         }
 
@@ -328,13 +326,21 @@ public class Game : MonoBehaviour
             {
                 if (CurrentScore > HighScores[i].Score)
                 {
-                    HighScores.Insert(i, highscore);
-                    highScoreSaved = true;
+                    SavedHighscore highscore = HighScores.FirstOrDefault(x => x.SaveSlot == SaveGame.Slot);
+
+                    if (highscore != null)
+                        highscore.Score = CurrentScore;
+                    else
+                    {
+                        highscore = new SavedHighscore(Name, CurrentScore, SaveGame.Slot);
+                        HighScores.Insert(i, highscore);
+                        highScoreSaved = true;
+                    }
+
                     break;
                 }
             }
 
-            HighScores.Where(x => x.SaveSlot == SaveGame.Slot && x != highscore).ToList().ForEach(x => HighScores.Remove(x));
         }
 
         SaveSystem.SaveHighscores(HighScores);
