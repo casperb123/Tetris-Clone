@@ -128,6 +128,7 @@ public class PauseMenu : MonoBehaviour
     {
         audioSource.Play();
         Game.Instance.UpdateHighscores();
+        Game.SaveGame = null;
         SceneManager.LoadScene("GameMenu");
     }
 

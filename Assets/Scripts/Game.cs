@@ -146,7 +146,6 @@ public class Game : MonoBehaviour
             if (SaveGame.SavedTetromino != null)
                 SaveTetromino((GameObject)Resources.Load(GetTetromino(SaveGame.SavedTetromino.Name)), true);
 
-            SaveGame = null;
             Time.timeScale = 1;
         }
         else
@@ -312,10 +311,10 @@ public class Game : MonoBehaviour
     /// </summary>
     public void UpdateHighscores()
     {
-        if (string.IsNullOrWhiteSpace(Name) || CurrentScore == 0 || highScoreSaved)
+        if (string.IsNullOrWhiteSpace(Name) || CurrentScore == 0 || highScoreSaved || SaveGame is null)
             return;
 
-        SavedHighscore highscore = new SavedHighscore(Name, CurrentScore);
+        SavedHighscore highscore = new SavedHighscore(Name, CurrentScore, SaveGame.Slot);
 
         if (HighScores.Count == 0)
         {
@@ -334,6 +333,8 @@ public class Game : MonoBehaviour
                     break;
                 }
             }
+
+            HighScores.Where(x => x.SaveSlot == SaveGame.Slot && x != highscore).ToList().ForEach(x => HighScores.Remove(x));
         }
 
         SaveSystem.SaveHighscores(HighScores);

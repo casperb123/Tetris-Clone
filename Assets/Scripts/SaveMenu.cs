@@ -108,6 +108,7 @@ public class SaveMenu : MonoBehaviour
             return;
 
         tempSavedGames[slot - 1] = saveGame;
+        Game.SaveGame = saveGame;
         GetSaves(false);
     }
 
@@ -120,6 +121,9 @@ public class SaveMenu : MonoBehaviour
         audioSource.Play();
         if (!SaveSystem.DeleteSaveGame(slot))
             return;
+
+        if (tempSavedGames[slot - 1] == Game.SaveGame)
+            Game.SaveGame = null;
 
         tempSavedGames[slot - 1] = null;
         GetSaves(false);
