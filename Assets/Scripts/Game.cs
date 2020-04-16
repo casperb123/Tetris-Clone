@@ -321,16 +321,18 @@ public class Game : MonoBehaviour
         {
             HighScores.Add(highscore);
             highScoreSaved = true;
-            return;
         }
 
-        for (int i = 0; i < HighScores.Count; i++)
+        if (!highScoreSaved)
         {
-            if (CurrentScore > HighScores[i].Score)
+            for (int i = 0; i < HighScores.Count; i++)
             {
-                HighScores.Insert(i, highscore);
-                highScoreSaved = true;
-                break;
+                if (CurrentScore > HighScores[i].Score)
+                {
+                    HighScores.Insert(i, highscore);
+                    highScoreSaved = true;
+                    break;
+                }
             }
         }
 
