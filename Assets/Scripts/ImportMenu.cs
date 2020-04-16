@@ -73,6 +73,8 @@ public class ImportMenu : MonoBehaviour
 
             if (formatter.Deserialize(stream) is SavedGame savedGame && savedGame.CurrentTetromino != null && savedGame.NextTetromino != null && savedGame.Minos != null)
             {
+                savedGame.Slot = slot;
+
                 if (SaveSystem.SaveGame(savedGame, slot))
                     tempSavedGames[slot - 1] = savedGame;
             }

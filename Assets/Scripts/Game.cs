@@ -204,6 +204,12 @@ public class Game : MonoBehaviour
             audioSource.Play();
     }
 
+    public void Back()
+    {
+        buttonAudioSource.Play();
+        SceneManager.LoadScene("GameMenu");
+    }
+
     /// <summary>
     /// Updates the current level according to the total lines cleared
     /// </summary>

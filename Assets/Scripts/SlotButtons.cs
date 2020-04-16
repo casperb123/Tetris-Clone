@@ -37,7 +37,7 @@ public class SlotButtons : MonoBehaviour
             TMP_Text timeStampText = button.transform.GetChild(1).GetComponent<TMP_Text>();
             Button deleteButton = button.transform.GetChild(2).GetComponent<Button>();
 
-            if (savedGames == null || savedGames[i] is null)
+            if (savedGames == null)
             {
                 var (isValid, savedGame) = SaveSystem.LoadGame(i + 1);
 
@@ -54,6 +54,7 @@ public class SlotButtons : MonoBehaviour
                 else
                 {
                     deleteButton.gameObject.SetActive(false);
+                    timeStampText.text = "";
 
                     if (hideIfNoSave)
                         button.gameObject.SetActive(false);
@@ -61,7 +62,6 @@ public class SlotButtons : MonoBehaviour
             }
             else
             {
-
                 SavedGame savedGame = savedGames[i];
 
                 if (savedGame != null)
@@ -79,6 +79,7 @@ public class SlotButtons : MonoBehaviour
                 else
                 {
                     deleteButton.gameObject.SetActive(false);
+                    timeStampText.text = "";
 
                     if (hideIfNoSave)
                         button.gameObject.SetActive(false);

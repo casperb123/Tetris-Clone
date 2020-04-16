@@ -10,6 +10,8 @@ public class PauseMenu : MonoBehaviour
     private GameObject optionsMenu;
     [SerializeField]
     private GameObject saveMenu;
+    [SerializeField]
+    private GameObject playMenu;
 
     private AudioSource audioSource;
     private AudioSource audioSourceGameLoop;
@@ -35,8 +37,8 @@ public class PauseMenu : MonoBehaviour
     {
         options = SaveSystem.GetOptions();
 
-        if (!focus && !optionsMenu.activeSelf && !saveMenu.activeSelf && options.AutoPauseOnFocusLose)
-            Pause();
+        if (!focus && !optionsMenu.activeSelf && !saveMenu.activeSelf && !playMenu.activeSelf && options.AutoPauseOnFocusLose)
+            Pause(false);
     }
 
     private void OnApplicationPause(bool pause)
@@ -50,9 +52,11 @@ public class PauseMenu : MonoBehaviour
     /// <summary>
     /// Pauses the game
     /// </summary>
-    private void Pause()
+    private void Pause(bool playSound = true)
     {
-        audioSource.Play();
+        if (playSound)
+            audioSource.Play();
+
         pauseMenu.SetActive(true);
         audioSourceGameLoop.Stop();
         isPaused = true;

@@ -30,23 +30,28 @@ public class SaveMenu : MonoBehaviour
     /// </summary>
     public void GetSaves(bool useLoadedSaves = true)
     {
-        var (buttons, savedGames) = SlotButtons.GetSaves(slotTemplateButton, tempSavedGames, true);
+        List<Button> buttons = null;
+        List<SavedGame> savedGames = null;
+
+        if (useLoadedSaves)
+            (buttons, savedGames) = SlotButtons.GetSaves(slotTemplateButton, canDelete: true);
+        else
+            (buttons, savedGames) = SlotButtons.GetSaves(slotTemplateButton, tempSavedGames, true);
 
         foreach (Button slotButton in buttons)
         {
             int index = buttons.IndexOf(slotButton);
             Button deleteButton = buttons[index].GetComponentsInChildren<Button>(true).FirstOrDefault(x => x.gameObject.name == "DeleteButton");
-            SavedGame savedGame = null;
-
-            if (useLoadedSaves)
-                savedGame = savedGames.FirstOrDefault(x => x.Slot == index + 1);
-            else if (tempSavedGames[index] != null)
-                savedGame = tempSavedGames[index];
+            SavedGame savedGame = savedGames.FirstOrDefault(x => x.Slot == index + 1);
 
             slotButton.onClick.AddListener(() => SaveGame(index + 1));
 
             if (savedGame != null)
+            {
                 deleteButton.onClick.AddListener(() => DeleteSave(index + 1));
+                if (useLoadedSaves)
+                    tempSavedGames[index] = savedGame;
+            }
         }
     }
 

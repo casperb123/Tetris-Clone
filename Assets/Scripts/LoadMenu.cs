@@ -87,18 +87,20 @@ public class LoadMenu : MonoBehaviour
     /// <param name="useLoadedSaves">If the loaded saves should be used</param>
     public void ManageSaves(bool useLoadedSaves = true)
     {
-        var (buttons, savedGames) = SlotButtons.GetSaves(slotTemplateButton, TempSavedGames, hideIfNoSave: true);
+        List<Button> buttons;
+        List<SavedGame> savedGames;
+
+        if (useLoadedSaves)
+            (buttons, savedGames) = SlotButtons.GetSaves(slotTemplateButton, hideIfNoSave: true);
+        else
+            (buttons, savedGames) = SlotButtons.GetSaves(slotTemplateButton, TempSavedGames, hideIfNoSave: true);
+
         foreach (Button slotButton in buttons)
         {
             int index = buttons.IndexOf(slotButton);
             Button deleteButton = slotButton.transform.GetComponentsInChildren<Button>(true).FirstOrDefault(x => x.gameObject.name == "DeleteButton");
             TMP_Text timeStampText = slotButton.GetComponentsInChildren<TMP_Text>(true).FirstOrDefault(x => x.gameObject.name == "TimestampText");
-            SavedGame savedGame = null;
-
-            if (useLoadedSaves)
-                savedGame = savedGames.FirstOrDefault(x => x.Slot == index + 1);
-            else if (TempSavedGames[index] != null)
-                savedGame = TempSavedGames[index];
+            SavedGame savedGame = savedGames.FirstOrDefault(x => x.Slot == index + 1);
 
             if (savedGame != null)
             {
