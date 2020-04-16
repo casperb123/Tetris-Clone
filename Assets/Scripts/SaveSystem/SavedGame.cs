@@ -18,6 +18,7 @@ public class SavedGame
         }
     }
 
+    public int Slot { get; set; }
     public DateTime? LastLoaded { get; set; }
     public string Name { get; set; }
     public int Score { get; set; }
@@ -31,5 +32,17 @@ public class SavedGame
     {
         timeStamp = DateTime.Now;
         Minos = new List<SavedMino>();
+    }
+
+    public SavedGame(int slot, DateTime lastLoaded, string name, int score, int lines, SavedTetromino currentTetromino, SavedTetromino nextTetromino, SavedTetromino savedTetromino) : this()
+    {
+        Slot = slot;
+        LastLoaded = lastLoaded;
+        Name = name;
+        Score = score;
+        Lines = lines;
+        CurrentTetromino = currentTetromino;
+        NextTetromino = nextTetromino;
+        SavedTetromino = savedTetromino;
     }
 }

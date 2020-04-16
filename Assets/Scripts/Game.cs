@@ -112,10 +112,7 @@ public class Game : MonoBehaviour
 
     private void Start()
     {
-        Application.quitting += () =>
-        {
-            UpdateHighscores();
-        };
+        Application.quitting += () => UpdateHighscores();
 
         audioSource = GetComponents<AudioSource>().FirstOrDefault(x => x.clip.name == "gameloop");
         buttonAudioSource = GetComponents<AudioSource>().FirstOrDefault(x => x.clip.name == "buttonclick");

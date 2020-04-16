@@ -99,8 +99,7 @@ public static class SaveSystem
     /// <returns>The path of the saved game</returns>
     private static string GetSavePath(int slot)
     {
-        string name = $"slot{slot}";
-        return Path.Combine(Application.persistentDataPath, $"{name}.sav");
+        return Path.Combine(Application.persistentDataPath, $"slot{slot}.sav");
     }
 
     /// <summary>

@@ -2,13 +2,10 @@
 using UnityEngine.UI;
 using TMPro;
 using System.Linq;
-using System.Globalization;
 using UnityEngine.SceneManagement;
 using SFB;
-using System.IO;
-using System.Runtime.Serialization.Formatters.Binary;
 using System;
-using System.Runtime.Serialization;
+using System.Collections.Generic;
 
 public class LoadMenu : MonoBehaviour
 {
@@ -18,16 +15,14 @@ public class LoadMenu : MonoBehaviour
     [SerializeField]
     private GameObject loadMenu;
     [SerializeField]
-    private TextMeshProUGUI title;
+    private GameObject importMenu;
     [SerializeField]
     private TextMeshProUGUI noSavedGamesText;
+    [SerializeField]
+    private GameObject buttonsContainer;
 
     [SerializeField]
-    private Button slotOneButton;
-    [SerializeField]
-    private Button slotTwoButton;
-    [SerializeField]
-    private Button slotThreeButton;
+    private Button slotTemplateButton;
     [SerializeField]
     private Button importButton;
 
@@ -35,15 +30,15 @@ public class LoadMenu : MonoBehaviour
     [SerializeField]
     private AudioClip buttonClick;
 
-    private SavedGame[] savedGames;
+    public SavedGame[] TempSavedGames;
     private AudioSource audioSource;
-    private string importSavePath = null;
-    private SavedGame tempSavedGame;
+    private ImportMenu importMenuScript;
 
     private void Start()
     {
         audioSource = GetComponent<AudioSource>();
-        savedGames = new SavedGame[] { null, null, null };
+        TempSavedGames = new SavedGame[SlotButtons.SaveSlots];
+        importMenuScript = GetComponent<ImportMenu>();
         ManageSaves();
     }
 
@@ -54,24 +49,12 @@ public class LoadMenu : MonoBehaviour
     public void LoadGame(int slot)
     {
         audioSource.PlayOneShot(buttonClick);
+        TempSavedGames[slot - 1].LastLoaded = DateTime.Now;
+        if (!SaveSystem.SaveGame(TempSavedGames[slot - 1], slot))
+            return;
 
-        if (importSavePath is null)
-        {
-            savedGames[slot - 1].LastLoaded = DateTime.Now;
-            SaveSystem.SaveGame(savedGames[slot - 1], slot);
-
-            Game.SaveGame = savedGames[slot - 1];
-            SceneManager.LoadScene("Level");
-        }
-        else
-        {
-            string newFilePath = Path.Combine(Application.persistentDataPath, $"slot{slot}.sav");
-            File.Copy(importSavePath, newFilePath);
-            importSavePath = null;
-            title.text = "Load Game";
-            importButton.interactable = true;
-            ManageSaves();
-        }
+        Game.SaveGame = TempSavedGames[slot - 1];
+        SceneManager.LoadScene("Level");
     }
 
     /// <summary>
@@ -79,6 +62,8 @@ public class LoadMenu : MonoBehaviour
     /// </summary>
     public void ImportSave()
     {
+        audioSource.PlayOneShot(buttonClick);
+
         ExtensionFilter[] extensionFilters = new ExtensionFilter[]
         {
             new ExtensionFilter("Unity Save Files", "sav"),
@@ -89,138 +74,51 @@ public class LoadMenu : MonoBehaviour
 
         if (files.Length == 1)
         {
-            bool isValid = true;
-
-            try
-            {
-                BinaryFormatter formatter = new BinaryFormatter();
-                MemoryStream stream = new MemoryStream();
-                byte[] bytes = File.ReadAllBytes(files[0]);
-
-                stream.Write(bytes, 0, bytes.Length);
-                stream.Position = 0;
-                tempSavedGame = formatter.Deserialize(stream) as SavedGame;
-            }
-            catch (SerializationException)
-            {
-                isValid = false;
-            }
-
-            if (isValid && tempSavedGame != null && tempSavedGame.CurrentTetromino != null && tempSavedGame.NextTetromino != null && tempSavedGame.Minos != null)
-            {
-                title.text = "Select Slot";
-                importSavePath = files[0];
-                importButton.interactable = false;
-                slotOneButton.gameObject.SetActive(true);
-                slotTwoButton.gameObject.SetActive(true);
-                slotThreeButton.gameObject.SetActive(true);
-
-                if (!SaveSystem.DoesSaveGameExist(1))
-                {
-                    TMP_Text timeStampText = slotOneButton.GetComponentsInChildren<TMP_Text>(true).FirstOrDefault(x => x.gameObject.name == "TimestampText");
-                    Button deleteButton = slotOneButton.GetComponentsInChildren<Button>(true).FirstOrDefault(x => x.gameObject.name == "DeleteButton");
-
-                    timeStampText.text = "";
-                    deleteButton.gameObject.SetActive(false);
-                }
-                if (!SaveSystem.DoesSaveGameExist(2))
-                {
-                    TMP_Text timeStampText = slotTwoButton.GetComponentsInChildren<TMP_Text>(true).FirstOrDefault(x => x.gameObject.name == "TimestampText");
-                    Button deleteButton = slotTwoButton.GetComponentsInChildren<Button>(true).FirstOrDefault(x => x.gameObject.name == "DeleteButton");
-
-                    timeStampText.text = "";
-                    deleteButton.gameObject.SetActive(false);
-                }
-                if (!SaveSystem.DoesSaveGameExist(3))
-                {
-                    TMP_Text timeStampText = slotThreeButton.GetComponentsInChildren<TMP_Text>(true).FirstOrDefault(x => x.gameObject.name == "TimestampText");
-                    Button deleteButton = slotThreeButton.GetComponentsInChildren<Button>(true).FirstOrDefault(x => x.gameObject.name == "DeleteButton");
-
-                    timeStampText.text = "";
-                    deleteButton.gameObject.SetActive(false);
-                }
-            }
+            ImportMenu.ImportSavePath = files[0];
+            importMenuScript.GetSaves();
+            loadMenu.SetActive(false);
+            importMenu.SetActive(true);
         }
     }
 
     /// <summary>
     /// Checks if any of the save slots exists and activates the save slots
     /// </summary>
-    /// <param name="loadSaves">If it should load the games from the save slots</param>
-    private void ManageSaves(bool loadSaves = true)
+    /// <param name="useLoadedSaves">If the loaded saves should be used</param>
+    public void ManageSaves(bool useLoadedSaves = true)
     {
-        if (SaveSystem.DoesSaveGameExist(1))
+        var (buttons, savedGames) = SlotButtons.GetSaves(slotTemplateButton, TempSavedGames, hideIfNoSave: true);
+        foreach (Button slotButton in buttons)
         {
-            var (isValid, game) = SaveSystem.LoadGame(1);
+            int index = buttons.IndexOf(slotButton);
+            Button deleteButton = slotButton.transform.GetComponentsInChildren<Button>(true).FirstOrDefault(x => x.gameObject.name == "DeleteButton");
+            TMP_Text timeStampText = slotButton.GetComponentsInChildren<TMP_Text>(true).FirstOrDefault(x => x.gameObject.name == "TimestampText");
+            SavedGame savedGame = null;
 
-            if (isValid)
+            if (useLoadedSaves)
+                savedGame = savedGames.FirstOrDefault(x => x.Slot == index + 1);
+            else if (TempSavedGames[index] != null)
+                savedGame = TempSavedGames[index];
+
+            if (savedGame != null)
             {
-                TMP_Text timeStampText = slotOneButton.GetComponentsInChildren<TMP_Text>(true).FirstOrDefault(x => x.gameObject.name == "TimestampText");
-                Button deleteButton = slotOneButton.GetComponentsInChildren<Button>(true).FirstOrDefault(x => x.gameObject.name == "DeleteButton");
-
-                if (loadSaves && tempSavedGame is null)
-                    savedGames[0] = game as SavedGame;
-                else if (tempSavedGame != null)
-                    savedGames[0] = tempSavedGame;
-
-                timeStampText.text = savedGames[0].TimeStamp.ToString(CultureInfo.CurrentCulture);
-                deleteButton.gameObject.SetActive(true);
-                slotOneButton.gameObject.SetActive(true);
+                slotButton.onClick.AddListener(() => LoadGame(index + 1));
+                deleteButton.onClick.AddListener(() => DeleteSave(index + 1));
+                if (useLoadedSaves)
+                    TempSavedGames[index] = savedGame;
             }
         }
-        else
-            slotOneButton.gameObject.SetActive(false);
 
-        if (SaveSystem.DoesSaveGameExist(2))
+        if (savedGames.Count == 0)
         {
-            var (isValid, game) = SaveSystem.LoadGame(2);
-
-            if (isValid)
-            {
-                TMP_Text timeStampText = slotTwoButton.GetComponentsInChildren<TMP_Text>(true).FirstOrDefault(x => x.gameObject.name == "TimestampText");
-                Button deleteButton = slotTwoButton.GetComponentsInChildren<Button>(true).FirstOrDefault(x => x.gameObject.name == "DeleteButton");
-
-                if (loadSaves && tempSavedGame is null)
-                    savedGames[1] = game as SavedGame;
-                else if (tempSavedGame != null)
-                    savedGames[1] = tempSavedGame;
-
-                timeStampText.text = savedGames[1].TimeStamp.ToString(CultureInfo.CurrentCulture);
-                deleteButton.gameObject.SetActive(true);
-                slotTwoButton.gameObject.SetActive(true);
-            }
-        }
-        else
-            slotTwoButton.gameObject.SetActive(false);
-
-        if (SaveSystem.DoesSaveGameExist(3))
-        {
-            var (isValid, game) = SaveSystem.LoadGame(3);
-
-            if (isValid)
-            {
-                TMP_Text timeStampText = slotThreeButton.GetComponentsInChildren<TMP_Text>(true).FirstOrDefault(x => x.gameObject.name == "TimestampText");
-                Button deleteButton = slotThreeButton.GetComponentsInChildren<Button>(true).FirstOrDefault(x => x.gameObject.name == "DeleteButton");
-
-                if (loadSaves && tempSavedGame is null)
-                    savedGames[2] = game as SavedGame;
-                else if (tempSavedGame != null)
-                    savedGames[2] = tempSavedGame;
-
-                timeStampText.text = savedGames[2].TimeStamp.ToString(CultureInfo.CurrentCulture);
-                deleteButton.gameObject.SetActive(true);
-                slotThreeButton.gameObject.SetActive(true);
-            }
-        }
-        else
-            slotThreeButton.gameObject.SetActive(false);
-
-        if (savedGames[0] == null && savedGames[1] == null && savedGames[2] == null)
             noSavedGamesText.gameObject.SetActive(true);
+            buttonsContainer.SetActive(false);
+        }
         else
+        {
             noSavedGamesText.gameObject.SetActive(false);
-
-        tempSavedGame = null;
+            buttonsContainer.SetActive(true);
+        }
     }
 
     /// <summary>
@@ -231,7 +129,7 @@ public class LoadMenu : MonoBehaviour
     {
         audioSource.PlayOneShot(buttonClick);
         SaveSystem.DeleteSaveGame(slot);
-        savedGames[slot - 1] = null;
+        TempSavedGames[slot - 1] = null;
         ManageSaves(false);
     }
 
@@ -243,8 +141,6 @@ public class LoadMenu : MonoBehaviour
         audioSource.PlayOneShot(buttonClick);
         loadMenu.SetActive(false);
         gameMenu.SetActive(true);
-        title.text = "Load Game";
-        importSavePath = null;
         importButton.interactable = true;
         ManageSaves(false);
     }

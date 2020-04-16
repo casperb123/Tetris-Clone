@@ -1,7 +1,6 @@
 ﻿using System;
-using System.Globalization;
+using System.Collections.Generic;
 using System.Linq;
-using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -14,61 +13,40 @@ public class SaveMenu : MonoBehaviour
     private GameObject saveMenu;
 
     [SerializeField]
-    private Button slotOneButton;
-    [SerializeField]
-    private Button slotTwoButton;
-    [SerializeField]
-    private Button slotThreeButton;
+    private Button slotTemplateButton;
 
-    private SavedGame[] savedGames;
+    private SavedGame[] tempSavedGames;
     private AudioSource audioSource;
 
     private void Start()
     {
-        savedGames = new SavedGame[] { null, null, null };
+        tempSavedGames = new SavedGame[SlotButtons.SaveSlots];
         audioSource = GetComponent<AudioSource>();
+        GetSaves();
+    }
 
-        if (SaveSystem.DoesSaveGameExist(1))
+    /// <summary>
+    /// Gets all the saved games and activates/deactivates the save buttons
+    /// </summary>
+    public void GetSaves(bool useLoadedSaves = true)
+    {
+        var (buttons, savedGames) = SlotButtons.GetSaves(slotTemplateButton, tempSavedGames, true);
+
+        foreach (Button slotButton in buttons)
         {
-            var (isValid, game) = SaveSystem.LoadGame(1);
+            int index = buttons.IndexOf(slotButton);
+            Button deleteButton = buttons[index].GetComponentsInChildren<Button>(true).FirstOrDefault(x => x.gameObject.name == "DeleteButton");
+            SavedGame savedGame = null;
 
-            if (isValid)
-            {
-                TMP_Text timeStampText = slotOneButton.GetComponentsInChildren<TMP_Text>().FirstOrDefault(x => x.gameObject.name == "TimestampText");
-                Button deleteButton = slotOneButton.GetComponentsInChildren<Button>(true).FirstOrDefault(x => x.gameObject.name == "DeleteButton");
+            if (useLoadedSaves)
+                savedGame = savedGames.FirstOrDefault(x => x.Slot == index + 1);
+            else if (tempSavedGames[index] != null)
+                savedGame = tempSavedGames[index];
 
-                savedGames[0] = game as SavedGame;
-                timeStampText.text = savedGames[0].TimeStamp.ToString(CultureInfo.CurrentCulture);
-                deleteButton.gameObject.SetActive(true);
-            }
-        }
-        if (SaveSystem.DoesSaveGameExist(2))
-        {
-            var (isValid, game) = SaveSystem.LoadGame(2);
+            slotButton.onClick.AddListener(() => SaveGame(index + 1));
 
-            if (isValid)
-            {
-                TMP_Text timeStampText = slotTwoButton.GetComponentsInChildren<TMP_Text>().FirstOrDefault(x => x.gameObject.name == "TimestampText");
-                Button deleteButton = slotTwoButton.GetComponentsInChildren<Button>(true).FirstOrDefault(x => x.gameObject.name == "DeleteButton");
-
-                savedGames[1] = game as SavedGame;
-                timeStampText.text = savedGames[1].TimeStamp.ToString(CultureInfo.CurrentCulture);
-                deleteButton.gameObject.SetActive(true);
-            }
-        }
-        if (SaveSystem.DoesSaveGameExist(3))
-        {
-            var (isValid, game) = SaveSystem.LoadGame(3);
-
-            if (isValid)
-            {
-                TMP_Text timeStampText = slotThreeButton.GetComponentsInChildren<TMP_Text>().FirstOrDefault(x => x.gameObject.name == "TimestampText");
-                Button deleteButton = slotThreeButton.GetComponentsInChildren<Button>(true).FirstOrDefault(x => x.gameObject.name == "DeleteButton");
-
-                savedGames[2] = game as SavedGame;
-                timeStampText.text = savedGames[2].TimeStamp.ToString(CultureInfo.CurrentCulture);
-                deleteButton.gameObject.SetActive(true);
-            }
+            if (savedGame != null)
+                deleteButton.onClick.AddListener(() => DeleteSave(index + 1));
         }
     }
 
@@ -86,16 +64,7 @@ public class SaveMenu : MonoBehaviour
         if (Game.Instance.SavedTetromino != null)
             savedTetromino = new SavedTetromino(Game.Instance.SavedTetromino.name.Replace("(Clone)", ""));
 
-        SavedGame saveGame = new SavedGame
-        {
-            LastLoaded = DateTime.Now,
-            Score = Game.Instance.CurrentScore,
-            Lines = Game.Instance.TotalLinesCleared,
-            Name = Game.Instance.Name,
-            CurrentTetromino = currentTetromino,
-            NextTetromino = nextTetromino,
-            SavedTetromino = savedTetromino
-        };
+        SavedGame saveGame = new SavedGame(slot, DateTime.Now, Game.Instance.Name, Game.Instance.CurrentScore, Game.Instance.TotalLinesCleared, currentTetromino, nextTetromino, savedTetromino);
 
         for (int x = 0; x < Game.Instance.GridWidth; x++)
         {
@@ -130,41 +99,11 @@ public class SaveMenu : MonoBehaviour
             }
         }
 
-        savedGames[slot - 1] = saveGame;
-        SaveSystem.SaveGame(savedGames[slot - 1], slot);
-        ActivateSaveSlot(slot);
-    }
+        if (!SaveSystem.SaveGame(saveGame, slot))
+            return;
 
-    /// <summary>
-    /// Activates the save slot
-    /// </summary>
-    /// <param name="slot">The slot to activate</param>
-    private void ActivateSaveSlot(int slot)
-    {
-        if (slot == 1)
-        {
-            Button deleteButton = slotOneButton.GetComponentsInChildren<Button>(true).FirstOrDefault(x => x.gameObject.name == "DeleteButton");
-            TMP_Text timeStampText = slotOneButton.GetComponentsInChildren<TMP_Text>().FirstOrDefault(x => x.gameObject.name == "TimestampText");
-
-            deleteButton.gameObject.SetActive(true);
-            timeStampText.text = savedGames[slot - 1].TimeStamp.ToString(CultureInfo.CurrentCulture);
-        }
-        else if (slot == 2)
-        {
-            Button deleteButton = slotTwoButton.GetComponentsInChildren<Button>(true).FirstOrDefault(x => x.gameObject.name == "DeleteButton");
-            TMP_Text timeStampText = slotTwoButton.GetComponentsInChildren<TMP_Text>().FirstOrDefault(x => x.gameObject.name == "TimestampText");
-
-            deleteButton.gameObject.SetActive(true);
-            timeStampText.text = savedGames[slot - 1].TimeStamp.ToString(CultureInfo.CurrentCulture);
-        }
-        else if (slot == 3)
-        {
-            Button deleteButton = slotThreeButton.GetComponentsInChildren<Button>(true).FirstOrDefault(x => x.gameObject.name == "DeleteButton");
-            TMP_Text timeStampText = slotThreeButton.GetComponentsInChildren<TMP_Text>().FirstOrDefault(x => x.gameObject.name == "TimestampText");
-
-            deleteButton.gameObject.SetActive(true);
-            timeStampText.text = savedGames[slot - 1].TimeStamp.ToString(CultureInfo.CurrentCulture);
-        }
+        tempSavedGames[slot - 1] = saveGame;
+        GetSaves(false);
     }
 
     /// <summary>
@@ -174,33 +113,11 @@ public class SaveMenu : MonoBehaviour
     public void DeleteSave(int slot)
     {
         audioSource.Play();
-        SaveSystem.DeleteSaveGame(slot);
-        savedGames[slot - 1] = null;
+        if (!SaveSystem.DeleteSaveGame(slot))
+            return;
 
-        if (slot == 1)
-        {
-            Button deleteButton = slotOneButton.GetComponentsInChildren<Button>().FirstOrDefault(x => x.gameObject.name == "DeleteButton");
-            TMP_Text timeStampText = slotOneButton.GetComponentsInChildren<TMP_Text>().FirstOrDefault(x => x.gameObject.name == "TimestampText");
-
-            deleteButton.gameObject.SetActive(false);
-            timeStampText.text = string.Empty;
-        }
-        else if (slot == 2)
-        {
-            Button deleteButton = slotTwoButton.GetComponentsInChildren<Button>().FirstOrDefault(x => x.gameObject.name == "DeleteButton");
-            TMP_Text timeStampText = slotTwoButton.GetComponentsInChildren<TMP_Text>().FirstOrDefault(x => x.gameObject.name == "TimestampText");
-
-            deleteButton.gameObject.SetActive(false);
-            timeStampText.text = string.Empty;
-        }
-        else if (slot == 3)
-        {
-            Button deleteButton = slotThreeButton.GetComponentsInChildren<Button>().FirstOrDefault(x => x.gameObject.name == "DeleteButton");
-            TMP_Text timeStampText = slotThreeButton.GetComponentsInChildren<TMP_Text>().FirstOrDefault(x => x.gameObject.name == "TimestampText");
-
-            deleteButton.gameObject.SetActive(false);
-            timeStampText.text = string.Empty;
-        }
+        tempSavedGames[slot - 1] = null;
+        GetSaves(false);
     }
 
     /// <summary>
