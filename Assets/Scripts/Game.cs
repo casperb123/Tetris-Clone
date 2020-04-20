@@ -14,6 +14,7 @@ public class Game : MonoBehaviour
     public static bool StartingAtLevelZero;
     public static int StartingLevel;
     public static SavedGame SaveGame;
+    public static bool SaveGameChanged;
 
     [Header("Game Settings")]
     public int GridWidth = 10;
@@ -813,6 +814,7 @@ public class Game : MonoBehaviour
         }
 
         SpawnGhostTetromino();
+        SaveGameChanged = true;
     }
 
     /// <summary>

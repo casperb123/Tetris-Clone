@@ -30,6 +30,11 @@ public class LoadMenu : MonoBehaviour
     [SerializeField]
     private AudioClip buttonClick;
 
+    [Header("General Settings")]
+    [SerializeField]
+    private GameObject dialogTemplate;
+
+    [HideInInspector]
     public SavedGame[] TempSavedGames;
     private AudioSource audioSource;
     private ImportMenu importMenuScript;
@@ -130,9 +135,26 @@ public class LoadMenu : MonoBehaviour
     public void DeleteSave(int slot)
     {
         audioSource.PlayOneShot(buttonClick);
-        SaveSystem.DeleteSaveGame(slot);
-        TempSavedGames[slot - 1] = null;
-        ManageSaves(false);
+
+        GameObject dialogObject = Instantiate(dialogTemplate, dialogTemplate.transform.parent);
+        Dialog dialog = dialogObject.GetComponent<Dialog>();
+        dialog.onResult += (Dialog.Result result) =>
+        {
+            audioSource.PlayOneShot(buttonClick);
+
+            if (result == Dialog.Result.Yes)
+            {
+                if (!SaveSystem.DeleteSaveGame(slot))
+                    return;
+
+                TempSavedGames[slot - 1] = null;
+                ManageSaves(false);
+            }
+
+            Destroy(dialogObject);
+        };
+
+        dialog.Open(Dialog.Type.YesNo, $"Are you sure that you want to delete the save at save slot {slot}?");
     }
 
     /// <summary>

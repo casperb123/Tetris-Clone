@@ -12,6 +12,14 @@ public class PauseMenu : MonoBehaviour
     private GameObject saveMenu;
     [SerializeField]
     private GameObject playMenu;
+    [SerializeField]
+    private GameObject saveBackButton;
+    [SerializeField]
+    private GameObject saveQuitButton;
+
+    [Header("General Settings")]
+    [SerializeField]
+    private GameObject dialogTemplate;
 
     private AudioSource audioSource;
     private AudioSource audioSourceGameLoop;
@@ -127,9 +135,36 @@ public class PauseMenu : MonoBehaviour
     public void Menu()
     {
         audioSource.Play();
-        Game.Instance.UpdateHighscores();
-        Game.SaveGame = null;
-        SceneManager.LoadScene("GameMenu");
+
+        if (Game.SaveGameChanged)
+        {
+            GameObject dialogObject = Instantiate(dialogTemplate, dialogTemplate.transform.parent);
+            Dialog dialog = dialogObject.GetComponent<Dialog>();
+            dialog.onResult += (Dialog.Result result) =>
+            {
+                audioSource.Play();
+
+                if (result == Dialog.Result.Yes)
+                {
+                    Game.Instance.UpdateHighscores();
+                    Game.SaveGame = null;
+                    SceneManager.LoadScene("GameMenu");
+                }
+                else if (result == Dialog.Result.Save)
+                {
+                    SaveMenu.GoingToMenu = true;
+                    saveQuitButton.SetActive(true);
+                    saveBackButton.SetActive(false);
+
+                    pauseMenu.SetActive(false);
+                    saveMenu.SetActive(true);
+                }
+
+                Destroy(dialogObject);
+            };
+
+            dialog.Open(Dialog.Type.Save, "Are you sure that you want to go to the menu without saving?");
+        }
     }
 
     /// <summary>
@@ -138,6 +173,33 @@ public class PauseMenu : MonoBehaviour
     public void Quit()
     {
         audioSource.Play();
-        Application.Quit();
+
+        if (Game.SaveGameChanged)
+        {
+            GameObject dialogObject = Instantiate(dialogTemplate, dialogTemplate.transform.parent);
+            Dialog dialog = dialogObject.GetComponent<Dialog>();
+            dialog.onResult += (Dialog.Result result) =>
+            {
+                audioSource.Play();
+
+                if (result == Dialog.Result.Yes)
+                    Application.Quit();
+                else if (result == Dialog.Result.Save)
+                {
+                    SaveMenu.Quitting = true;
+                    saveQuitButton.SetActive(true);
+                    saveBackButton.SetActive(false);
+
+                    pauseMenu.SetActive(false);
+                    saveMenu.SetActive(true);
+                }
+
+                Destroy(dialogObject);
+            };
+
+            dialog.Open(Dialog.Type.Save, "Are you sure that you want to quit without saving?");
+        }
+        else
+            Application.Quit();
     }
 }

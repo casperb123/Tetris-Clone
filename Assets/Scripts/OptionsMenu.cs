@@ -3,6 +3,7 @@ using UnityEngine.UI;
 using TMPro;
 using System.Linq;
 using System.Collections.Generic;
+using System;
 
 public class OptionsMenu : MonoBehaviour
 {
@@ -26,11 +27,15 @@ public class OptionsMenu : MonoBehaviour
     [SerializeField]
     private TMP_Dropdown refreshRateDropdown;
     [SerializeField]
-    private Button backButton;
+    private Button okButton;
     [SerializeField]
     private Button applyButton;
     [SerializeField]
-    private Button cancelButton;
+    private Button backButton;
+
+    [Header("General Settings")]
+    [SerializeField]
+    private GameObject dialogTemplate;
 
     private AudioSource audioSource;
     private List<Resolution> resolutions;
@@ -70,9 +75,8 @@ public class OptionsMenu : MonoBehaviour
 
     private void OptionsUpdated()
     {
+        okButton.gameObject.SetActive(true);
         applyButton.gameObject.SetActive(true);
-        cancelButton.gameObject.SetActive(true);
-        backButton.gameObject.SetActive(false);
         OptionsChanged = true;
     }
 
@@ -187,6 +191,12 @@ public class OptionsMenu : MonoBehaviour
         options.Resolution.RefreshRate = refreshRates[index];
     }
 
+    public void Ok()
+    {
+        Apply();
+        Back();
+    }
+
     /// <summary>
     /// Applies and saves the options
     /// </summary>
@@ -195,28 +205,8 @@ public class OptionsMenu : MonoBehaviour
         audioSource.Play();
         SaveSystem.SaveOptions(options);
         OptionsChanged = false;
+        okButton.gameObject.SetActive(false);
         applyButton.gameObject.SetActive(false);
-        cancelButton.gameObject.SetActive(false);
-        backButton.gameObject.SetActive(true);
-    }
-
-    /// <summary>
-    /// Cancels the changes
-    /// </summary>
-    public void Cancel()
-    {
-        audioSource.Play();
-        options = SaveSystem.GetOptions();
-        options.OptionsChanged.AddListener(OptionsUpdated);
-        options.Resolution.ResolutionChanged.AddListener(OptionsUpdated);
-
-        changeOptions = false;
-        SetOptionValues();
-
-        OptionsChanged = false;
-        changeOptions = true;
-        applyButton.gameObject.SetActive(false);
-        cancelButton.gameObject.SetActive(false);
         backButton.gameObject.SetActive(true);
     }
 
@@ -240,7 +230,42 @@ public class OptionsMenu : MonoBehaviour
     public void Back()
     {
         audioSource.Play();
-        optionsMenu.SetActive(false);
-        backMenu.SetActive(true);
+
+        if (!OptionsChanged)
+        {
+            optionsMenu.SetActive(false);
+            backMenu.SetActive(true);
+            return;
+        }
+
+        GameObject dialogObject = Instantiate(dialogTemplate, dialogTemplate.transform.parent);
+        Dialog dialog = dialogObject.GetComponent<Dialog>();
+        dialog.onResult += (Dialog.Result result) =>
+        {
+            audioSource.Play();
+
+            if (result == Dialog.Result.Yes)
+            {
+                options = SaveSystem.GetOptions();
+                options.OptionsChanged.AddListener(OptionsUpdated);
+                options.Resolution.ResolutionChanged.AddListener(OptionsUpdated);
+
+                changeOptions = false;
+                SetOptionValues();
+
+                OptionsChanged = false;
+                changeOptions = true;
+                okButton.gameObject.SetActive(false);
+                applyButton.gameObject.SetActive(false);
+                backButton.gameObject.SetActive(true);
+
+                optionsMenu.SetActive(false);
+                backMenu.SetActive(true);
+            }
+
+            Destroy(dialogObject);
+        };
+
+        dialog.Open(Dialog.Type.YesNo, "Are you sure that you want to go back and cancel the changed options?");
     }
 }

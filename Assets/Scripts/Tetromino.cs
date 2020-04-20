@@ -196,6 +196,8 @@ public class Tetromino : MonoBehaviour
             Game.Instance.UpdateGrid(this);
             PlayMoveAudio();
             Game.Instance.MoveGhostTetromino((int)transform.position.x, transform);
+
+            Game.SaveGameChanged = true;
         }
         else
             // If it isn't we move the tetromino back to the right
@@ -225,7 +227,6 @@ public class Tetromino : MonoBehaviour
             movedImmediateHorizontal = true;
 
         horizontalTimer = 0;
-
         transform.position += Vector3.right;
 
         if (Game.Instance.CheckIsValidPosition(transform))
@@ -233,6 +234,8 @@ public class Tetromino : MonoBehaviour
             Game.Instance.UpdateGrid(this);
             PlayMoveAudio();
             Game.Instance.MoveGhostTetromino((int)transform.position.x, transform);
+
+            Game.SaveGameChanged = true;
         }
         else
             transform.position += Vector3.left;
@@ -261,7 +264,6 @@ public class Tetromino : MonoBehaviour
             movedImmediateVertical = true;
 
         verticalTimer = 0;
-
         transform.position += Vector3.down;
 
         if (Game.Instance.CheckIsValidPosition(transform))
@@ -291,6 +293,7 @@ public class Tetromino : MonoBehaviour
             enabled = false;
         }
 
+        Game.SaveGameChanged = true;
         fallTimer = Time.time;
     }
 
@@ -326,6 +329,8 @@ public class Tetromino : MonoBehaviour
         PlayLandAudio();
         tag = "Untagged";
         enabled = false;
+
+        Game.SaveGameChanged = true;
     }
 
     /// <summary>
@@ -349,8 +354,9 @@ public class Tetromino : MonoBehaviour
             {
                 Game.Instance.UpdateGrid(this);
                 PlayMoveAudio();
-
                 Game.Instance.RotateGhostTetromino(transform.rotation, transform);
+
+                Game.SaveGameChanged = true;
             }
             else
             {
@@ -381,6 +387,8 @@ public class Tetromino : MonoBehaviour
 
                     Game.Instance.RotateGhostTetromino(transform.rotation, transform);
                     Game.Instance.MoveGhostTetromino((int)transform.position.x, transform);
+
+                    Game.SaveGameChanged = true;
                 }
                 else
                 {

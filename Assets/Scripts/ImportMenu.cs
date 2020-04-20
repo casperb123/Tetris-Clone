@@ -24,6 +24,10 @@ public class ImportMenu : MonoBehaviour
     [SerializeField]
     private AudioClip buttonClick;
 
+    [Header("General Settings")]
+    [SerializeField]
+    private GameObject dialogTemplate;
+
     private LoadMenu loadMenuScript;
     private AudioSource audioSource;
     private SavedGame[] tempSavedGames;
@@ -62,29 +66,43 @@ public class ImportMenu : MonoBehaviour
     {
         audioSource.PlayOneShot(buttonClick);
 
-        try
+        GameObject dialogObject = Instantiate(dialogTemplate, dialogTemplate.transform.parent);
+        Dialog dialog = dialogObject.GetComponent<Dialog>();
+        dialog.onResult += (Dialog.Result result) =>
         {
-            BinaryFormatter formatter = new BinaryFormatter();
-            MemoryStream stream = new MemoryStream();
-            byte[] bytes = File.ReadAllBytes(ImportSavePath);
+            audioSource.PlayOneShot(buttonClick);
 
-            stream.Write(bytes, 0, bytes.Length);
-            stream.Position = 0;
-
-            if (formatter.Deserialize(stream) is SavedGame savedGame && savedGame.CurrentTetromino != null && savedGame.NextTetromino != null && savedGame.Minos != null)
+            if (result == Dialog.Result.Yes)
             {
-                savedGame.Slot = slot;
+                try
+                {
+                    BinaryFormatter formatter = new BinaryFormatter();
+                    MemoryStream stream = new MemoryStream();
+                    byte[] bytes = File.ReadAllBytes(ImportSavePath);
 
-                if (SaveSystem.SaveGame(savedGame, slot))
-                    tempSavedGames[slot - 1] = savedGame;
+                    stream.Write(bytes, 0, bytes.Length);
+                    stream.Position = 0;
+
+                    if (formatter.Deserialize(stream) is SavedGame savedGame && savedGame.CurrentTetromino != null && savedGame.NextTetromino != null && savedGame.Minos != null)
+                    {
+                        savedGame.Slot = slot;
+
+                        if (SaveSystem.SaveGame(savedGame, slot))
+                            tempSavedGames[slot - 1] = savedGame;
+                    }
+                }
+                catch (SerializationException)
+                {
+                    Back();
+                }
+
+                Back();
             }
-        }
-        catch (SerializationException)
-        {
-            Back();
-        }
 
-        Back();
+            Destroy(dialogObject);
+        };
+
+        dialog.Open(Dialog.Type.YesNo, $"Are you sure that you want to import into save slot {slot}?");
     }
 
     public void Cancel()

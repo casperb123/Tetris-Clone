@@ -2,18 +2,25 @@
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class SaveMenu : MonoBehaviour
 {
+    public static bool Quitting;
+    public static bool GoingToMenu;
+
     [Header("UI Settings")]
     [SerializeField]
     private GameObject pauseMenu;
     [SerializeField]
     private GameObject saveMenu;
-
     [SerializeField]
     private Button slotTemplateButton;
+
+    [Header("General Settings")]
+    [SerializeField]
+    private GameObject dialogTemplate;
 
     private SavedGame[] tempSavedGames;
     private AudioSource audioSource;
@@ -62,54 +69,183 @@ public class SaveMenu : MonoBehaviour
     public void SaveGame(int slot)
     {
         audioSource.Play();
-        SavedTetromino currentTetromino = new SavedTetromino(Game.Instance.CurrentTetromino.name.Replace("(Clone)", ""), Game.Instance.CurrentTetromino.transform.position.x, Game.Instance.CurrentTetromino.transform.position.y, (int)Game.Instance.CurrentTetromino.transform.rotation.eulerAngles.z);
-        SavedTetromino nextTetromino = new SavedTetromino(Game.Instance.NextTetromino.name.Replace("(Clone)", ""));
-        SavedTetromino savedTetromino = null;
 
-        if (Game.Instance.SavedTetromino != null)
-            savedTetromino = new SavedTetromino(Game.Instance.SavedTetromino.name.Replace("(Clone)", ""));
-
-        SavedGame saveGame = new SavedGame(slot, DateTime.Now, Game.Instance.Name, Game.Instance.CurrentScore, Game.Instance.TotalLinesCleared, currentTetromino, nextTetromino, savedTetromino);
-
-        for (int x = 0; x < Game.Instance.GridWidth; x++)
+        if (SaveSystem.DoesSaveGameExist(slot))
         {
-            for (int y = 0; y < Game.Instance.GridHeight; y++)
+            GameObject dialogObject = Instantiate(dialogTemplate, dialogTemplate.transform.parent);
+            Dialog dialog = dialogObject.GetComponent<Dialog>();
+            dialog.onResult += (Dialog.Result result) =>
             {
-                Transform mino = Game.Instance.Grid[x, y];
-                if (mino is null || mino.parent == null)
-                    continue;
+                audioSource.Play();
 
-                if (mino.parent.TryGetComponent(out Tetromino tetromino))
+                if (result == Dialog.Result.Yes)
                 {
-                    if (tetromino.enabled)
-                        continue;
+                    SavedTetromino currentTetromino = new SavedTetromino(Game.Instance.CurrentTetromino.name.Replace("(Clone)", ""), Game.Instance.CurrentTetromino.transform.position.x, Game.Instance.CurrentTetromino.transform.position.y, (int)Game.Instance.CurrentTetromino.transform.rotation.eulerAngles.z);
+                    SavedTetromino nextTetromino = new SavedTetromino(Game.Instance.NextTetromino.name.Replace("(Clone)", ""));
+                    SavedTetromino savedTetromino = null;
+
+                    if (Game.Instance.SavedTetromino != null)
+                        savedTetromino = new SavedTetromino(Game.Instance.SavedTetromino.name.Replace("(Clone)", ""));
+
+                    SavedGame saveGame = new SavedGame(slot, DateTime.Now, Game.Instance.Name, Game.Instance.CurrentScore, Game.Instance.TotalLinesCleared, currentTetromino, nextTetromino, savedTetromino);
+
+                    for (int x = 0; x < Game.Instance.GridWidth; x++)
+                    {
+                        for (int y = 0; y < Game.Instance.GridHeight; y++)
+                        {
+                            Transform mino = Game.Instance.Grid[x, y];
+                            if (mino is null || mino.parent == null)
+                                continue;
+
+                            if (mino.parent.TryGetComponent(out Tetromino tetromino))
+                            {
+                                if (tetromino.enabled)
+                                    continue;
+                            }
+
+                            string name = mino.name.Replace("(Clone)", "");
+                            int nameIndex = name.IndexOf(' ');
+
+                            if (nameIndex != -1)
+                                name = mino.name.Substring(0, nameIndex);
+
+                            Vector2 pos = Game.Instance.Round(mino.position);
+
+                            SavedMino savedMino = new SavedMino
+                            {
+                                Name = name,
+                                PositionX = (int)pos.x,
+                                PositionY = (int)pos.y
+                            };
+
+                            saveGame.Minos.Add(savedMino);
+                        }
+                    }
+
+                    if (!SaveSystem.SaveGame(saveGame, slot))
+                        return;
+
+                    tempSavedGames[slot - 1] = saveGame;
+                    Game.SaveGame = saveGame;
+                    GetSaves(false);
+                    Game.SaveGameChanged = false;
+
+                    if (Quitting)
+                    {
+                        Destroy(dialogObject);
+
+                        GameObject newDialogObject = Instantiate(dialogTemplate, dialogTemplate.transform.parent);
+                        Dialog newDialog = newDialogObject.GetComponent<Dialog>();
+                        newDialog.onResult += (_) =>
+                        {
+                            audioSource.Play();
+                            Quitting = false;
+                            Application.Quit();
+                        };
+
+                        newDialog.Open(Dialog.Type.Ok, $"Your game has been successfully saved to save slot {slot}. The game will now quit");
+                    }
+                    else if (GoingToMenu)
+                    {
+                        Destroy(dialogObject);
+
+                        GameObject newDialogObject = Instantiate(dialogTemplate, dialogTemplate.transform.parent);
+                        Dialog newDialog = newDialogObject.GetComponent<Dialog>();
+                        newDialog.onResult += (_) =>
+                        {
+                            audioSource.Play();
+                            GoingToMenu = false;
+                            SceneManager.LoadScene("GameMenu");
+                        };
+
+                        newDialog.Open(Dialog.Type.Ok, $"Your game has been successfully saved to save slot {slot}. Going back to the menu");
+                    }
                 }
 
-                string name = mino.name.Replace("(Clone)", "");
-                int nameIndex = name.IndexOf(' ');
+                Destroy(dialogObject);
+            };
 
-                if (nameIndex != -1)
-                    name = mino.name.Substring(0, nameIndex);
+            dialog.Open(Dialog.Type.YesNo, $"Are you sure that you want to overwrite the save at save slot {slot}?");
+        }
+        else
+        {
+            SavedTetromino currentTetromino = new SavedTetromino(Game.Instance.CurrentTetromino.name.Replace("(Clone)", ""), Game.Instance.CurrentTetromino.transform.position.x, Game.Instance.CurrentTetromino.transform.position.y, (int)Game.Instance.CurrentTetromino.transform.rotation.eulerAngles.z);
+            SavedTetromino nextTetromino = new SavedTetromino(Game.Instance.NextTetromino.name.Replace("(Clone)", ""));
+            SavedTetromino savedTetromino = null;
 
-                Vector2 pos = Game.Instance.Round(mino.position);
+            if (Game.Instance.SavedTetromino != null)
+                savedTetromino = new SavedTetromino(Game.Instance.SavedTetromino.name.Replace("(Clone)", ""));
 
-                SavedMino savedMino = new SavedMino
+            SavedGame saveGame = new SavedGame(slot, DateTime.Now, Game.Instance.Name, Game.Instance.CurrentScore, Game.Instance.TotalLinesCleared, currentTetromino, nextTetromino, savedTetromino);
+
+            for (int x = 0; x < Game.Instance.GridWidth; x++)
+            {
+                for (int y = 0; y < Game.Instance.GridHeight; y++)
                 {
-                    Name = name,
-                    PositionX = (int)pos.x,
-                    PositionY = (int)pos.y
+                    Transform mino = Game.Instance.Grid[x, y];
+                    if (mino is null || mino.parent == null)
+                        continue;
+
+                    if (mino.parent.TryGetComponent(out Tetromino tetromino))
+                    {
+                        if (tetromino.enabled)
+                            continue;
+                    }
+
+                    string name = mino.name.Replace("(Clone)", "");
+                    int nameIndex = name.IndexOf(' ');
+
+                    if (nameIndex != -1)
+                        name = mino.name.Substring(0, nameIndex);
+
+                    Vector2 pos = Game.Instance.Round(mino.position);
+
+                    SavedMino savedMino = new SavedMino
+                    {
+                        Name = name,
+                        PositionX = (int)pos.x,
+                        PositionY = (int)pos.y
+                    };
+
+                    saveGame.Minos.Add(savedMino);
+                }
+            }
+
+            if (!SaveSystem.SaveGame(saveGame, slot))
+                return;
+
+            tempSavedGames[slot - 1] = saveGame;
+            Game.SaveGame = saveGame;
+            GetSaves(false);
+            Game.SaveGameChanged = false;
+
+            if (Quitting)
+            {
+                GameObject dialogObject = Instantiate(dialogTemplate, dialogTemplate.transform.parent);
+                Dialog dialog = dialogObject.GetComponent<Dialog>();
+                dialog.onResult += (_) =>
+                {
+                    audioSource.Play();
+                    Quitting = false;
+                    Application.Quit();
                 };
 
-                saveGame.Minos.Add(savedMino);
+                dialog.Open(Dialog.Type.Ok, $"Your game has been successfully saved to save slot {slot}. The game will now quit");
+            }
+            else if (GoingToMenu)
+            {
+                GameObject dialogObject = Instantiate(dialogTemplate, dialogTemplate.transform.parent);
+                Dialog dialog = dialogObject.GetComponent<Dialog>();
+                dialog.onResult += (_) =>
+                {
+                    audioSource.Play();
+                    GoingToMenu = false;
+                    SceneManager.LoadScene("GameMenu");
+                };
+
+                dialog.Open(Dialog.Type.Ok, $"Your game has been successfully saved to save slot {slot}. Going back to the menu");
             }
         }
-
-        if (!SaveSystem.SaveGame(saveGame, slot))
-            return;
-
-        tempSavedGames[slot - 1] = saveGame;
-        Game.SaveGame = saveGame;
-        GetSaves(false);
     }
 
     /// <summary>
@@ -119,14 +255,29 @@ public class SaveMenu : MonoBehaviour
     public void DeleteSave(int slot)
     {
         audioSource.Play();
-        if (!SaveSystem.DeleteSaveGame(slot))
-            return;
 
-        if (tempSavedGames[slot - 1] == Game.SaveGame)
-            Game.SaveGame = null;
+        GameObject dialogObject = Instantiate(dialogTemplate, dialogTemplate.transform.parent);
+        Dialog dialog = dialogObject.GetComponent<Dialog>();
+        dialog.onResult += (Dialog.Result result) =>
+        {
+            audioSource.Play();
 
-        tempSavedGames[slot - 1] = null;
-        GetSaves(false);
+            if (result == Dialog.Result.Yes)
+            {
+                if (!SaveSystem.DeleteSaveGame(slot))
+                    return;
+
+                if (tempSavedGames[slot - 1] == Game.SaveGame)
+                    Game.SaveGame = null;
+
+                tempSavedGames[slot - 1] = null;
+                GetSaves(false);
+            }
+
+            Destroy(dialogObject);
+        };
+
+        dialog.Open(Dialog.Type.YesNo, $"Are you sure that you want to delete the save at save slot {slot}?");
     }
 
     /// <summary>
@@ -137,5 +288,13 @@ public class SaveMenu : MonoBehaviour
         audioSource.Play();
         saveMenu.SetActive(false);
         pauseMenu.SetActive(true);
+    }
+
+    /// <summary>
+    /// Quits the game
+    /// </summary>
+    public void Quit()
+    {
+        Application.Quit();
     }
 }
