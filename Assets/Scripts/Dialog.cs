@@ -16,7 +16,7 @@ public class Dialog : MonoBehaviour
     [SerializeField]
     private GameObject ok;
     [SerializeField]
-    private GameObject saveQuit;
+    private GameObject saveYesNo;
 
     [Header("General Settings")]
     [SerializeField]
@@ -43,10 +43,10 @@ public class Dialog : MonoBehaviour
     {
         YesNo,
         Ok,
-        Save
+        SaveYesNo
     }
 
-    public UnityAction<DialogResult> onResult = (result) =>
+    public UnityAction<DialogResult> OnResult = (result) =>
     {
         Debug.Log($"Result: {result}");
     };
@@ -55,24 +55,24 @@ public class Dialog : MonoBehaviour
     {
         yesNo.SetActive(false);
         ok.SetActive(false);
-        saveQuit.SetActive(false);
+        saveYesNo.SetActive(false);
 
         if (type == DialogType.YesNo)
             yesNo.SetActive(true);
         else if (type == DialogType.Ok)
             ok.SetActive(true);
-        else if (type == DialogType.Save)
-            saveQuit.SetActive(true);
+        else if (type == DialogType.SaveYesNo)
+            saveYesNo.SetActive(true);
 
         textField.text = text;
         image.enabled = true;
         container.SetActive(true);
     }
 
-    public void OnResult(int result)
+    public void Result(int result)
     {
         audioSource.Play();
-        onResult.Invoke((DialogResult)result);
+        OnResult.Invoke((DialogResult)result);
         container.SetActive(false);
         image.enabled = false;
     }

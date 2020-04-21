@@ -72,7 +72,7 @@ public class SaveMenu : MonoBehaviour
 
         if (SaveSystem.DoesSaveGameExist(slot))
         {
-            dialog.onResult += (Dialog.DialogResult result) =>
+            dialog.OnResult += (Dialog.DialogResult result) =>
             {
                 if (result == Dialog.DialogResult.Yes)
                 {
@@ -128,7 +128,7 @@ public class SaveMenu : MonoBehaviour
 
                     if (Quitting)
                     {
-                        dialog.onResult += (_) =>
+                        dialog.OnResult += (_) =>
                         {
                             Quitting = false;
                             Application.Quit();
@@ -138,7 +138,7 @@ public class SaveMenu : MonoBehaviour
                     }
                     else if (GoingToMenu)
                     {
-                        dialog.onResult += (_) =>
+                        dialog.OnResult += (_) =>
                         {
                             GoingToMenu = false;
                             SceneManager.LoadScene("GameMenu");
@@ -205,7 +205,7 @@ public class SaveMenu : MonoBehaviour
 
             if (Quitting)
             {
-                dialog.onResult += (_) =>
+                dialog.OnResult += (_) =>
                 {
                     Quitting = false;
                     Application.Quit();
@@ -215,7 +215,7 @@ public class SaveMenu : MonoBehaviour
             }
             else if (GoingToMenu)
             {
-                dialog.onResult += (_) =>
+                dialog.OnResult += (_) =>
                 {
                     GoingToMenu = false;
                     SceneManager.LoadScene("GameMenu");
@@ -234,7 +234,7 @@ public class SaveMenu : MonoBehaviour
     {
         audioSource.Play();
 
-        dialog.onResult += (Dialog.DialogResult result) =>
+        dialog.OnResult += (Dialog.DialogResult result) =>
         {
             if (result == Dialog.DialogResult.Yes)
             {

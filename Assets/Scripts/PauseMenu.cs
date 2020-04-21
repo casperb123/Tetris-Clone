@@ -138,7 +138,7 @@ public class PauseMenu : MonoBehaviour
 
         if (Game.SaveGameChanged)
         {
-            dialog.onResult += (Dialog.DialogResult result) =>
+            dialog.OnResult += (Dialog.DialogResult result) =>
             {
                 if (result == Dialog.DialogResult.Yes)
                 {
@@ -157,7 +157,7 @@ public class PauseMenu : MonoBehaviour
                 }
             };
 
-            dialog.Open(Dialog.DialogType.Save, "Are you sure that you want to go to the menu without saving?");
+            dialog.Open(Dialog.DialogType.SaveYesNo, "Are you sure that you want to go to the menu without saving?");
         }
         else
             SceneManager.LoadScene("GameMenu");
@@ -172,7 +172,7 @@ public class PauseMenu : MonoBehaviour
 
         if (Game.SaveGameChanged)
         {
-            dialog.onResult += (Dialog.DialogResult result) =>
+            dialog.OnResult += (Dialog.DialogResult result) =>
             {
                 if (result == Dialog.DialogResult.Yes)
                     Application.Quit();
@@ -187,7 +187,7 @@ public class PauseMenu : MonoBehaviour
                 }
             };
 
-            dialog.Open(Dialog.DialogType.Save, "Are you sure that you want to quit without saving?");
+            dialog.Open(Dialog.DialogType.SaveYesNo, "Are you sure that you want to quit without saving?");
         }
         else
             Application.Quit();

@@ -238,7 +238,7 @@ public class OptionsMenu : MonoBehaviour
             return;
         }
 
-        dialog.onResult += (Dialog.DialogResult result) =>
+        dialog.OnResult += (Dialog.DialogResult result) =>
         {
             if (result == Dialog.DialogResult.Yes)
             {

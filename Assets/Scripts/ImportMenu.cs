@@ -66,7 +66,7 @@ public class ImportMenu : MonoBehaviour
     {
         audioSource.PlayOneShot(buttonClick);
 
-        dialog.onResult += (Dialog.DialogResult result) =>
+        dialog.OnResult += (Dialog.DialogResult result) =>
         {
             if (result == Dialog.DialogResult.Yes)
             {
