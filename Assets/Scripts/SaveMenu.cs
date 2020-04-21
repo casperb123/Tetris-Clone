@@ -128,23 +128,13 @@ public class SaveMenu : MonoBehaviour
 
                     if (Quitting)
                     {
-                        dialog.OnResult += (_) =>
-                        {
-                            Quitting = false;
-                            Application.Quit();
-                        };
-
-                        dialog.Open(Dialog.DialogType.Ok, $"Your game has been successfully saved to save slot {slot}. The game will now quit");
+                        Quitting = false;
+                        Application.Quit();
                     }
                     else if (GoingToMenu)
                     {
-                        dialog.OnResult += (_) =>
-                        {
-                            GoingToMenu = false;
-                            SceneManager.LoadScene("GameMenu");
-                        };
-
-                        dialog.Open(Dialog.DialogType.Ok, $"Your game has been successfully saved to save slot {slot}. Going back to the menu");
+                        GoingToMenu = false;
+                        SceneManager.LoadScene("GameMenu");
                     }
                 }
             };

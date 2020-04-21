@@ -78,6 +78,7 @@ public class GameMenu : MonoBehaviour
     public void Play()
     {
         audioSource.PlayOneShot(buttonClick);
+        Game.SaveGame = null;
         Game.StartingLevel = startingLevel;
 
         if (Game.StartingLevel == 0)

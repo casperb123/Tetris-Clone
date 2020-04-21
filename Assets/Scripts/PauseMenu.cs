@@ -23,7 +23,6 @@ public class PauseMenu : MonoBehaviour
 
     private AudioSource audioSource;
     private AudioSource audioSourceGameLoop;
-    private bool isPaused;
     private SavedOptions options;
     private OptionsMenu optionsMenuScript;
 

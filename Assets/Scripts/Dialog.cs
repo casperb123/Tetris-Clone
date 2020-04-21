@@ -25,6 +25,11 @@ public class Dialog : MonoBehaviour
     private AudioSource audioSource;
     private Image image;
 
+    [HideInInspector]
+    public bool IsOpen;
+    [HideInInspector]
+    public DialogType Type;
+
     private void Start()
     {
         audioSource = GetComponent<AudioSource>();
@@ -53,6 +58,8 @@ public class Dialog : MonoBehaviour
 
     public void Open(DialogType type, string text)
     {
+        Type = type;
+        IsOpen = true;
         yesNo.SetActive(false);
         ok.SetActive(false);
         saveYesNo.SetActive(false);
@@ -75,5 +82,6 @@ public class Dialog : MonoBehaviour
         OnResult.Invoke((DialogResult)result);
         container.SetActive(false);
         image.enabled = false;
+        IsOpen = false;
     }
 }

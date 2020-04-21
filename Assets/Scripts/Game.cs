@@ -190,7 +190,7 @@ public class Game : MonoBehaviour
             SaveTetromino(tempTetromino);
         }
 
-        if (Input.GetKeyDown(KeyCode.Return) && playMenu.activeSelf)
+        if (Input.GetKeyDown(KeyCode.Return) && playMenu.activeSelf && !dialog.IsOpen)
             Play();
     }
 
