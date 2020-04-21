@@ -71,6 +71,10 @@ public class Game : MonoBehaviour
     public float HorizontalSpeed = .1f;     // The speed at which the tetromino will move when the left or right arrow is held down
     public float ButtonDownWaitMax = .2f;   // How long to wait before the tetromino recognizes that a button is being held down
 
+    [Header("General Settings")]
+    [SerializeField]
+    private Dialog dialog;
+
     [HideInInspector]
     public int CurrentScore;
     [HideInInspector]
@@ -194,7 +198,15 @@ public class Game : MonoBehaviour
     {
         buttonAudioSource.Play();
         if (string.IsNullOrWhiteSpace(nameField.text))
+        {
+            dialog.Open(Dialog.DialogType.Ok, "The name can't be empty or whitespace");
             return;
+        }
+        else if (SaveSystem.IsNameTaken(nameField.text))
+        {
+            dialog.Open(Dialog.DialogType.Ok, $"The name <b>{nameField.text}</b> is already taken");
+            return;
+        }
 
         Name = nameField.text;
         playMenu.SetActive(false);

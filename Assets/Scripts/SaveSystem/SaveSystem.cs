@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
 using UnityEngine;
@@ -61,6 +62,32 @@ public static class SaveSystem
     }
 
     /// <summary>
+    /// Loads a saved game
+    /// </summary>
+    /// <param name="path">The path to the save file</param>
+    /// <returns>The saved game if it exists</returns>
+    public static (bool isValid, SavedGame game) LoadGame(string path)
+    {
+        try
+        {
+            if (!DoesSaveGameExist(path))
+                return (false, null);
+
+            BinaryFormatter formatter = new BinaryFormatter();
+            MemoryStream stream = new MemoryStream();
+            byte[] bytes = File.ReadAllBytes(path);
+
+            stream.Write(bytes, 0, bytes.Length);
+            stream.Position = 0;
+            return (true, formatter.Deserialize(stream) as SavedGame);
+        }
+        catch (SerializationException)
+        {
+            return (false, null);
+        }
+    }
+
+    /// <summary>
     /// Deletes a saved game
     /// </summary>
     /// <param name="slot">The save slot to delete</param>
@@ -90,6 +117,37 @@ public static class SaveSystem
     public static bool DoesSaveGameExist(int slot)
     {
         return File.Exists(GetSavePath(slot));
+    }
+
+    /// <summary>
+    /// Checks if a saved game with the name exists
+    /// </summary>
+    /// <param name="path">The path to the save file</param>
+    /// <returns>True if the saved game exists, false otherwise</returns>
+    public static bool DoesSaveGameExist(string path)
+    {
+        return File.Exists(path);
+    }
+
+    /// <summary>
+    /// Checks if the name is taken
+    /// </summary>
+    /// <param name="name">The name to check</param>
+    /// <returns>True if the name is taken, false otherwise</returns>
+    public static bool IsNameTaken(string name)
+    {
+        foreach (string saveFile in Directory.GetFiles(Application.persistentDataPath, "*.sav"))
+        {
+            var (isValid, savedGame) = LoadGame(saveFile);
+
+            if (isValid)
+            {
+                if (savedGame.Name.ToLower() == name.ToLower())
+                    return true;
+            }
+        }
+
+        return false;
     }
 
     /// <summary>

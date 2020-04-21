@@ -7070,6 +7070,7 @@ MonoBehaviour:
   VerticalSpeed: 0.05
   HorizontalSpeed: 0.1
   ButtonDownWaitMax: 0.2
+  dialog: {fileID: 1360098177}
   CurrentScore: 0
   CurrentLevel: 0
   TotalLinesCleared: 0
