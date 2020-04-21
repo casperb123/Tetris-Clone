@@ -32,7 +32,7 @@ public class LoadMenu : MonoBehaviour
 
     [Header("General Settings")]
     [SerializeField]
-    private GameObject dialogTemplate;
+    private Dialog dialog;
 
     [HideInInspector]
     public SavedGame[] TempSavedGames;
@@ -136,13 +136,9 @@ public class LoadMenu : MonoBehaviour
     {
         audioSource.PlayOneShot(buttonClick);
 
-        GameObject dialogObject = Instantiate(dialogTemplate, dialogTemplate.transform.parent);
-        Dialog dialog = dialogObject.GetComponent<Dialog>();
-        dialog.onResult += (Dialog.Result result) =>
+        dialog.onResult += (Dialog.DialogResult result) =>
         {
-            audioSource.PlayOneShot(buttonClick);
-
-            if (result == Dialog.Result.Yes)
+            if (result == Dialog.DialogResult.Yes)
             {
                 if (!SaveSystem.DeleteSaveGame(slot))
                     return;
@@ -150,11 +146,9 @@ public class LoadMenu : MonoBehaviour
                 TempSavedGames[slot - 1] = null;
                 ManageSaves(false);
             }
-
-            Destroy(dialogObject);
         };
 
-        dialog.Open(Dialog.Type.YesNo, $"Are you sure that you want to delete the save at save slot {slot}?");
+        dialog.Open(Dialog.DialogType.YesNo, $"Are you sure that you want to delete the save at save slot {slot}?");
     }
 
     /// <summary>

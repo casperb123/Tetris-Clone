@@ -19,7 +19,7 @@ public class PauseMenu : MonoBehaviour
 
     [Header("General Settings")]
     [SerializeField]
-    private GameObject dialogTemplate;
+    private Dialog dialog;
 
     private AudioSource audioSource;
     private AudioSource audioSourceGameLoop;
@@ -67,7 +67,7 @@ public class PauseMenu : MonoBehaviour
 
         pauseMenu.SetActive(true);
         audioSourceGameLoop.Stop();
-        isPaused = true;
+        Game.Instance.IsPaused = true;
         Time.timeScale = 0;
     }
 
@@ -86,7 +86,7 @@ public class PauseMenu : MonoBehaviour
         saveMenu.SetActive(false);
         if (options != null && options.BackgroundMusic)
             audioSourceGameLoop.Play();
-        isPaused = false;
+        Game.Instance.IsPaused = false;
         Time.timeScale = 1;
     }
 
@@ -95,7 +95,7 @@ public class PauseMenu : MonoBehaviour
     /// </summary>
     public void PauseToggle()
     {
-        if (isPaused)
+        if (Game.Instance.IsPaused)
             UnPause();
         else
             Pause();
@@ -138,19 +138,15 @@ public class PauseMenu : MonoBehaviour
 
         if (Game.SaveGameChanged)
         {
-            GameObject dialogObject = Instantiate(dialogTemplate, dialogTemplate.transform.parent);
-            Dialog dialog = dialogObject.GetComponent<Dialog>();
-            dialog.onResult += (Dialog.Result result) =>
+            dialog.onResult += (Dialog.DialogResult result) =>
             {
-                audioSource.Play();
-
-                if (result == Dialog.Result.Yes)
+                if (result == Dialog.DialogResult.Yes)
                 {
                     Game.Instance.UpdateHighscores();
                     Game.SaveGame = null;
                     SceneManager.LoadScene("GameMenu");
                 }
-                else if (result == Dialog.Result.Save)
+                else if (result == Dialog.DialogResult.Save)
                 {
                     SaveMenu.GoingToMenu = true;
                     saveQuitButton.SetActive(true);
@@ -159,12 +155,12 @@ public class PauseMenu : MonoBehaviour
                     pauseMenu.SetActive(false);
                     saveMenu.SetActive(true);
                 }
-
-                Destroy(dialogObject);
             };
 
-            dialog.Open(Dialog.Type.Save, "Are you sure that you want to go to the menu without saving?");
+            dialog.Open(Dialog.DialogType.Save, "Are you sure that you want to go to the menu without saving?");
         }
+        else
+            SceneManager.LoadScene("GameMenu");
     }
 
     /// <summary>
@@ -176,15 +172,11 @@ public class PauseMenu : MonoBehaviour
 
         if (Game.SaveGameChanged)
         {
-            GameObject dialogObject = Instantiate(dialogTemplate, dialogTemplate.transform.parent);
-            Dialog dialog = dialogObject.GetComponent<Dialog>();
-            dialog.onResult += (Dialog.Result result) =>
+            dialog.onResult += (Dialog.DialogResult result) =>
             {
-                audioSource.Play();
-
-                if (result == Dialog.Result.Yes)
+                if (result == Dialog.DialogResult.Yes)
                     Application.Quit();
-                else if (result == Dialog.Result.Save)
+                else if (result == Dialog.DialogResult.Save)
                 {
                     SaveMenu.Quitting = true;
                     saveQuitButton.SetActive(true);
@@ -193,11 +185,9 @@ public class PauseMenu : MonoBehaviour
                     pauseMenu.SetActive(false);
                     saveMenu.SetActive(true);
                 }
-
-                Destroy(dialogObject);
             };
 
-            dialog.Open(Dialog.Type.Save, "Are you sure that you want to quit without saving?");
+            dialog.Open(Dialog.DialogType.Save, "Are you sure that you want to quit without saving?");
         }
         else
             Application.Quit();

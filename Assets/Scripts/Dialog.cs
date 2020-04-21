@@ -4,9 +4,11 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine.UI;
 
 public class Dialog : MonoBehaviour
 {
+    [Header("UI Settings")]
     [SerializeField]
     private TMP_Text textField;
     [SerializeField]
@@ -16,7 +18,20 @@ public class Dialog : MonoBehaviour
     [SerializeField]
     private GameObject saveQuit;
 
-    public enum Result
+    [Header("General Settings")]
+    [SerializeField]
+    private GameObject container;
+
+    private AudioSource audioSource;
+    private Image image;
+
+    private void Start()
+    {
+        audioSource = GetComponent<AudioSource>();
+        image = GetComponent<Image>();
+    }
+
+    public enum DialogResult
     {
         Yes,
         No,
@@ -24,33 +39,41 @@ public class Dialog : MonoBehaviour
         Save
     }
 
-    public enum Type
+    public enum DialogType
     {
         YesNo,
         Ok,
         Save
     }
 
-    public UnityAction<Result> onResult = (result) =>
+    public UnityAction<DialogResult> onResult = (result) =>
     {
         Debug.Log($"Result: {result}");
     };
 
-    public void Open(Type type, string text)
+    public void Open(DialogType type, string text)
     {
-        if (type == Type.YesNo)
+        yesNo.SetActive(false);
+        ok.SetActive(false);
+        saveQuit.SetActive(false);
+
+        if (type == DialogType.YesNo)
             yesNo.SetActive(true);
-        else if (type == Type.Ok)
+        else if (type == DialogType.Ok)
             ok.SetActive(true);
-        else if (type == Type.Save)
+        else if (type == DialogType.Save)
             saveQuit.SetActive(true);
 
         textField.text = text;
-        transform.gameObject.SetActive(true);
+        image.enabled = true;
+        container.SetActive(true);
     }
 
     public void OnResult(int result)
     {
-        onResult.Invoke((Result)result);
+        audioSource.Play();
+        onResult.Invoke((DialogResult)result);
+        container.SetActive(false);
+        image.enabled = false;
     }
 }

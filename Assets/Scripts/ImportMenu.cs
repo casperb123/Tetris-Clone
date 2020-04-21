@@ -26,7 +26,7 @@ public class ImportMenu : MonoBehaviour
 
     [Header("General Settings")]
     [SerializeField]
-    private GameObject dialogTemplate;
+    private Dialog dialog;
 
     private LoadMenu loadMenuScript;
     private AudioSource audioSource;
@@ -66,13 +66,9 @@ public class ImportMenu : MonoBehaviour
     {
         audioSource.PlayOneShot(buttonClick);
 
-        GameObject dialogObject = Instantiate(dialogTemplate, dialogTemplate.transform.parent);
-        Dialog dialog = dialogObject.GetComponent<Dialog>();
-        dialog.onResult += (Dialog.Result result) =>
+        dialog.onResult += (Dialog.DialogResult result) =>
         {
-            audioSource.PlayOneShot(buttonClick);
-
-            if (result == Dialog.Result.Yes)
+            if (result == Dialog.DialogResult.Yes)
             {
                 try
                 {
@@ -98,11 +94,9 @@ public class ImportMenu : MonoBehaviour
 
                 Back();
             }
-
-            Destroy(dialogObject);
         };
 
-        dialog.Open(Dialog.Type.YesNo, $"Are you sure that you want to import into save slot {slot}?");
+        dialog.Open(Dialog.DialogType.YesNo, $"Are you sure that you want to import into save slot {slot}?");
     }
 
     public void Cancel()
@@ -113,7 +107,6 @@ public class ImportMenu : MonoBehaviour
 
     private void Back()
     {
-        ImportSavePath = string.Empty;
         loadMenuScript.TempSavedGames = tempSavedGames;
         loadMenuScript.ManageSaves(false);
         importMenu.SetActive(false);

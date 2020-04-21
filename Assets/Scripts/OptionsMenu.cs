@@ -35,7 +35,7 @@ public class OptionsMenu : MonoBehaviour
 
     [Header("General Settings")]
     [SerializeField]
-    private GameObject dialogTemplate;
+    private Dialog dialog;
 
     private AudioSource audioSource;
     private List<Resolution> resolutions;
@@ -238,13 +238,9 @@ public class OptionsMenu : MonoBehaviour
             return;
         }
 
-        GameObject dialogObject = Instantiate(dialogTemplate, dialogTemplate.transform.parent);
-        Dialog dialog = dialogObject.GetComponent<Dialog>();
-        dialog.onResult += (Dialog.Result result) =>
+        dialog.onResult += (Dialog.DialogResult result) =>
         {
-            audioSource.Play();
-
-            if (result == Dialog.Result.Yes)
+            if (result == Dialog.DialogResult.Yes)
             {
                 options = SaveSystem.GetOptions();
                 options.OptionsChanged.AddListener(OptionsUpdated);
@@ -262,10 +258,8 @@ public class OptionsMenu : MonoBehaviour
                 optionsMenu.SetActive(false);
                 backMenu.SetActive(true);
             }
-
-            Destroy(dialogObject);
         };
 
-        dialog.Open(Dialog.Type.YesNo, "Are you sure that you want to go back and cancel the changed options?");
+        dialog.Open(Dialog.DialogType.YesNo, "Are you sure that you want to go back and cancel the changed options?");
     }
 }

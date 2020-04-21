@@ -20,7 +20,7 @@ public class SaveMenu : MonoBehaviour
 
     [Header("General Settings")]
     [SerializeField]
-    private GameObject dialogTemplate;
+    private Dialog dialog;
 
     private SavedGame[] tempSavedGames;
     private AudioSource audioSource;
@@ -72,13 +72,9 @@ public class SaveMenu : MonoBehaviour
 
         if (SaveSystem.DoesSaveGameExist(slot))
         {
-            GameObject dialogObject = Instantiate(dialogTemplate, dialogTemplate.transform.parent);
-            Dialog dialog = dialogObject.GetComponent<Dialog>();
-            dialog.onResult += (Dialog.Result result) =>
+            dialog.onResult += (Dialog.DialogResult result) =>
             {
-                audioSource.Play();
-
-                if (result == Dialog.Result.Yes)
+                if (result == Dialog.DialogResult.Yes)
                 {
                     SavedTetromino currentTetromino = new SavedTetromino(Game.Instance.CurrentTetromino.name.Replace("(Clone)", ""), Game.Instance.CurrentTetromino.transform.position.x, Game.Instance.CurrentTetromino.transform.position.y, (int)Game.Instance.CurrentTetromino.transform.rotation.eulerAngles.z);
                     SavedTetromino nextTetromino = new SavedTetromino(Game.Instance.NextTetromino.name.Replace("(Clone)", ""));
@@ -132,40 +128,28 @@ public class SaveMenu : MonoBehaviour
 
                     if (Quitting)
                     {
-                        Destroy(dialogObject);
-
-                        GameObject newDialogObject = Instantiate(dialogTemplate, dialogTemplate.transform.parent);
-                        Dialog newDialog = newDialogObject.GetComponent<Dialog>();
-                        newDialog.onResult += (_) =>
+                        dialog.onResult += (_) =>
                         {
-                            audioSource.Play();
                             Quitting = false;
                             Application.Quit();
                         };
 
-                        newDialog.Open(Dialog.Type.Ok, $"Your game has been successfully saved to save slot {slot}. The game will now quit");
+                        dialog.Open(Dialog.DialogType.Ok, $"Your game has been successfully saved to save slot {slot}. The game will now quit");
                     }
                     else if (GoingToMenu)
                     {
-                        Destroy(dialogObject);
-
-                        GameObject newDialogObject = Instantiate(dialogTemplate, dialogTemplate.transform.parent);
-                        Dialog newDialog = newDialogObject.GetComponent<Dialog>();
-                        newDialog.onResult += (_) =>
+                        dialog.onResult += (_) =>
                         {
-                            audioSource.Play();
                             GoingToMenu = false;
                             SceneManager.LoadScene("GameMenu");
                         };
 
-                        newDialog.Open(Dialog.Type.Ok, $"Your game has been successfully saved to save slot {slot}. Going back to the menu");
+                        dialog.Open(Dialog.DialogType.Ok, $"Your game has been successfully saved to save slot {slot}. Going back to the menu");
                     }
                 }
-
-                Destroy(dialogObject);
             };
 
-            dialog.Open(Dialog.Type.YesNo, $"Are you sure that you want to overwrite the save at save slot {slot}?");
+            dialog.Open(Dialog.DialogType.YesNo, $"Are you sure that you want to overwrite the save at save slot {slot}?");
         }
         else
         {
@@ -221,29 +205,23 @@ public class SaveMenu : MonoBehaviour
 
             if (Quitting)
             {
-                GameObject dialogObject = Instantiate(dialogTemplate, dialogTemplate.transform.parent);
-                Dialog dialog = dialogObject.GetComponent<Dialog>();
                 dialog.onResult += (_) =>
                 {
-                    audioSource.Play();
                     Quitting = false;
                     Application.Quit();
                 };
 
-                dialog.Open(Dialog.Type.Ok, $"Your game has been successfully saved to save slot {slot}. The game will now quit");
+                dialog.Open(Dialog.DialogType.Ok, $"Your game has been successfully saved to save slot {slot}. The game will now quit");
             }
             else if (GoingToMenu)
             {
-                GameObject dialogObject = Instantiate(dialogTemplate, dialogTemplate.transform.parent);
-                Dialog dialog = dialogObject.GetComponent<Dialog>();
                 dialog.onResult += (_) =>
                 {
-                    audioSource.Play();
                     GoingToMenu = false;
                     SceneManager.LoadScene("GameMenu");
                 };
 
-                dialog.Open(Dialog.Type.Ok, $"Your game has been successfully saved to save slot {slot}. Going back to the menu");
+                dialog.Open(Dialog.DialogType.Ok, $"Your game has been successfully saved to save slot {slot}. Going back to the menu");
             }
         }
     }
@@ -256,13 +234,9 @@ public class SaveMenu : MonoBehaviour
     {
         audioSource.Play();
 
-        GameObject dialogObject = Instantiate(dialogTemplate, dialogTemplate.transform.parent);
-        Dialog dialog = dialogObject.GetComponent<Dialog>();
-        dialog.onResult += (Dialog.Result result) =>
+        dialog.onResult += (Dialog.DialogResult result) =>
         {
-            audioSource.Play();
-
-            if (result == Dialog.Result.Yes)
+            if (result == Dialog.DialogResult.Yes)
             {
                 if (!SaveSystem.DeleteSaveGame(slot))
                     return;
@@ -273,11 +247,9 @@ public class SaveMenu : MonoBehaviour
                 tempSavedGames[slot - 1] = null;
                 GetSaves(false);
             }
-
-            Destroy(dialogObject);
         };
 
-        dialog.Open(Dialog.Type.YesNo, $"Are you sure that you want to delete the save at save slot {slot}?");
+        dialog.Open(Dialog.DialogType.YesNo, $"Are you sure that you want to delete the save at save slot {slot}?");
     }
 
     /// <summary>

@@ -640,7 +640,7 @@ MonoBehaviour:
   slotTemplateButton: {fileID: 1802615019}
   importButton: {fileID: 73732044}
   buttonClick: {fileID: 8300000, guid: 8c258dca7e08fb1438113b0b75348f71, type: 3}
-  dialogTemplate: {fileID: 2140959345}
+  dialog: {fileID: 2140959347}
   TempSavedGames: []
 --- !u!114 &37731501
 MonoBehaviour:
@@ -658,7 +658,7 @@ MonoBehaviour:
   loadMenu: {fileID: 1685938416}
   importMenu: {fileID: 117226627}
   buttonClick: {fileID: 8300000, guid: 8c258dca7e08fb1438113b0b75348f71, type: 3}
-  dialogTemplate: {fileID: 2140959345}
+  dialog: {fileID: 2140959347}
 --- !u!1 &50064954
 GameObject:
   m_ObjectHideFlags: 0
@@ -7520,7 +7520,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &866825807
 RectTransform:
   m_ObjectHideFlags: 0
@@ -16377,7 +16377,7 @@ MonoBehaviour:
   okButton: {fileID: 2128987826}
   applyButton: {fileID: 667682417}
   backButton: {fileID: 812350589}
-  dialogTemplate: {fileID: 2140959345}
+  dialog: {fileID: 2140959347}
   OptionsChanged: 0
 --- !u!82 &1952632889
 AudioSource:
@@ -17661,7 +17661,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &2140959346
 RectTransform:
   m_ObjectHideFlags: 0
@@ -17698,6 +17698,7 @@ MonoBehaviour:
   yesNo: {fileID: 859949030}
   ok: {fileID: 1705663252}
   saveQuit: {fileID: 1408928956}
+  container: {fileID: 866825806}
 --- !u!82 &2140959348
 AudioSource:
   m_ObjectHideFlags: 0
@@ -17801,7 +17802,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2140959345}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   m_Name: 
