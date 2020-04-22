@@ -25,10 +25,7 @@ public class Dialog : MonoBehaviour
     private AudioSource audioSource;
     private Image image;
 
-    [HideInInspector]
-    public bool IsOpen;
-    [HideInInspector]
-    public DialogType Type;
+    public bool IsOpen { get; private set; }
 
     private void Start()
     {
@@ -58,7 +55,6 @@ public class Dialog : MonoBehaviour
 
     public void Open(DialogType type, string text)
     {
-        Type = type;
         IsOpen = true;
         yesNo.SetActive(false);
         ok.SetActive(false);
