@@ -269,7 +269,8 @@ public class OptionsMenu : MonoBehaviour
                 backButton.gameObject.SetActive(true);
             }
 
-            Back();
+            if (goBack)
+                Back();
         }
     }
 
