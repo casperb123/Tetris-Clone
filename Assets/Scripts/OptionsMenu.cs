@@ -31,6 +31,8 @@ public class OptionsMenu : MonoBehaviour
     [SerializeField]
     private Button applyButton;
     [SerializeField]
+    private Button cancelButton;
+    [SerializeField]
     private Button backButton;
 
     [Header("General Settings")]
@@ -77,6 +79,7 @@ public class OptionsMenu : MonoBehaviour
     {
         okButton.gameObject.SetActive(true);
         applyButton.gameObject.SetActive(true);
+        cancelButton.gameObject.SetActive(true);
         OptionsChanged = true;
     }
 
@@ -191,6 +194,9 @@ public class OptionsMenu : MonoBehaviour
         options.Resolution.RefreshRate = refreshRates[index];
     }
 
+    /// <summary>
+    /// Applies and saves the changes and goes back
+    /// </summary>
     public void Ok()
     {
         Apply();
@@ -198,7 +204,7 @@ public class OptionsMenu : MonoBehaviour
     }
 
     /// <summary>
-    /// Applies and saves the options
+    /// Applies and saves the changes
     /// </summary>
     public void Apply()
     {
@@ -207,7 +213,64 @@ public class OptionsMenu : MonoBehaviour
         OptionsChanged = false;
         okButton.gameObject.SetActive(false);
         applyButton.gameObject.SetActive(false);
+        cancelButton.gameObject.SetActive(false);
         backButton.gameObject.SetActive(true);
+    }
+
+    /// <summary>
+    /// Cancels the changes
+    /// </summary>
+    public void Cancel(bool goBack)
+    {
+        audioSource.Play();
+
+        if (goBack && OptionsChanged)
+        {
+            dialog.OnResult += (Dialog.DialogResult result) =>
+            {
+                if (result == Dialog.DialogResult.Yes)
+                {
+                    options = SaveSystem.GetOptions();
+                    options.OptionsChanged.AddListener(OptionsUpdated);
+                    options.Resolution.ResolutionChanged.AddListener(OptionsUpdated);
+
+                    changeOptions = false;
+                    SetOptionValues();
+
+                    OptionsChanged = false;
+                    changeOptions = true;
+                    okButton.gameObject.SetActive(false);
+                    applyButton.gameObject.SetActive(false);
+                    cancelButton.gameObject.SetActive(false);
+                    backButton.gameObject.SetActive(true);
+
+                    Back();
+                }
+            };
+
+            dialog.Open(Dialog.DialogType.YesNo, "Are you sure that you want to cancel the changes and go back?");
+        }
+        else
+        {
+            if (OptionsChanged)
+            {
+                options = SaveSystem.GetOptions();
+                options.OptionsChanged.AddListener(OptionsUpdated);
+                options.Resolution.ResolutionChanged.AddListener(OptionsUpdated);
+
+                changeOptions = false;
+                SetOptionValues();
+
+                OptionsChanged = false;
+                changeOptions = true;
+                okButton.gameObject.SetActive(false);
+                applyButton.gameObject.SetActive(false);
+                cancelButton.gameObject.SetActive(false);
+                backButton.gameObject.SetActive(true);
+            }
+
+            Back();
+        }
     }
 
     private void SetOptionValues()
@@ -227,39 +290,10 @@ public class OptionsMenu : MonoBehaviour
     /// <summary>
     /// Goes back to the pause or game menu
     /// </summary>
-    public void Back()
+    private void Back()
     {
         audioSource.Play();
-
-        if (!OptionsChanged)
-        {
-            optionsMenu.SetActive(false);
-            backMenu.SetActive(true);
-            return;
-        }
-
-        dialog.OnResult += (Dialog.DialogResult result) =>
-        {
-            if (result == Dialog.DialogResult.Yes)
-            {
-                options = SaveSystem.GetOptions();
-                options.OptionsChanged.AddListener(OptionsUpdated);
-                options.Resolution.ResolutionChanged.AddListener(OptionsUpdated);
-
-                changeOptions = false;
-                SetOptionValues();
-
-                OptionsChanged = false;
-                changeOptions = true;
-                okButton.gameObject.SetActive(false);
-                applyButton.gameObject.SetActive(false);
-                backButton.gameObject.SetActive(true);
-
-                optionsMenu.SetActive(false);
-                backMenu.SetActive(true);
-            }
-        };
-
-        dialog.Open(Dialog.DialogType.YesNo, "Are you sure that you want to go back and cancel the changed options?");
+        optionsMenu.SetActive(false);
+        backMenu.SetActive(true);
     }
 }
