@@ -64,14 +64,29 @@ public class ControlsMenu : MonoBehaviour
                 code == KeyCode.Mouse6)
                 continue;
 
-            if (Input.GetKey(code))
+            if (Input.GetKeyDown(code))
             {
-                TMP_Text buttonText = GetButtonText(changingControl);
+                bool keyTaken = controls.Where(x => x != changingControl).Any(x => x.Key == code);
 
-                changingControl.Key = code;
-                changingControl = null;
-                buttonText.text = code.ToString();
-                return;
+                if (keyTaken)
+                {
+                    dialog.OnResult += (_) =>
+                    {
+                        CancelChange();
+                        return;
+                    };
+
+                    dialog.Open(Dialog.DialogType.Ok, $"The key <b>{code}</b> is already taken by another control");
+                }
+                else
+                {
+                    TMP_Text buttonText = GetButtonText(changingControl);
+
+                    changingControl.Key = code;
+                    changingControl = null;
+                    buttonText.text = code.ToString();
+                    return;
+                }
             }
         }
     }
