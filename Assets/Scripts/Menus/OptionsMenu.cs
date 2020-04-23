@@ -13,6 +13,8 @@ public class OptionsMenu : MonoBehaviour
     [SerializeField]
     private GameObject optionsMenu;
     [SerializeField]
+    private GameObject controlsMenu;
+    [SerializeField]
     private Toggle backgroundMusicToggle;
     [SerializeField]
     private Toggle soundEffectsToggle;
@@ -286,6 +288,34 @@ public class OptionsMenu : MonoBehaviour
         refreshRateDropdown.value = refreshRateIndex;
         fullscreenToggle.isOn = options.Fullscreen;
         autoPauseToggle.isOn = options.AutoPauseOnFocusLose;
+    }
+
+    /// <summary>
+    /// Opens the controls menu
+    /// </summary>
+    public void Controls()
+    {
+        audioSource.Play();
+
+        if (OptionsChanged)
+        {
+            dialog.OnResult += (Dialog.DialogResult result) =>
+            {
+                if (result == Dialog.DialogResult.Yes)
+                {
+                    Cancel(false);
+                    optionsMenu.SetActive(false);
+                    controlsMenu.SetActive(true);
+                }
+            };
+
+            dialog.Open(Dialog.DialogType.YesNo, "Are you sure that you want to cancel the changes and open the controls?");
+        }
+        else
+        {
+            optionsMenu.SetActive(false);
+            controlsMenu.SetActive(true);
+        }
     }
 
     /// <summary>

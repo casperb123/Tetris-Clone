@@ -1,4 +1,6 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using System.Linq;
+using UnityEngine;
 
 public class Tetromino : MonoBehaviour
 {
@@ -131,33 +133,40 @@ public class Tetromino : MonoBehaviour
 
 #else
 
-        if (Input.GetKeyUp(KeyCode.RightArrow) || Input.GetKeyUp(KeyCode.LeftArrow))
+        SavedControl moveLeft = Game.Instance.Controls.FirstOrDefault(x => x.ControlType == SavedControl.Type.MoveLeft);
+        SavedControl moveRight = Game.Instance.Controls.FirstOrDefault(x => x.ControlType == SavedControl.Type.MoveRight);
+        SavedControl moveDown = Game.Instance.Controls.FirstOrDefault(x => x.ControlType == SavedControl.Type.MoveDown);
+        SavedControl rotate = Game.Instance.Controls.FirstOrDefault(x => x.ControlType == SavedControl.Type.Rotate);
+        SavedControl moveToBottom = Game.Instance.Controls.FirstOrDefault(x => x.ControlType == SavedControl.Type.MoveToBottom);
+        SavedControl save = Game.Instance.Controls.FirstOrDefault(x => x.ControlType == SavedControl.Type.SaveTetromino);
+
+        if (Input.GetKeyUp(moveRight.Key) || Input.GetKeyUp(moveLeft.Key))
         {
             movedImmediateHorizontal = false;
             horizontalTimer = 0;
             buttonDownWaitTimerHorizontal = 0;
         }
 
-        if (Input.GetKeyUp(KeyCode.DownArrow))
+        if (Input.GetKeyUp(moveDown.Key))
         {
             movedImmediateVertical = false;
             verticalTimer = 0;
             buttonDownWaitTimerVertical = 0;
         }
 
-        if (Input.GetKey(KeyCode.RightArrow))
+        if (Input.GetKey(moveRight.Key))
             MoveRight();
 
-        if (Input.GetKey(KeyCode.LeftArrow))
+        if (Input.GetKey(moveLeft.Key))
             MoveLeft();
 
-        if (Input.GetKeyDown(KeyCode.UpArrow))
+        if (Input.GetKeyDown(rotate.Key))
             Rotate();
 
-        if (Input.GetKey(KeyCode.DownArrow) || Time.time - fallTimer >= Game.Instance.FallSpeed)
+        if (Input.GetKey(moveDown.Key) || Time.time - fallTimer >= Game.Instance.FallSpeed)
             MoveDown();
 
-        if (Input.GetKeyDown(KeyCode.LeftAlt))
+        if (Input.GetKeyDown(moveToBottom.Key))
             MoveToBottom();
 #endif
     }

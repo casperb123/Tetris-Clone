@@ -5,7 +5,6 @@ using System.Linq;
 using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using UnityEngine.UI;
 using Random = UnityEngine.Random;
 
 [Serializable]
@@ -109,6 +108,8 @@ public class Game : MonoBehaviour
 
     private bool gameStarted;
     private SavedOptions options;
+    [HideInInspector]
+    public List<SavedControl> Controls;
     private bool highScoreSaved;
 
     private void Awake()
@@ -123,6 +124,7 @@ public class Game : MonoBehaviour
         audioSource = GetComponents<AudioSource>().FirstOrDefault(x => x.clip.name == "gameloop");
         buttonAudioSource = GetComponents<AudioSource>().FirstOrDefault(x => x.clip.name == "buttonclick");
         options = SaveSystem.GetOptions();
+        GetControls();
         Grid = new Transform[GridWidth, GridHeight];
         spawnPosition = new Vector2(GridWidth / 2, GridHeight);
 
@@ -177,6 +179,14 @@ public class Game : MonoBehaviour
     private string AddCommas(int number)
     {
         return string.Format(CultureInfo.InvariantCulture, "{0:n0}", number);
+    }
+
+    /// <summary>
+    /// Gets the controls
+    /// </summary>
+    public void GetControls()
+    {
+        Controls = SaveSystem.GetControls();
     }
 
     /// <summary>

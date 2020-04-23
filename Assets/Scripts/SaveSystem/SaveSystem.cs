@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
@@ -11,6 +12,7 @@ public static class SaveSystem
 {
     private static SavedOptions options;
     private static List<SavedHighscore> highscores;
+    private static List<SavedControl> controls;
 
     /// <summary>
     /// Saves the game
@@ -297,8 +299,103 @@ public static class SaveSystem
         }
     }
 
+    /// <summary>
+    /// Gets the path to the highscores file
+    /// </summary>
+    /// <returns>The path to the highscores file</returns>
     private static string GetHighscorePath()
     {
         return Path.Combine(Application.persistentDataPath, "highscores.bin");
+    }
+
+    /// <summary>
+    /// Gets the saved controls
+    /// </summary>
+    /// <returns>List of controls</returns>
+    public static List<SavedControl> GetControls()
+    {
+        List<SavedControl> controls = new List<SavedControl>();
+
+        if (SaveSystem.controls is null)
+        {
+            BinaryFormatter formatter = new BinaryFormatter();
+            MemoryStream stream = new MemoryStream();
+
+            if (File.Exists(GetControlsPath()))
+            {
+                try
+                {
+                    byte[] bytes = File.ReadAllBytes(GetControlsPath());
+                    stream.Write(bytes, 0, bytes.Length);
+                    stream.Position = 0;
+                    List<SavedControl> tempControls = formatter.Deserialize(stream) as List<SavedControl>;
+                    tempControls.ForEach(x => controls.Add(new SavedControl(x)));
+                }
+                catch (SerializationException)
+                {
+                    SaveControls(controls);
+                }
+            }
+            else
+            {
+                controls = new List<SavedControl>
+                {
+                    new SavedControl(SavedControl.Type.MoveLeft, KeyCode.LeftArrow, "Move Tetromino Left"),
+                    new SavedControl(SavedControl.Type.MoveRight, KeyCode.RightArrow, "Move Tetromino Right"),
+                    new SavedControl(SavedControl.Type.MoveDown, KeyCode.DownArrow, "Move Tetromino Down"),
+                    new SavedControl(SavedControl.Type.Rotate, KeyCode.UpArrow, "Rotate Tetromino"),
+                    new SavedControl(SavedControl.Type.MoveToBottom, KeyCode.LeftAlt, "Move Tetromino To Bottom"),
+                    new SavedControl(SavedControl.Type.SaveTetromino, KeyCode.Space, "Save Tetromino")
+                };
+
+                SaveControls(controls);
+            }
+        }
+        else
+            controls = new List<SavedControl>(SaveSystem.controls);
+
+        return controls;
+    }
+
+    /// <summary>
+    /// Gets the control with the type
+    /// </summary>
+    /// <param name="type">The control type</param>
+    /// <returns>The control with the type</returns>
+    public static SavedControl GetControl(SavedControl.Type type)
+    {
+        return GetControls().FirstOrDefault(x => x.ControlType == type);
+    }
+
+    /// <summary>
+    /// Saves the controls
+    /// </summary>
+    /// <param name="controls">The controls to save</param>
+    /// <returns>If saving the controls was a success</returns>
+    public static bool SaveControls(List<SavedControl> controls)
+    {
+        SaveSystem.controls = new List<SavedControl>(controls);
+        BinaryFormatter formatter = new BinaryFormatter();
+        MemoryStream stream = new MemoryStream();
+
+        try
+        {
+            formatter.Serialize(stream, controls);
+            File.WriteAllBytes(GetControlsPath(), stream.ToArray());
+            return true;
+        }
+        catch (SerializationException)
+        {
+            return false;
+        }
+    }
+
+    /// <summary>
+    /// Gets the path for the controls file
+    /// </summary>
+    /// <returns>The path to the controls file</returns>
+    private static string GetControlsPath()
+    {
+        return Path.Combine(Application.persistentDataPath, "controls.bin");
     }
 }
