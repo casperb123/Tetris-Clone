@@ -269,6 +269,7 @@ public class ControlsMenu : MonoBehaviour
             {
                 if (result == Dialog.DialogResult.Yes)
                 {
+                    CancelChange();
                     GetControls(false);
                     ControlsChanged = false;
                     okButton.gameObject.SetActive(false);
@@ -283,6 +284,8 @@ public class ControlsMenu : MonoBehaviour
         }
         else
         {
+            CancelChange();
+
             if (ControlsChanged)
             {
                 GetControls(false);
