@@ -108,8 +108,7 @@ public class Game : MonoBehaviour
 
     private bool gameStarted;
     public SavedOptions Options;
-    [HideInInspector]
-    public List<SavedControl> Controls;
+    public List<SavedControl> Controls { get; private set; }
     private bool highScoreSaved;
 
     private void Awake()

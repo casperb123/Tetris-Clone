@@ -7,6 +7,8 @@ using UnityEngine.UI;
 
 public class ControlsMenu : MonoBehaviour
 {
+    public static ControlsMenu Instance;
+
     [Header("UI Settings")]
     [SerializeField]
     private GameObject optionsMenu;
@@ -32,7 +34,12 @@ public class ControlsMenu : MonoBehaviour
     private List<SavedControl> controls;
     private SavedControl changingControl;
     private AudioSource audioSource;
-    private bool controlsChanged;
+    public bool ControlsChanged { get; private set; }
+
+    private void Awake()
+    {
+        Instance = this;
+    }
 
     private void Start()
     {
@@ -191,7 +198,7 @@ public class ControlsMenu : MonoBehaviour
         okButton.gameObject.SetActive(true);
         applyButton.gameObject.SetActive(true);
         cancelButton.gameObject.SetActive(true);
-        controlsChanged = true;
+        ControlsChanged = true;
     }
 
     /// <summary>
@@ -207,13 +214,16 @@ public class ControlsMenu : MonoBehaviour
             {
                 CancelChange();
                 changingControl = null;
-                controlsChanged = false;
+                ControlsChanged = false;
                 okButton.gameObject.SetActive(false);
                 applyButton.gameObject.SetActive(false);
                 cancelButton.gameObject.SetActive(false);
 
                 SaveSystem.ResetControls();
                 GetControls(false);
+
+                if (Game.Instance != null)
+                    Game.Instance.GetControls();
             }
         };
 
@@ -239,7 +249,7 @@ public class ControlsMenu : MonoBehaviour
         if (Game.Instance != null)
             Game.Instance.GetControls();
 
-        controlsChanged = false;
+        ControlsChanged = false;
         okButton.gameObject.SetActive(false);
         applyButton.gameObject.SetActive(false);
         cancelButton.gameObject.SetActive(false);
@@ -253,14 +263,14 @@ public class ControlsMenu : MonoBehaviour
     {
         audioSource.Play();
 
-        if (goBack && controlsChanged)
+        if (goBack && ControlsChanged)
         {
             dialog.OnResult += (Dialog.DialogResult result) =>
             {
                 if (result == Dialog.DialogResult.Yes)
                 {
                     GetControls(false);
-                    controlsChanged = false;
+                    ControlsChanged = false;
                     okButton.gameObject.SetActive(false);
                     applyButton.gameObject.SetActive(false);
                     cancelButton.gameObject.SetActive(false);
@@ -273,10 +283,10 @@ public class ControlsMenu : MonoBehaviour
         }
         else
         {
-            if (controlsChanged)
+            if (ControlsChanged)
             {
                 GetControls(false);
-                controlsChanged = false;
+                ControlsChanged = false;
                 okButton.gameObject.SetActive(false);
                 applyButton.gameObject.SetActive(false);
                 cancelButton.gameObject.SetActive(false);

@@ -13,6 +13,8 @@ public class PauseMenu : MonoBehaviour
     [SerializeField]
     private GameObject playMenu;
     [SerializeField]
+    private GameObject controlsMenu;
+    [SerializeField]
     private GameObject saveBackButton;
     [SerializeField]
     private GameObject saveQuitButton;
@@ -44,7 +46,7 @@ public class PauseMenu : MonoBehaviour
     {
         options = SaveSystem.GetOptions();
 
-        if (!focus && !optionsMenu.activeSelf && !saveMenu.activeSelf && !playMenu.activeSelf && options.AutoPauseOnFocusLose)
+        if (!focus && !optionsMenu.activeSelf && !saveMenu.activeSelf && !playMenu.activeSelf && !controlsMenu.activeSelf && options.AutoPauseOnFocusLose)
             Pause(false);
     }
 
@@ -78,15 +80,43 @@ public class PauseMenu : MonoBehaviour
         if (optionsMenuScript is null || optionsMenuScript.OptionsChanged)
             return;
 
-        options = SaveSystem.GetOptions();
-        audioSource.Play();
-        pauseMenu.SetActive(false);
-        optionsMenu.SetActive(false);
-        saveMenu.SetActive(false);
-        if (options != null && options.BackgroundMusic)
-            audioSourceGameLoop.Play();
-        Game.Instance.IsPaused = false;
-        Time.timeScale = 1;
+        if (ControlsMenu.Instance != null && ControlsMenu.Instance.ControlsChanged)
+        {
+            dialog.OnResult += (Dialog.DialogResult result) =>
+            {
+                if (result == Dialog.DialogResult.Yes)
+                {
+                    options = SaveSystem.GetOptions();
+                    audioSource.Play();
+                    pauseMenu.SetActive(false);
+                    optionsMenu.SetActive(false);
+                    saveMenu.SetActive(false);
+                    controlsMenu.SetActive(false);
+                    if (options != null && options.BackgroundMusic)
+                        audioSourceGameLoop.Play();
+
+                    ControlsMenu.Instance.Cancel(false);
+                    Game.Instance.IsPaused = false;
+                    Time.timeScale = 1;
+                }
+            };
+
+            dialog.Open(Dialog.DialogType.YesNo, "Are you sure that you want to cancel the changes?");
+        }
+        else
+        {
+            options = SaveSystem.GetOptions();
+            audioSource.Play();
+            pauseMenu.SetActive(false);
+            optionsMenu.SetActive(false);
+            saveMenu.SetActive(false);
+            controlsMenu.SetActive(false);
+            if (options != null && options.BackgroundMusic)
+                audioSourceGameLoop.Play();
+
+            Game.Instance.IsPaused = false;
+            Time.timeScale = 1;
+        }
     }
 
     /// <summary>

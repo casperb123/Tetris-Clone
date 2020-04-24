@@ -356,6 +356,7 @@ MonoBehaviour:
   optionsMenu: {fileID: 926108968}
   saveMenu: {fileID: 413376122}
   playMenu: {fileID: 603376434}
+  controlsMenu: {fileID: 1199336032}
   saveBackButton: {fileID: 152803153}
   saveQuitButton: {fileID: 1258151724}
   dialog: {fileID: 1360098177}
@@ -8594,7 +8595,6 @@ MonoBehaviour:
   CurrentTetromino: {fileID: 0}
   SavedTetromino: {fileID: 0}
   GhostTetromino: {fileID: 0}
-  Controls: []
 --- !u!4 &757178063
 Transform:
   m_ObjectHideFlags: 0
