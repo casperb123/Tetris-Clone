@@ -145,6 +145,9 @@ public class LoadMenu : MonoBehaviour
 
                 TempSavedGames[slot - 1] = null;
                 ManageSaves(false);
+
+                if (GameMenu.Instance != null)
+                    GameMenu.Instance.GetLastLoadedGame();
             }
         };
 

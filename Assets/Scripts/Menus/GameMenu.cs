@@ -5,6 +5,8 @@ using UnityEngine.UI;
 
 public class GameMenu : MonoBehaviour
 {
+    public static GameMenu Instance;
+
     [Header("UI Settings")]
     [SerializeField]
     private TextMeshProUGUI levelText;
@@ -31,36 +33,42 @@ public class GameMenu : MonoBehaviour
     private int startingLevel;
     private SavedGame lastLoadedGame;
 
+    private void Awake()
+    {
+        Instance = this;
+    }
+
     private void Start()
     {
         audioSource = GetComponent<AudioSource>();
-        lastLoadedGame = GetLastLoadedGame();
-
-        if (lastLoadedGame != null)
-            continueButton.gameObject.SetActive(true);
+        GetLastLoadedGame();
     }
 
     /// <summary>
     /// Gets the last loaded game
     /// </summary>
     /// <returns>The last loaded game if a saved game exists, otherwise null</returns>
-    private SavedGame GetLastLoadedGame()
+    public void GetLastLoadedGame()
     {
-        SavedGame lastLoaded = null;
+        if (lastLoadedGame != null && !SaveSystem.DoesSaveGameExist(lastLoadedGame.Slot))
+            lastLoadedGame = null;
 
-        for (int i = 1; i <= 3; i++)
+        for (int i = 1; i <= SlotButtons.SaveSlots; i++)
         {
             var (isValid, savedGame) = SaveSystem.LoadGame(i);
             if (!isValid)
                 continue;
 
-            if (lastLoaded != null && savedGame.LastLoaded.Value < lastLoaded.LastLoaded.Value)
+            if (lastLoadedGame != null && savedGame.LastLoaded.Value < lastLoadedGame.LastLoaded.Value)
                 continue;
 
-            lastLoaded = savedGame;
+            lastLoadedGame = savedGame;
         }
 
-        return lastLoaded;
+        if (lastLoadedGame is null)
+            continueButton.gameObject.SetActive(false);
+        else
+            continueButton.gameObject.SetActive(true);
     }
 
     /// <summary>

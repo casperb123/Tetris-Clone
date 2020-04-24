@@ -66,6 +66,12 @@ public class ControlsMenu : MonoBehaviour
 
             if (Input.GetKeyDown(code))
             {
+                if (code == KeyCode.Escape)
+                {
+                    CancelChange();
+                    return;
+                }
+
                 bool keyTaken = controls.Where(x => x != changingControl).Any(x => x.Key == code);
 
                 if (keyTaken)
