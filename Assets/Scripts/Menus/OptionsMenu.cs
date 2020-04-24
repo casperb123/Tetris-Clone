@@ -75,6 +75,10 @@ public class OptionsMenu : MonoBehaviour
         SetOptionValues();
         options.OptionsChanged.AddListener(OptionsUpdated);
         options.Resolution.ResolutionChanged.AddListener(OptionsUpdated);
+
+        Screen.SetResolution(options.Resolution.Width, options.Resolution.Height, options.Fullscreen, options.Resolution.RefreshRate);
+        Application.targetFrameRate = options.Resolution.RefreshRate;
+        Screen.fullScreen = options.Fullscreen;
     }
 
     private void OptionsUpdated()
@@ -83,22 +87,6 @@ public class OptionsMenu : MonoBehaviour
         applyButton.gameObject.SetActive(true);
         cancelButton.gameObject.SetActive(true);
         OptionsChanged = true;
-    }
-
-    private void Update()
-    {
-        if (OptionsChanged)
-            return;
-
-        if (Screen.currentResolution.width != options.Resolution.Width ||
-            Screen.currentResolution.height != options.Resolution.Height ||
-            Screen.currentResolution.refreshRate != options.Resolution.RefreshRate ||
-            Screen.fullScreen != options.Fullscreen ||
-            Application.targetFrameRate != options.Resolution.RefreshRate)
-        {
-            Screen.SetResolution(options.Resolution.Width, options.Resolution.Height, options.Fullscreen, options.Resolution.RefreshRate);
-            Application.targetFrameRate = options.Resolution.RefreshRate;
-        }
     }
 
     /// <summary>
@@ -217,6 +205,9 @@ public class OptionsMenu : MonoBehaviour
         applyButton.gameObject.SetActive(false);
         cancelButton.gameObject.SetActive(false);
         backButton.gameObject.SetActive(true);
+
+        Screen.SetResolution(options.Resolution.Width, options.Resolution.Height, options.Fullscreen, options.Resolution.RefreshRate);
+        Application.targetFrameRate = options.Resolution.RefreshRate;
     }
 
     /// <summary>

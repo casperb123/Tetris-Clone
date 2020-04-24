@@ -56,12 +56,7 @@ public class ControlsMenu : MonoBehaviour
         foreach (KeyCode code in Enum.GetValues(typeof(KeyCode)))
         {
             if (code == KeyCode.Mouse0 ||
-                code == KeyCode.Mouse1 ||
-                code == KeyCode.Mouse2 ||
-                code == KeyCode.Mouse3 ||
-                code == KeyCode.Mouse4 ||
-                code == KeyCode.Mouse5 ||
-                code == KeyCode.Mouse6)
+                code == KeyCode.Mouse1)
                 continue;
 
             if (Input.GetKeyDown(code))
