@@ -61,6 +61,8 @@ public class ControlsMenu : MonoBehaviour
 
             if (Input.GetKeyDown(code))
             {
+                audioSource.Play();
+
                 if (code == KeyCode.Escape)
                 {
                     CancelChange();
@@ -161,6 +163,7 @@ public class ControlsMenu : MonoBehaviour
     /// <param name="control">The contol to change</param>
     private void ChangeControl(SavedControl control)
     {
+        audioSource.Play();
         TMP_Text buttonText = GetButtonText(control);
 
         CancelChange();
