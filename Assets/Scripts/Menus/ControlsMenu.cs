@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -14,6 +12,8 @@ public class ControlsMenu : MonoBehaviour
     private GameObject optionsMenu;
     [SerializeField]
     private GameObject controlsMenu;
+    [SerializeField]
+    private Button resetButton;
     [SerializeField]
     private Button okButton;
     [SerializeField]
@@ -192,6 +192,32 @@ public class ControlsMenu : MonoBehaviour
         applyButton.gameObject.SetActive(true);
         cancelButton.gameObject.SetActive(true);
         controlsChanged = true;
+    }
+
+    /// <summary>
+    /// Resets the controls to the default values
+    /// </summary>
+    public void ResetControls()
+    {
+        audioSource.Play();
+
+        dialog.OnResult += (Dialog.DialogResult result) =>
+        {
+            if (result == Dialog.DialogResult.Yes)
+            {
+                CancelChange();
+                changingControl = null;
+                controlsChanged = false;
+                okButton.gameObject.SetActive(false);
+                applyButton.gameObject.SetActive(false);
+                cancelButton.gameObject.SetActive(false);
+
+                SaveSystem.ResetControls();
+                GetControls(false);
+            }
+        };
+
+        dialog.Open(Dialog.DialogType.YesNo, "Are you sure that you want to reset the controls?");
     }
 
     /// <summary>

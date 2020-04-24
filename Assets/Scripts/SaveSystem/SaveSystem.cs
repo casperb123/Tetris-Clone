@@ -358,6 +358,17 @@ public static class SaveSystem
     }
 
     /// <summary>
+    /// Resets the controls to the default values
+    /// </summary>
+    public static void ResetControls()
+    {
+        controls = null;
+
+        if (File.Exists(GetControlsPath()))
+            File.Delete(GetControlsPath());
+    }
+
+    /// <summary>
     /// Gets the control with the type
     /// </summary>
     /// <param name="type">The control type</param>
