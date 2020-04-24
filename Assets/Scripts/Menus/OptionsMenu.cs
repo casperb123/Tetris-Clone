@@ -201,13 +201,16 @@ public class OptionsMenu : MonoBehaviour
         audioSource.Play();
         SaveSystem.SaveOptions(options);
         OptionsChanged = false;
+        Screen.SetResolution(options.Resolution.Width, options.Resolution.Height, options.Fullscreen, options.Resolution.RefreshRate);
+        Application.targetFrameRate = options.Resolution.RefreshRate;
+
+        if (Game.Instance != null)
+            Game.Instance.Options = SaveSystem.GetOptions();
+
         okButton.gameObject.SetActive(false);
         applyButton.gameObject.SetActive(false);
         cancelButton.gameObject.SetActive(false);
         backButton.gameObject.SetActive(true);
-
-        Screen.SetResolution(options.Resolution.Width, options.Resolution.Height, options.Fullscreen, options.Resolution.RefreshRate);
-        Application.targetFrameRate = options.Resolution.RefreshRate;
     }
 
     /// <summary>

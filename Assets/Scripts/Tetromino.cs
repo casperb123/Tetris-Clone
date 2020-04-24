@@ -21,8 +21,6 @@ public class Tetromino : MonoBehaviour
     [SerializeField]
     private AudioClip landSound;                        // Sound for when the tetromino lands
 
-    private SavedOptions options;
-
     private float fallTimer = 0;                        // Countdown timer for the fall speed
     private float verticalTimer = 0;                    // Countdown timer for the vertical speed
     private float horizontalTimer = 0;                  // Countdown timer for the horizontal speed
@@ -42,7 +40,6 @@ public class Tetromino : MonoBehaviour
 
     private void Start()
     {
-        options = SaveSystem.GetOptions();
         audioSource = GetComponent<AudioSource>();
         individualScore = Game.Instance.MaxIndividualScore;
     }
@@ -421,7 +418,7 @@ public class Tetromino : MonoBehaviour
     /// </summary>
     void PlayMoveAudio()
     {
-        if (options.SoundEffects)
+        if (Game.Instance.Options.SoundEffects)
             audioSource.PlayOneShot(moveSound);
     }
 
@@ -430,7 +427,7 @@ public class Tetromino : MonoBehaviour
     /// </summary>
     void PlayLandAudio()
     {
-        if (options.SoundEffects)
+        if (Game.Instance.Options.SoundEffects)
             audioSource.PlayOneShot(landSound);
     }
 }

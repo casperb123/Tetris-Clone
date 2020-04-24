@@ -107,7 +107,7 @@ public class Game : MonoBehaviour
     private Vector2 spawnPosition;
 
     private bool gameStarted;
-    private SavedOptions options;
+    public SavedOptions Options;
     [HideInInspector]
     public List<SavedControl> Controls;
     private bool highScoreSaved;
@@ -123,7 +123,7 @@ public class Game : MonoBehaviour
 
         audioSource = GetComponents<AudioSource>().FirstOrDefault(x => x.clip.name == "gameloop");
         buttonAudioSource = GetComponents<AudioSource>().FirstOrDefault(x => x.clip.name == "buttonclick");
-        options = SaveSystem.GetOptions();
+        Options = SaveSystem.GetOptions();
         GetControls();
         Grid = new Transform[GridWidth, GridHeight];
         spawnPosition = new Vector2(GridWidth / 2, GridHeight);
@@ -136,7 +136,7 @@ public class Game : MonoBehaviour
 
         if (SaveGame != null)
         {
-            if (options.BackgroundMusic)
+            if (Options.BackgroundMusic)
                 audioSource.Play();
 
             CurrentScore = SaveGame.Score;
@@ -223,7 +223,7 @@ public class Game : MonoBehaviour
         Time.timeScale = 1;
         SpawnTetromino();
 
-        if (options.BackgroundMusic)
+        if (Options.BackgroundMusic)
             audioSource.Play();
     }
 
@@ -375,7 +375,8 @@ public class Game : MonoBehaviour
     /// </summary>
     private void PlayClearLineSound()
     {
-        audioSource.PlayOneShot(clearLineSound);
+        if (Options.SoundEffects)
+            audioSource.PlayOneShot(clearLineSound);
     }
 
     /// <summary>
@@ -383,7 +384,8 @@ public class Game : MonoBehaviour
     /// </summary>
     private void PlayClearFourLinesSound()
     {
-        audioSource.PlayOneShot(clearFourLinesSound);
+        if (Options.SoundEffects)
+            audioSource.PlayOneShot(clearFourLinesSound);
     }
 
     /// <summary>
