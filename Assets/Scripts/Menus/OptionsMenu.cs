@@ -78,7 +78,6 @@ public class OptionsMenu : MonoBehaviour
 
         Screen.SetResolution(options.Resolution.Width, options.Resolution.Height, options.Fullscreen, options.Resolution.RefreshRate);
         Application.targetFrameRate = options.Resolution.RefreshRate;
-        Screen.fullScreen = options.Fullscreen;
     }
 
     private void OptionsUpdated()
