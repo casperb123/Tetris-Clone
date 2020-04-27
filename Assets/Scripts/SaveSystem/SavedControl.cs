@@ -15,7 +15,8 @@ public class SavedControl
         set
         {
             controlType = value;
-            Changed.Invoke();
+            if (Changed != null)
+                Changed.Invoke();
         }
     }
     public KeyCode Key
@@ -24,7 +25,8 @@ public class SavedControl
         set
         {
             key = value;
-            Changed.Invoke();
+            if (Changed != null)
+                Changed.Invoke();
         }
     }
     public string Name
@@ -33,7 +35,8 @@ public class SavedControl
         set
         {
             name = value;
-            Changed.Invoke();
+            if (Changed != null)
+                Changed.Invoke();
         }
     }
 
@@ -52,10 +55,10 @@ public class SavedControl
 
     public SavedControl(Type controlType, KeyCode key, string name)
     {
-        Changed = new UnityEvent();
         ControlType = controlType;
         Key = key;
         Name = name;
+        Changed = new UnityEvent();
     }
 
     public SavedControl(SavedControl control) : this(control.ControlType, control.Key, control.Name)

@@ -8,9 +8,9 @@ using UnityEngine;
 
 public static class SaveSystem
 {
-    private static SavedOptions options;
-    private static List<SavedHighscore> highscores;
-    private static List<SavedControl> controls;
+    public static SavedOptions options;
+    public static List<SavedHighscore> highscores;
+    public static List<SavedControl> controls;
 
     /// <summary>
     /// Saves the game
@@ -350,7 +350,7 @@ public static class SaveSystem
             }
         }
         else
-            controls = new List<SavedControl>(SaveSystem.controls);
+            SaveSystem.controls.ForEach(x => controls.Add(new SavedControl(x)));
 
         return controls;
     }
@@ -360,10 +360,17 @@ public static class SaveSystem
     /// </summary>
     public static void ResetControls()
     {
-        controls = null;
+        controls = new List<SavedControl>
+        {
+            new SavedControl(SavedControl.Type.MoveLeft, KeyCode.LeftArrow, "Move Tetromino Left"),
+            new SavedControl(SavedControl.Type.MoveRight, KeyCode.RightArrow, "Move Tetromino Right"),
+            new SavedControl(SavedControl.Type.MoveDown, KeyCode.DownArrow, "Move Tetromino Down"),
+            new SavedControl(SavedControl.Type.Rotate, KeyCode.UpArrow, "Rotate Tetromino"),
+            new SavedControl(SavedControl.Type.MoveToBottom, KeyCode.LeftAlt, "Move Tetromino To Bottom"),
+            new SavedControl(SavedControl.Type.SaveTetromino, KeyCode.Space, "Save Tetromino")
+        };
 
-        if (File.Exists(GetControlsPath()))
-            File.Delete(GetControlsPath());
+        SaveControls(controls);
     }
 
     /// <summary>
@@ -381,9 +388,11 @@ public static class SaveSystem
     /// </summary>
     /// <param name="controls">The controls to save</param>
     /// <returns>If saving the controls was a success</returns>
-    public static bool SaveControls(List<SavedControl> controls)
+    public static bool SaveControls(List<SavedControl> controls, bool replaceControls = true)
     {
-        SaveSystem.controls = new List<SavedControl>(controls);
+        if (replaceControls)
+            SaveSystem.controls = new List<SavedControl>(controls);
+
         BinaryFormatter formatter = new BinaryFormatter();
         MemoryStream stream = new MemoryStream();
 

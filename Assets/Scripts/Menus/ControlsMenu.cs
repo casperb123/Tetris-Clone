@@ -82,12 +82,7 @@ public class ControlsMenu : MonoBehaviour
 
                 if (keyTaken)
                 {
-                    dialog.OnResult += (_) =>
-                    {
-                        CancelChange();
-                        return;
-                    };
-
+                    dialog.OnResult += (_) => CancelChange();
                     dialog.Open(Dialog.DialogType.Ok, $"The key <b>{code}</b> is already taken by another control");
                 }
                 else
@@ -98,7 +93,6 @@ public class ControlsMenu : MonoBehaviour
                     changingControl = null;
                     buttonText.text = code.ToString();
                     editingText.gameObject.SetActive(false);
-                    return;
                 }
             }
         }
@@ -217,15 +211,15 @@ public class ControlsMenu : MonoBehaviour
         {
             if (result == Dialog.DialogResult.Yes)
             {
-                CancelChange();
                 changingControl = null;
                 ControlsChanged = false;
-                okButton.gameObject.SetActive(false);
-                applyButton.gameObject.SetActive(false);
-                cancelButton.gameObject.SetActive(false);
 
                 SaveSystem.ResetControls();
                 GetControls(false);
+
+                okButton.gameObject.SetActive(false);
+                applyButton.gameObject.SetActive(false);
+                cancelButton.gameObject.SetActive(false);
 
                 if (Game.Instance != null)
                     Game.Instance.GetControls();
