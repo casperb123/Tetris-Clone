@@ -211,9 +211,14 @@ public class Game : MonoBehaviour
             dialog.Open(Dialog.DialogType.Ok, "The name can't be empty or whitespace");
             return;
         }
-        else if (SaveSystem.IsNameTaken(nameField.text))
+        if (SaveSystem.IsNameTaken(nameField.text))
         {
             dialog.Open(Dialog.DialogType.Ok, $"The name <b>{nameField.text}</b> is already taken");
+            return;
+        }
+        if (nameField.text.Length > 15)
+        {
+            dialog.Open(Dialog.DialogType.Ok, "The name can't contain more than 15 characters");
             return;
         }
 
@@ -349,7 +354,7 @@ public class Game : MonoBehaviour
             {
                 if (CurrentScore > HighScores[i].Score)
                 {
-                    SavedHighscore highscore = HighScores.FirstOrDefault(x => x.SaveSlot == SaveGame.Slot);
+                    SavedHighscore highscore = HighScores.FirstOrDefault(x => x.SaveSlot == SaveGame.Slot && x.Name == SaveGame.Name);
 
                     if (highscore != null)
                         highscore.Score = CurrentScore;

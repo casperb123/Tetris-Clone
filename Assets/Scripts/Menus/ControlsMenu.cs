@@ -15,6 +15,8 @@ public class ControlsMenu : MonoBehaviour
     [SerializeField]
     private GameObject controlsMenu;
     [SerializeField]
+    private TMP_Text editingText;
+    [SerializeField]
     private Button resetButton;
     [SerializeField]
     private Button okButton;
@@ -95,6 +97,7 @@ public class ControlsMenu : MonoBehaviour
                     changingControl.Key = code;
                     changingControl = null;
                     buttonText.text = code.ToString();
+                    editingText.gameObject.SetActive(false);
                     return;
                 }
             }
@@ -176,6 +179,7 @@ public class ControlsMenu : MonoBehaviour
         CancelChange();
         changingControl = control;
         buttonText.text = "Press a key...";
+        editingText.gameObject.SetActive(true);
     }
 
     /// <summary>
@@ -188,6 +192,7 @@ public class ControlsMenu : MonoBehaviour
 
         TMP_Text buttonText = GetButtonText(changingControl);
         buttonText.text = changingControl.Key.ToString();
+        editingText.gameObject.SetActive(false);
     }
 
     /// <summary>

@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
 using UnityEngine;
@@ -267,7 +265,7 @@ public static class SaveSystem
             }
         }
         else
-            highscores = SaveSystem.highscores;
+            highscores = new List<SavedHighscore>(SaveSystem.highscores);
 
         highscores = highscores.OrderByDescending(x => x.Score).ToList();
         return highscores;
@@ -283,7 +281,7 @@ public static class SaveSystem
         if (highscores.Count > 100)
             highscores = highscores.Take(100).ToList();
 
-        SaveSystem.highscores = highscores;
+        SaveSystem.highscores = new List<SavedHighscore>(highscores);
         BinaryFormatter formatter = new BinaryFormatter();
         MemoryStream stream = new MemoryStream();
 

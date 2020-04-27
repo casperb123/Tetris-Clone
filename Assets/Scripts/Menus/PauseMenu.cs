@@ -189,7 +189,15 @@ public class PauseMenu : MonoBehaviour
             dialog.Open(Dialog.DialogType.SaveYesNo, "Are you sure that you want to go to the menu without saving?");
         }
         else
+        {
+            if (Game.SaveGame != null)
+            {
+                Game.Instance.UpdateHighscores();
+                Game.SaveGame = null;
+            }
+
             SceneManager.LoadScene("GameMenu");
+        }
     }
 
     /// <summary>

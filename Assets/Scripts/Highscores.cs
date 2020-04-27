@@ -2,6 +2,8 @@
 using UnityEngine;
 using TMPro;
 using System.Globalization;
+using UnityEngine.SceneManagement;
+using System;
 
 public class Highscores : MonoBehaviour
 {
@@ -20,6 +22,11 @@ public class Highscores : MonoBehaviour
     private void Start()
     {
         GetHighScores();
+    }
+
+    private string AddCommas(int number)
+    {
+        return string.Format(CultureInfo.InvariantCulture, "{0:n0}", number);
     }
 
     public void GetHighScores()
@@ -42,17 +49,12 @@ public class Highscores : MonoBehaviour
             TMP_Text positionNameText = highscoreObject.transform.GetChild(0).GetComponent<TMP_Text>();
             TMP_Text scoreText = highscoreObject.transform.GetChild(1).GetComponent<TMP_Text>();
 
-            positionNameText.text = $"{i + 1}. {HighscoresList[i].Name}";
+            positionNameText.text = $"{i + 1}. Slot {HighscoresList[i].SaveSlot}: {HighscoresList[i].Name}";
             scoreText.text = AddCommas(HighscoresList[i].Score);
             highscoreObject.SetActive(true);
         }
 
         if (showButton != null && HighscoresList.Count > 10)
             showButton.SetActive(true);
-    }
-
-    private string AddCommas(int number)
-    {
-        return string.Format(CultureInfo.InvariantCulture, "{0:n0}", number);
     }
 }
