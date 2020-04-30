@@ -391,7 +391,10 @@ public static class SaveSystem
     public static bool SaveControls(List<SavedControl> controls, bool replaceControls = true)
     {
         if (replaceControls)
-            SaveSystem.controls = new List<SavedControl>(controls);
+        {
+            SaveSystem.controls = new List<SavedControl>();
+            controls.ForEach(x => SaveSystem.controls.Add(new SavedControl(x)));
+        }
 
         BinaryFormatter formatter = new BinaryFormatter();
         MemoryStream stream = new MemoryStream();
